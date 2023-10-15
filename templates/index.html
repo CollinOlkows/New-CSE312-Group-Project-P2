@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Bookface{% endblock %} 
+{% block head %}
+<link  rel="stylesheet" href="{{url_for('send_static',path='css/index.css')}}">
+{% endblock %}
+{% block content %}
+                <h1>Bookface</h1>
+                <p>"Yes. I am the popular social networking site known as Bookface." -Jim Halpert</p>
+                <form action="{{url_for('login')}}">
+                    <input type="submit" value="login" class="buttons">
+                </form>
+                <form action="{{url_for('signup')}}">
+                    <input type="submit" value="signup" class="buttons">
+                </form>
+                <form action="{{url_for('post')}}">
+                    <input type="submit" value="post">
+                </form>
+                <form action="{{url_for('feed')}}">
+                    <input type="submit" value="feed">
+                </form>
+        <br>
+{% endblock %}

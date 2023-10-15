@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Feed{% endblock %}
+{% block head %}
+<link  rel="stylesheet" href="{{url_for('send_static',path='css/feed.css')}}">
+{% endblock %}
+{% block content %}
+        <h1>Feed</h1>
+        <br>
+        {%for post in posts%}
+        <div class="post">
+        <h3 class="username">{{post.owner_username}}</h3>
+        <h1 class="title">Post Title</h1>
+        <p class="contents">{{post.content}}</p>
+        <form action="/like" method="POST">
+                <input type="text" hidden value="{{post.post_id}}">
+                {%if true%}
+                <input type="submit" value="🖤0" class="like_button">
+                {%else%}
+                <input type="submit" value="❤️1">
+                {%endif%}
+        </form>
+        </div>
+        {%endfor%}
+{% endblock %}
