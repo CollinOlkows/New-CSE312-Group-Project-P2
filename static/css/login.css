@@ -1,0 +1,48 @@
+@font-face {
+    font-family: InterDisplay-Thin;
+    src: url('/InterDisplay-Thin.otf');
+}
+.container_center{
+    display: flex;
+    justify-content: center;
+}
+.container{
+    display: flex;
+    justify-content: space-evenly;
+}
+.heading{
+    font-size: 2rem;
+}
+
+.text_fields{
+    margin-top: .25%;
+    width: 25rem;
+    height: 3rem;
+    border-radius: .50rem;
+}
+.button_fields{
+    margin-top: .25%;
+    width: 15rem;
+    height: 2rem;
+    border-radius: 1rem;
+    background-color: #4267B2;
+    color: white;
+}
+.button_smaller{
+    width: 6rem;
+    height: 2rem;
+    border-radius: 1rem;
+    background-color: rgb(14, 129, 14);
+    color: white;
+}
+.container-form{
+    display: flex;
+    justify-content: space-evenly;
+    flex-direction: column;
+    gap: 1rem;
+}
+.Error{
+    color: rgb(188, 40, 40);
+    text-align: center;
+    font-size: 1.5rem;
+}

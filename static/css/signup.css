@@ -1,0 +1,13 @@
+@font-face {
+    font-family: InterDisplay-Thin;
+    src: url('/InterDisplay-Thin.otf');
+}
+.container_center{
+    display: flex;
+    justify-content: center;
+    padding-bottom: 2%;
+}
+.container{
+    display: flex;
+    justify-content: space-evenly;
+}

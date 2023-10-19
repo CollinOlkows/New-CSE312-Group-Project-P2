@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Posts{% endblock %}
+{% block head %}
+<link  rel="stylesheet" href="{{url_for('send_static',path='css/post.css')}}">
+{% endblock %}
+{% block content %}
+        <h1>Posts</h1>
+        <form action="/post" method="POST">
+                <input type="text" name="post_content" id="post_content">
+                <input type="submit" value="Make Post">
+        </form>
+{% endblock %}
