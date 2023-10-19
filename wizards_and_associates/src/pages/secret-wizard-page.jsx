@@ -1,11 +1,17 @@
 import React from "react";
 import '../App.css';
 import LoginButton from "../components/buttons/loginButton.jsx";
+import LogOutButton from "../components/buttons/logoutButton";
+import RickRoll from "../components/buttons/rickrollButton";
+import SignUpButton from "../components/buttons/signupButton";
 
 function WizardPage() {
   return (
     <div className="homepage">
         <LoginButton />
+        <RickRoll />
+        <SignUpButton />
+        <LogOutButton />
       <header>
         <h1>Welcome to the Finders of the Secret Club BOZO</h1>
       </header>
