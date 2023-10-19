@@ -1,12 +1,26 @@
+/*
+
+  text - CAD2C5
+  84A98C
+  52796F
+  354F52
+  background - 2F3E46
+
+*/
+
+
+
+
 /* Global Styles */
 :root {
-  --bg: #bfcbe4; /* Define a global background color variable */
+  --bg: #2F3E46; /* Define a global background color variable */
 }
 
 body {
   margin: 0;
   font-family: Arial, sans-serif;
   background-color: var(--bg);
+  color: #CAD2C5; /* Text color */
 }
 
 /* App Container */
@@ -17,7 +31,7 @@ body {
   justify-content: center;
   min-height: 100vh;
   font-size: calc(10px + 2vmin);
-  color: white;
+  color: #CAD2C5; /* Text color */
   background-color: var(--bg);
   position: relative;
   overflow: hidden;
@@ -57,7 +71,7 @@ body {
 
 /* Link Styles */
 .App-link {
-  color: #61dafb;
+  color: #CAD2C5; /* Text color */
   text-decoration: none;
 }
 
@@ -67,7 +81,7 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: flex-start; /* Align text at the top of the container */
-  color: white;
+  color: #CAD2C5; /* Text color */
   margin-top: 20px; /* Add margin for spacing */
   text-align: center; /* Center text within the container */
 }
