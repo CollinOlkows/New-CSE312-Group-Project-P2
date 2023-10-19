@@ -1,17 +1,17 @@
 import React from "react";
 import '../App.css';
 
-function Homepage() {
+function WizardPage() {
   return (
     <div className="homepage">
       <header>
-        <h1>Welcome Wizards</h1>
+        <h1>Welcome to the Finders of the Secret Club BOZO</h1>
       </header>
       <main>
-        <p>Together we can spread spells and misinformation.</p>
+        <p>Kanye west and noahn kahn listeners</p>
       </main>
     </div>
   );
 }
 
-export default Homepage;
+export default WizardPage;

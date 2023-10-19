@@ -1,34 +1,15 @@
-// import logo from './logo.svg';
-// import './App.css';
-
-// function App() {
-//   return (
-//     <div className="App">
-//       <header className="App-header">
-//         <img src={logo} className="App-logo" alt="logo" />
-//         <p>
-//           Edit <code>src/App.js</code> and save to reload.
-//         </p>
-//         <a
-//           className="App-link"
-//           href="https://reactjs.org"
-//           target="_blank"
-//           rel="noopener noreferrer"
-//         >
-//           Learn React
-//         </a>
-//       </header>
-//     </div>
-//   );
-// }
-
-// export default App;
-
 
 import './App.css';
 import React from "react";
 
-import Homepage from './pages/homepage';
+// intializing the pages
+import HomePage from './pages/homepage';
+import LoginPage from './pages/login.jsx';
+import FeedPage from './pages/feed.jsx';
+import PostPage from './pages/post.jsx';
+import ProfilePage from './pages/profile.jsx';
+import SignUpPage from './pages/signup.jsx';
+import SecretPage from './pages/secret-wizard-page';
 
 
 import { BrowserRouter, Route, Routes } from "react-router-dom";
@@ -43,7 +24,14 @@ function App() {
         <BrowserRouter basename={process.env.REACT_APP_BASE_URL}>
         <Routes>
 
-          <Route path="/" element={<Homepage />} />
+          <Route path="/" element={<HomePage />} />
+          <Route path="/Login" element={<LoginPage />} />
+          <Route path="/Feed" element={<FeedPage />} />
+          <Route path="/Post" element={<PostPage />} />
+          <Route path="/Profile" element={<ProfilePage />} />
+          <Route path="/Sign-up" element={<SignUpPage />} />
+          <Route path="/secret-cool-wizard-page-bozo" element={<SecretPage />} />
+
         
         </Routes>
       </BrowserRouter>
@@ -53,30 +41,4 @@ function App() {
 
 export default App;
 
-// import './App.css';
-// import React from "react";
 
-// // pages 
-// import Homepage from './pages/homepage';
-
-
-
-// import { BrowserRouter, Route, Routes } from "react-router-dom";
-
-// function App() {
-//   console.log(process.env.REACT_APP_BASE_URL, "url base <--");
-//   return (
-//     <div className="App">
-//       <header className="App-header">
-//         {/* Your header content */}
-//       </header>
-//       <BrowserRouter basename={process.env.REACT_APP_BASE_URL}>
-//         <Routes>
-//           <Route path = "/" element = {<Homepage />} />
-//         </Routes>
-//       </BrowserRouter>
-//     </div>
-//   );
-// }
-
-// export default App;
