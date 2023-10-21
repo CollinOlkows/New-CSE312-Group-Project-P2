@@ -1,0 +1,76 @@
+/*
+
+  text - CAD2C5
+  84A98C
+  52796F
+  354F52
+  background - 2F3E46
+
+*/
+
+
+
+
+/* Global Styles */
+:root {
+  --bg: #2F3E46; /* Define a global background color variable */
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: var(--bg);
+  color: #CAD2C5; /* Text color */
+}
+
+/* App Container */
+.App {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  font-size: calc(10px + 2vmin);
+  color: #CAD2C5; /* Text color */
+  background-color: var(--bg);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Logo */
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+  animation: App-logo-spin infinite 20s linear;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .App-logo {
+    animation: none; /* Disable animation for reduced motion users */
+  }
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Header */
+.App-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--bg);
+  height: 100px; /* Adjust height as needed */
+}
+
+/* Link Styles */
+.App-link {
+  color: #CAD2C5; /* Text color */
+  text-decoration: none;
+}
