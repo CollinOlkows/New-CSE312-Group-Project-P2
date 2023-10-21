@@ -8,13 +8,23 @@ function RickRoll() {
     setIsHovered(!isHovered);
   };
 
+  const navigateToSecretPage = () => {
+    // Define your custom navigate function here
+    const navigate = (url) => {
+      window.location.href = url;
+    };
+
+    navigate('/secret-cool-wizard-page-bozo'); // Use your custom navigate function to navigate
+  };
+
   return (
     <button
       className={`button ${isHovered ? 'hovered' : ''}`}
       onMouseEnter={handleHover}
       onMouseLeave={handleHover}
+      onClick={navigateToSecretPage} // Add an onClick event to trigger navigation
     >
-      Surpise
+      Surprise
     </button>
   );
 }

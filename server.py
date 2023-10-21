@@ -117,13 +117,38 @@ def signup():
            
         #Check if the user can be create, if yes we login if no throw error
 
-@app.route('/post')
-def post():
-    return make_response('Home Page',200)
 
 @app.route('/feed')
 def feed():
-    return make_response('Home Page',200)
+    token = request.cookies.get('auth',None)
+    if(token !=None and databaseutils.check_token(token=token)):
+        posts = databaseutils.get_all_posts()
+        response = make_response(render_template('feed.html',posts=posts,login=True),200)
+        response.headers['X-Content-Type-Options'] = 'nosniff'
+        return response
+    else:
+        return redirect(url_for('login'))
 
+@app.route('/post',methods=['POST', 'GET'])
+def post():
+    token = request.cookies.get('auth',None)
+    if(token !=None and databaseutils.check_token(token)):
+        if request.method== "POST":
+            token = request.cookies.get('auth')
+            if(token !=None and databaseutils.check_token(token=token)):
+                content = html.escape(request.form.get('post_content'))
+                user = databaseutils.get_user_by_token(token)
+                databaseutils.add_post(user,content)
+                return redirect(url_for('feed'))
+            else:
+                return redirect(url_for('login'))
+        else:
+            response = make_response(render_template('post.html',login=True),200)
+            response.headers['X-Content-Type-Options'] = 'nosniff'
+            return response
+    else:
+        response = make_response(redirect(url_for('login')))
+        response.headers['X-Content-Type-Options'] = 'nosniff'
+        return response
 
 app.run(host='0.0.0.0',port=8080)
