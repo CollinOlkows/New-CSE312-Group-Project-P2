@@ -3,6 +3,7 @@ import bcrypt
 import datetime
 import html
 from hashlib import sha256
+from bson.objectid import ObjectId
 mongo_client = MongoClient("mongo")
 db = mongo_client["cse312"]
 users = db['users']
@@ -36,6 +37,7 @@ class post:
         self.content = post_obj['content']
         self.creation_date = post_obj['creation_date']
         self.likes = post_obj['likes']
+        self.like_count = len(self.likes)
         self.owner_username = post_obj['owner_username']
         self.comments = post_obj['comments']
 
@@ -67,7 +69,7 @@ def update_user_pass_by_username(username,password):
 def update_user_pass_by_id(id,password):
     salt = bcrypt.gensalt()
     passhash = bcrypt.hashpw(password.encode('utf-8'),salt)
-    user = users.find_one_and_update({'_id':id},{"$set":{'passhash':passhash,'salt':salt}})
+    user = users.find_one_and_update({'_id':ObjectId(id)},{"$set":{'passhash':passhash,'salt':salt}})
 
 #Gets the user and returns a user object if found or none if not using the users username
 def get_user_by_username(username):
@@ -79,7 +81,7 @@ def get_user_by_username(username):
 
 #gets the user by their id and returns a user object if found or none if not
 def get_user_by_id(id):
-    user_found = users.find_one({'_id':id})
+    user_found = users.find_one({'_id':ObjectId(id)})
     if(user_found != None):
         return user(user_found)
     else:
@@ -95,7 +97,7 @@ def get_id_by_username(username):
 
 #Gets a users username from their id
 def get_username_by_id(id):
-    user_found = users.find_one({'_id':id})
+    user_found = users.find_one({'_id':ObjectId(id)})
     if(user_found != None):
         return user_found['username']
     else:
@@ -103,7 +105,7 @@ def get_username_by_id(id):
 
 #Returns a list of post objects that a specific id created
 def get_all_posts_by_user_id(id):
-    all_posts = posts.find({'post_owner':id})
+    all_posts = posts.find({'post_owner':ObjectId(id)})
     output = []
     if(all_posts!=None):
         for p in all_posts:
@@ -125,14 +127,14 @@ def delete_all_posts_by_username(username):
     return posts.delete_many({"owner_username":username})
 
 def delete_all_posts_by_user_id(*id):
-    return posts.delete_many({"post_owner":id})
+    return posts.delete_many({"post_owner":ObjectId(id)})
 #----------------------------------------- 
 #if the user is deleted, posts are not, do we want all posts to also be deleted?
 #deletes a user by their id
 #Need to add an unfollow + Mass Unfollow
 def user_delete_by_id(id):
     delete_all_posts_by_user_id(id=id)
-    return users.delete_one({'_id':id})
+    return users.delete_one({'_id':ObjectId(id)})
 
 #deletes a user by their username 
 def user_delete_by_username(username):
@@ -144,24 +146,24 @@ def add_post(user,content,title):
     return posts.insert_one({'post_owner':user.id,'content':content,'title':title,'owner_username':user.username,'creation_date':datetime.datetime.now(tz=datetime.timezone.utc),'likes':[],'comments':[]})
 
 def get_post_by_id(id):
-    return posts.find_one({'_id':id})
+    return posts.find_one({'_id':ObjectId(id)})
 
 def update_post_by_id(id,content):
-    return posts.update_one({'_id':id},{"$set":{'content':content}})
+    return posts.update_one({'_id':ObjectId(id)},{"$set":{'content':content}})
 
 #like value is either 1 or -1 (like or dislike)
 def update_post_likes(id,user_id):
     p = get_post_by_id(id=id)
     if(p != None):
-        likes = p[likes]
+        likes = p['likes']
         if user_id in likes:
             likes.remove(user_id)
-            posts.update_one({'_id':id},{"$set":{'likes':likes}})
-            return {'status':'User Unliked','liked':False,'likes':len(likes)}
+            posts.update_one({'_id':ObjectId(id)},{"$set":{'likes':likes}})
+            return {'status':'User Unliked','liked':False,'likes':len(likes),'emoji':'🖤'}
         else:
             likes.append(user_id)
-            posts.update_one({'_id':id},{"$set":{'likes':likes}})
-            return {'status':'User liked','liked':True,'likes':len(likes)}
+            posts.update_one({'_id':ObjectId(id)},{"$set":{'likes':likes}})
+            return {'status':'User liked','liked':True,'likes':len(likes),'emoji':'❤️'}
     else:
         return None
 
@@ -173,7 +175,7 @@ def add_comment_to_post(id,comment_obj):
     if(p != None):
         comments = p['comment']
         comments.append(comment_obj)
-        return posts.update_one({'_id':id},{"$set":{'comment':comments}})
+        return posts.update_one({'_id':ObjectId(id)},{"$set":{'comment':comments}})
     else:
         return None
 
@@ -185,7 +187,7 @@ def get_all_posts():
     return out
 
 def delete_post_by_id(id):
-    return posts.delete_one({"_id":id})
+    return posts.delete_one({"_id":ObjectId(id)})
 
 #needs to remove from post list and if parent, delete all replys to said post
 def delete_comment():

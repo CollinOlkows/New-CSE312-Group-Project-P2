@@ -2,30 +2,35 @@
 {% block title %}Feed{% endblock %}
 {% block head %}
 <link  rel="stylesheet" href="{{url_for('send_static',path='css/feed.css')}}">
-<link  rel="script" href="{{url_for('send_static',path='js/script.js')}}">
 {% endblock %}
 {% block content %}
+        <form>
+                <input type="text" hidden id="time" value="{{time}}">
+        </form>
         <h1>Make Post</h1>
-        <form action="make_post();" method="POST">
-                <input type="text" name="post_title" id="Title">
-                <input type="text" name="post_content" id="post_content">
-                <input type="submit" value="Make Post">
+        <form method="POST">
+                <input type="text" name="post_title" id="Title" placeholder="Post Title">
+                <input type="text" name="post_content" id="post_content" placeholder="Post content">
+                <input type="button" onclick="make_post();" value="Make Post">
         </form>
         <h1>Feed</h1>
         <br>
+        <div id="All_Posts_Container">
         {%for post in posts%}
         <div class="post">
         <h3 class="username">{{post.owner_username}}</h3>
         <h1 class="title">{{post.title}}</h1>
         <p class="contents">{{post.content}}</p>
-        <form action="like_post({{post.post_id}});" method="POST">
+        <form  method="POST">
                 <input type="text" hidden value="{{post.post_id}}">
-                {%if true%}
-                <input type="submit" value="🖤0" class="like_button" id="like_button_{{post.post_id}}">
+                {%if user.id in post.likes%}
+                <input type="button" onclick="like_post('{{post.post_id}}');" value="❤️{{post.like_count}}" class="like_button" id="like_button_{{post.post_id}}">
                 {%else%}
-                <input type="submit" value="❤️1" class="like_button">
+                <input type="button" onclick="like_post('{{post.post_id}}');" value="🖤{{post.like_count}}" class="like_button" id="like_button_{{post.post_id}}">
                 {%endif%}
         </form>
         </div>
         {%endfor%}
+        </div>
+        <script src="{{url_for('send_static',path='js/script.js')}}"></script>
 {% endblock %}
