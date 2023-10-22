@@ -44,7 +44,7 @@ class post:
 class comment:
     def __init__(self,person,content):
         self.person = person
-        self.creation_date = datetime.datetime.now(tz=datetime.timezone.utc)
+        self.creation_date = datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S")
         self.content = content
 
 #adds a user to the database if one does not exist
@@ -55,7 +55,7 @@ def add_user(username,password):
     else:
         salt = bcrypt.gensalt()
         passhash = bcrypt.hashpw(password.encode('utf-8'),salt)
-        users.insert_one({'username':username,'passhash':passhash,'salt':salt,'followers':[],"following":[],'token':'','token_date':datetime.datetime.now(tz=datetime.timezone.utc)})
+        users.insert_one({'username':username,'passhash':passhash,'salt':salt,'followers':[],"following":[],'token':'','token_date':datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S")})
         return True
 
 
@@ -143,7 +143,7 @@ def user_delete_by_username(username):
 
 def add_post(user,content,title):
     #idk if dateime is correct here
-    return posts.insert_one({'post_owner':user.id,'content':content,'title':title,'owner_username':user.username,'creation_date':datetime.datetime.now(tz=datetime.timezone.utc),'likes':[],'comments':[]})
+    return posts.insert_one({'post_owner':user.id,'content':content,'title':title,'owner_username':user.username,'creation_date':datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S"),'likes':[],'comments':[]})
 
 def get_post_by_id(id):
     return posts.find_one({'_id':ObjectId(id)})

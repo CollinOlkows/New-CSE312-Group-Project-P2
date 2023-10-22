@@ -10,7 +10,7 @@ function make_post() {
         request.onreadystatechange = function () {
             if (this.readyState === 4 && this.status === 200) {
                 console.log(this.response);
-                location.reload();
+                //location.reload();
             }
         }
         const messageJSON = {"content": post_disc,"title":t_value};

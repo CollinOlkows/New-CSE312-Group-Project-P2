@@ -5,7 +5,6 @@ import html
 import secrets
 import json
 import datetime
-from dateutil import parser
 
 
 #File for all the server stuff
@@ -69,7 +68,7 @@ def login():
             ph=bcrypt.hashpw(password.encode(),user.salt)
             if ph==user.passhash:
                 token = secrets.token_hex()
-                databaseutils.set_user_token(username,token,datetime.datetime.now(tz=datetime.timezone.utc))
+                databaseutils.set_user_token(username,token,datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))
                 response = make_response(redirect(url_for('index', _external=True)))
                 response.set_cookie('auth',token,max_age=3600)
                 return response
@@ -109,7 +108,7 @@ def signup():
         if(test):
             #Set User Cookie Here
             token = secrets.token_hex()
-            databaseutils.set_user_token(username,token,datetime.datetime.now(tz=datetime.timezone.utc))
+            databaseutils.set_user_token(username,token,datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))
             response = make_response(redirect(url_for('feed', _external=True)))
             response.set_cookie('auth',token,max_age=3600)
             return response
@@ -128,7 +127,7 @@ def feed():
     if(token !=None and databaseutils.check_token(token=token)):
         posts = databaseutils.get_all_posts()[::-1]
         user = databaseutils.get_user_by_token(token=token)
-        response = make_response(render_template('feed.html',posts=posts,user=user,time=datetime.datetime.now(tz=datetime.timezone.utc),login=True),200)
+        response = make_response(render_template('feed.html',posts=posts,user=user,time=datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S"),login=True),200)
         response.headers['X-Content-Type-Options'] = 'nosniff'
         return response
     else:
@@ -194,9 +193,9 @@ def getposts():
         posts = databaseutils.get_all_posts()
         output = []
         for post in posts:
-            if post.creation_date > parser.parse(time):
-                obj = {'username':post.owner_username,'title':post.title,'content':post.content,'id':post.post_id,'like_count':post.like_count,'emoji':'🖤','time_checked':datetime.datetime.now(tz=datetime.timezone.utc)}
-                output.append(post)
+            if  datetime.datetime.strptime(post.creation_date, "%m/%d/%Y, %H:%M:%S") > datetime.datetime.strptime(time, "%m/%d/%Y, %H:%M:%S"):
+                obj = {'username':post.owner_username,'title':post.title,'content':post.content,'id':post.post_id,'like_count':post.like_count,'emoji':'🖤','time_checked':datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S")}
+                output.append(obj)
         return make_response(json.dumps(output),200)
     else:
         response = make_response(redirect(url_for('login')))
