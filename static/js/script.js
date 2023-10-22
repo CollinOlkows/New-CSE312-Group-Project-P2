@@ -39,6 +39,19 @@ function like_post(post_id) {
 
 function AddPost(post){
     let container = document.getElementById('All_Posts_Container')
+    document.getElementById('time').value=post['time_checked']
+    var div = document.createElement('div');
+    div.setAttribute('class', 'post');
+    div.innerHTML = `
+    <h3 class="username">${post['username']}</h3>
+    <h1 class="title">${post['title']}</h1>
+    <p class="contents">${post['content']}</p>
+    <form  method="POST">
+            <input type="text" hidden value="${post['id']}">
+            <input type="button" onclick="like_post('${post['id']}');" value="🖤${post['like_count']}" class="like_button" id="like_button_${post['id']}">
+    </form>
+    `;
+document.getElementById('All_Posts_Container').appendChild(div);
     // insert post at the beginning of container
 }
 

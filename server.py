@@ -70,7 +70,7 @@ def login():
                 token = secrets.token_hex()
                 databaseutils.set_user_token(username,token,datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))
                 response = make_response(redirect(url_for('index', _external=True)))
-                response.set_cookie('auth',token,max_age=3600)
+                response.set_cookie('auth',token,max_age=3600,httponly=True)
                 return response
             response = make_response(render_template('login.html',error='Password Incorrect',login=login),200)
             response.headers['X-Content-Type-Options'] = 'nosniff'
@@ -110,7 +110,7 @@ def signup():
             token = secrets.token_hex()
             databaseutils.set_user_token(username,token,datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))
             response = make_response(redirect(url_for('feed', _external=True)))
-            response.set_cookie('auth',token,max_age=3600)
+            response.set_cookie('auth',token,max_age=3600,httponly=True)
             return response
         else:
             error = "Username Already Exists"
@@ -125,7 +125,7 @@ def signup():
 def feed():
     token = request.cookies.get('auth',None)
     if(token !=None and databaseutils.check_token(token=token)):
-        posts = databaseutils.get_all_posts()[::-1]
+        posts = databaseutils.get_all_posts()
         user = databaseutils.get_user_by_token(token=token)
         response = make_response(render_template('feed.html',posts=posts,user=user,time=datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S"),login=True),200)
         response.headers['X-Content-Type-Options'] = 'nosniff'
@@ -177,11 +177,11 @@ def logout():
         user = databaseutils.get_user_by_token(token)
         #remove token from user database
         response = make_response(redirect(url_for('index')))
-        response.set_cookie('auth','',max_age=0)
+        response.set_cookie('auth','',max_age=0,httponly=True)
         return response
     else:
         response = make_response(redirect(url_for('index')))
-        response.set_cookie('auth','',max_age=0)
+        response.set_cookie('auth','',max_age=0,httponly=True)
         return response
 
 @app.route('/get_posts',methods=['POST'])
@@ -193,8 +193,8 @@ def getposts():
         posts = databaseutils.get_all_posts()
         output = []
         for post in posts:
-            if  datetime.datetime.strptime(post.creation_date, "%m/%d/%Y, %H:%M:%S") > datetime.datetime.strptime(time, "%m/%d/%Y, %H:%M:%S"):
-                obj = {'username':post.owner_username,'title':post.title,'content':post.content,'id':post.post_id,'like_count':post.like_count,'emoji':'🖤','time_checked':datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S")}
+            if datetime.datetime.strptime(post.creation_date, "%m/%d/%Y, %H:%M:%S") > datetime.datetime.strptime(time, "%m/%d/%Y, %H:%M:%S"):
+                obj = {'username':post.owner_username,'title':post.title,'content':post.content,'id':str(post.post_id),'like_count':post.like_count,'emoji':'🖤','time_checked':datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S")}
                 output.append(obj)
         return make_response(json.dumps(output),200)
     else:
