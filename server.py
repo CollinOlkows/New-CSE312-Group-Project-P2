@@ -3,6 +3,7 @@ import databaseutils
 import bcrypt
 import html
 import secrets
+import json
 import datetime
 
 
@@ -136,9 +137,10 @@ def post():
         if request.method== "POST":
             token = request.cookies.get('auth')
             if(token !=None and databaseutils.check_token(token=token)):
-                content = html.escape(request.form.get('post_content'))
+                content = html.escape(request.json['content'])
+                title = html.escape(request.json['title'])
                 user = databaseutils.get_user_by_token(token)
-                databaseutils.add_post(user,content)
+                databaseutils.add_post(user,content,title)
                 return redirect(url_for('feed'))
             else:
                 return redirect(url_for('login'))
@@ -146,6 +148,24 @@ def post():
             response = make_response(render_template('post.html',login=True),200)
             response.headers['X-Content-Type-Options'] = 'nosniff'
             return response
+    else:
+        response = make_response(redirect(url_for('login')))
+        response.headers['X-Content-Type-Options'] = 'nosniff'
+        return response
+
+@app.route('/like_post',methods=['POST'])
+def like_post():
+    token = request.cookies.get('auth',None)
+    if(token !=None and databaseutils.check_token(token)):
+        token = request.cookies.get('auth')
+        if(token !=None and databaseutils.check_token(token=token)):
+            user = databaseutils.get_user_by_token(token=token)
+            post_id = html.escape(request.json['post_id'])
+            post = databaseutils.get_post_by_id(post_id)
+            status = databaseutils.update_post_likes(post_id,user.id)
+            return json.dumps(status)
+        else:
+            return redirect(url_for('login'))
     else:
         response = make_response(redirect(url_for('login')))
         response.headers['X-Content-Type-Options'] = 'nosniff'
