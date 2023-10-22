@@ -32,6 +32,7 @@ class post:
     def __init__(self,post_obj):
         self.post_id = post_obj['_id']
         self.post_owner = post_obj['post_owner']
+        self.title = post_obj['title']
         self.content = post_obj['content']
         self.creation_date = post_obj['creation_date']
         self.likes = post_obj['likes']
@@ -138,9 +139,9 @@ def user_delete_by_username(username):
     delete_all_posts_by_username(username=username)
     return users.delete_one({'username':username})
 
-def add_post(user,content):
+def add_post(user,content,title):
     #idk if dateime is correct here
-    return posts.insert_one({'post_owner':user.id,'content':content,'owner_username':user.username,'creation_date':datetime.datetime.now(tz=datetime.timezone.utc),'likes':[],'comments':[]})
+    return posts.insert_one({'post_owner':user.id,'content':content,'title':title,'owner_username':user.username,'creation_date':datetime.datetime.now(tz=datetime.timezone.utc),'likes':[],'comments':[]})
 
 def get_post_by_id(id):
     return posts.find_one({'_id':id})
@@ -155,10 +156,12 @@ def update_post_likes(id,user_id):
         likes = p[likes]
         if user_id in likes:
             likes.remove(user_id)
-            return posts.update_one({'_id':id},{"$set":{'likes':likes}})
+            posts.update_one({'_id':id},{"$set":{'likes':likes}})
+            return {'status':'User Unliked','liked':False,'likes':len(likes)}
         else:
             likes.append(user_id)
-            return posts.update_one({'_id':id},{"$set":{'likes':likes}})
+            posts.update_one({'_id':id},{"$set":{'likes':likes}})
+            return {'status':'User liked','liked':True,'likes':len(likes)}
     else:
         return None
 
