@@ -152,6 +152,18 @@ def update_post_by_id(id,content):
     return posts.update_one({'_id':ObjectId(id)},{"$set":{'content':content}})
 
 #like value is either 1 or -1 (like or dislike)
+def check_likes(id,user_id):
+    p = get_post_by_id(id=id)
+    if(p != None):
+        likes = p['likes']
+        if user_id in likes:
+            return '❤️'
+        else:
+            return '🖤'
+    else:
+        return '🖤'
+
+
 def update_post_likes(id,user_id):
     p = get_post_by_id(id=id)
     if(p != None):

@@ -193,9 +193,8 @@ def getposts():
         posts = databaseutils.get_all_posts()
         output = []
         for post in posts:
-            if datetime.datetime.strptime(post.creation_date, "%m/%d/%Y, %H:%M:%S") > datetime.datetime.strptime(time, "%m/%d/%Y, %H:%M:%S"):
-                obj = {'username':post.owner_username,'title':post.title,'content':post.content,'id':str(post.post_id),'like_count':post.like_count,'emoji':'🖤','time_checked':datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S")}
-                output.append(obj)
+            obj = {'username':post.owner_username,'title':post.title,'content':post.content,'id':str(post.post_id),'like_count':post.like_count,'emoji':databaseutils.check_likes(post.post_id,user.id),'time_checked':datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S")}
+            output.append(obj)
         return make_response(json.dumps(output),200)
     else:
         response = make_response(redirect(url_for('login')))

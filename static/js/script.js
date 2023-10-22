@@ -4,6 +4,8 @@ function make_post() {
     const post_disc = disc.value;
     const Title = document.getElementById("Title");
     const t_value = Title.value;
+    disc.value=''
+    Title.value = ''
     
         // Using AJAX
         const request = new XMLHttpRequest();
@@ -48,7 +50,7 @@ function AddPost(post){
     <p class="contents">${post['content']}</p>
     <form  method="POST">
             <input type="text" hidden value="${post['id']}">
-            <input type="button" onclick="like_post('${post['id']}');" value="🖤${post['like_count']}" class="like_button" id="like_button_${post['id']}">
+            <input type="button" onclick="like_post('${post['id']}');" value="${post['emoji']}${post['like_count']}" class="like_button" id="like_button_${post['id']}">
     </form>
     `;
 document.getElementById('All_Posts_Container').appendChild(div);
@@ -61,9 +63,10 @@ function updateChat() {
     request.onreadystatechange = function () {
         if (this.readyState === 4 && this.status === 200) {
             console.log(JSON.parse(this.response));
+            document.getElementById('All_Posts_Container').innerHTML=''
             const posts = JSON.parse(this.response);
             for (const post of posts) {
-                console.log(post);
+                //console.log(post);
                 AddPost(post);
             }
         }
@@ -76,5 +79,5 @@ function updateChat() {
 
 function feed_start(){
     updateChat();
-    setInterval(updateChat, 2000);
+    setInterval(updateChat, 4000);
 }
