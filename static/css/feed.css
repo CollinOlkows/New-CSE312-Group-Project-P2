@@ -1,0 +1,26 @@
+.post{
+    margin: 2%;
+    background-color: rgb(44, 41, 41);
+    border-radius: .33rem;
+}
+.like_button{
+    background: transparent ;
+    background-color: transparent ;
+    fill: none ;
+    border: 0 ;
+    font-size: 1.5rem ;
+    margin-left: 1%;
+}
+
+.username{
+    margin-top: .25rem;
+    font-size: 1.75rem;
+    margin-left: 1%;
+}
+.title{
+    margin-left: 1%;
+}
+.contents{
+    font-size: 1.5rem;
+    margin-left: 1%;
+}

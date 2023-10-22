@@ -1,15 +1,15 @@
-<nav>
-    <div>
-        <a href="/">Home</a>
+<nav class="nav-bar">
+    <div class="nav-container">
+        <a href="/" class="nav-a">Home</a>
         <div>
-            <a href="/login">Login </a>
-            <a href="/signup"> Sign Up</a> 
-            <a href="/post">Post </a>
-            <a href="/feed"> Feed</a>
-            <a href="/logout">Logout</a>
-            <a href="/super-cool-wizard-stuff"></a>
-            <a href="/wizard-feed"></a>
-            <a href="/spells"></a>
-        </div>/
+            {%if login == false%}
+            <a href="/login" class="nav-a">Login </a>
+            <a href="/signup" class="nav-a"> Sign Up</a> 
+            {%else%}
+            <a href="/post" class="nav-a">Post </a>
+            <a href="/feed" class="nav-a"> Feed</a>
+            <a href="/logout" class="nav-a">Logout</a>
+            {%endif%}
+        </div>
     </div>
 </nav>

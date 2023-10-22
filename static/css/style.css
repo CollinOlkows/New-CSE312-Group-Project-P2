@@ -1,0 +1,17 @@
+@font-face {
+    font-family: InterDisplay-Thin;
+    src: url('/InterDisplay-Thin.otf');
+}
+
+:root {
+    --font-color: white;
+    --background-color: #191414;
+    font-family: InterDisplay-Thin;
+}
+
+body{
+    background-color: var(--background-color);
+    color: var(--font-color);
+    margin: 0;
+    padding: 0;
+}

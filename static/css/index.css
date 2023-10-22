@@ -1,0 +1,44 @@
+@font-face {
+    font-family: InterDisplay-Thin;
+    src: url('/InterDisplay-Thin.otf');
+}
+
+body{
+    padding: 0;
+    margin: 0;
+}
+.buttons{
+    width: 20vmax;
+    height: 2vmax;
+    background-color: #4267B2;
+    font-style: InterDisplay-Thin;
+    font-size: 1vmax;
+    color: white;
+    border-radius: 1vmax;
+}
+.container{
+    display: flex;
+    justify-content: space-evenly;
+}
+.container-form{
+    display: flex;
+    justify-content: space-evenly;
+    flex-direction: column;
+}
+
+
+.container_center{
+    display: flex;
+    justify-content: center;
+    gap: 5vmax;
+}
+.image_main_square{
+    width: 25vmax;
+    height: 25vmax;
+}
+h1{
+    font-size: 3vmax;
+}
+p{
+    font-size: 1vmax;
+}
