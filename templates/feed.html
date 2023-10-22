@@ -2,6 +2,7 @@
 {% block title %}Feed{% endblock %}
 {% block head %}
 <link  rel="stylesheet" href="{{url_for('send_static',path='css/feed.css')}}">
+<link  rel="script" href="{{url_for('send_static',path='js/script.js')}}">
 {% endblock %}
 {% block content %}
         <h1>Make Post</h1>
@@ -27,5 +28,4 @@
         </form>
         </div>
         {%endfor%}
-        <link  rel="stylesheet" href="{{url_for('send_static',path='js/script.js')}}">
 {% endblock %}
