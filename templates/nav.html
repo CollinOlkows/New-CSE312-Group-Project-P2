@@ -2,6 +2,7 @@
     <div class="nav-container">
         {%if login == false%}
         <a href="{{url_for('index')}}" class="nav-a">Home</a>
+        <a href="{{url_for('feed')}}" class="nav-a"> Feed</a>
         {%else%}
         <a class="nav-a">{{user.username}}</a>
         <a href="{{url_for('feed')}}" class="nav-a"> Feed</a>

@@ -41,7 +41,8 @@ def login():
     login=False
     token = request.cookies.get('auth',None)
     if(token !=None and databaseutils.check_token(token)):
-        response = make_response(render_template('login.html',error='User is already Logged in!',login=login),200)
+        user = databaseutils.get_user_by_token(token)
+        response = make_response(render_template('login.html',error='User is already Logged in!',login=True,user=user),200)
         response.headers['X-Content-Type-Options'] = 'nosniff'
         return response
     if request.method == 'GET':
@@ -72,7 +73,7 @@ def login():
                 token = secrets.token_hex()
                 databaseutils.set_user_token(username,token,datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))
                 response = make_response(redirect(url_for('index', _external=True)))
-                response.set_cookie('auth',token,max_age=3600,httponly=True)
+                response.set_cookie('auth',token,max_age=7200,httponly=True)
                 return response
             response = make_response(render_template('login.html',error='Password Incorrect',login=login,user=None),200)
             response.headers['X-Content-Type-Options'] = 'nosniff'
@@ -114,7 +115,7 @@ def signup():
                 token = secrets.token_hex()
                 databaseutils.set_user_token(username,token,datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))
                 response = make_response(redirect(url_for('feed', _external=True)))
-                response.set_cookie('auth',token,max_age=3600,httponly=True)
+                response.set_cookie('auth',token,max_age=7200,httponly=True)
                 return response
             else:
                 error = "Username Already Exists"
