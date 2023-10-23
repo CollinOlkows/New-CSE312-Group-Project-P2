@@ -21,7 +21,8 @@ def send_static(path):
 def index():
     token = request.cookies.get('auth',None)
     if(token !=None and databaseutils.check_token(token)):
-        response = make_response(redirect(url_for('feed', _external=True)))
+        u = databaseutils.get_user_by_token(token)
+        response = make_response(render_template('index.html',login=True,user=u))
         return response
     else:
         u = None
@@ -40,7 +41,8 @@ def login():
     login=False
     token = request.cookies.get('auth',None)
     if(token !=None and databaseutils.check_token(token)):
-        response = make_response(redirect(url_for('feed', _external=True)))
+        response = make_response(render_template('login.html',error='User is already Logged in!',login=login),200)
+        response.headers['X-Content-Type-Options'] = 'nosniff'
         return response
     if request.method == 'GET':
         response = make_response(render_template('login.html',error='',login=login),200)
@@ -72,7 +74,7 @@ def login():
                 response = make_response(redirect(url_for('index', _external=True)))
                 response.set_cookie('auth',token,max_age=3600,httponly=True)
                 return response
-            response = make_response(render_template('login.html',error='Password Incorrect',login=login),200)
+            response = make_response(render_template('login.html',error='Password Incorrect',login=login,user=None),200)
             response.headers['X-Content-Type-Options'] = 'nosniff'
             return response
                 
@@ -84,40 +86,42 @@ def signup():
         response = make_response(redirect(url_for('feed', _external=True)))
         return response
     #if users signed in redirect to home or feed
-    if request.method == 'GET':
-        response = make_response(render_template('signup.html',error='',login=login),200)
-        response.headers['X-Content-Type-Options'] = 'nosniff'
-        return response
     else:
-        username = request.form.get('username',None)
-        password = request.form.get('password',None)
-        password_confirm = request.form.get('password_confirm',None)
-        if(password!=password_confirm or password =='' or password == None):
-            error = "Password empty or do not match"
-            response = make_response(render_template('signup.html',error=error,login=login),200)
+        if request.method == 'GET':
+            response = make_response(render_template('signup.html',error='',login=False,user=None),200)
             response.headers['X-Content-Type-Options'] = 'nosniff'
-            return response
-        if(username==None or username=='' or username == ' '):
-            error = "Username Field Empty"
-            response = make_response(render_template('signup.html',error=error,login=login),200)
-            response.headers['X-Content-Type-Options'] = 'nosniff'
-            return response
-        username=html.escape(username)
-        error = ''
-        test = databaseutils.add_user(username,password)
-        if(test):
-            #Set User Cookie Here
-            token = secrets.token_hex()
-            databaseutils.set_user_token(username,token,datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))
-            response = make_response(redirect(url_for('feed', _external=True)))
-            response.set_cookie('auth',token,max_age=3600,httponly=True)
             return response
         else:
-            error = "Username Already Exists"
-            response = make_response(render_template('signup.html',error=error,login=login),200)
-            response.headers['X-Content-Type-Options'] = 'nosniff'
-            return response
-           
+            login = False
+            username = request.form.get('username',None)
+            password = request.form.get('password',None)
+            password_confirm = request.form.get('password_confirm',None)
+            if(password!=password_confirm or password =='' or password == None):
+                error = "Password empty or do not match"
+                response = make_response(render_template('signup.html',error=error,login=login,user=None),200)
+                response.headers['X-Content-Type-Options'] = 'nosniff'
+                return response
+            if(username==None or username=='' or username == ' '):
+                error = "Username Field Empty"
+                response = make_response(render_template('signup.html',error=error,login=login,user=None),200)
+                response.headers['X-Content-Type-Options'] = 'nosniff'
+                return response
+            username=html.escape(username)
+            error = ''
+            test = databaseutils.add_user(username,password)
+            if(test):
+                #Set User Cookie Here
+                token = secrets.token_hex()
+                databaseutils.set_user_token(username,token,datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))
+                response = make_response(redirect(url_for('feed', _external=True)))
+                response.set_cookie('auth',token,max_age=3600,httponly=True)
+                return response
+            else:
+                error = "Username Already Exists"
+                response = make_response(render_template('signup.html',error=error,login=login,user=None),200)
+                response.headers['X-Content-Type-Options'] = 'nosniff'
+                return response
+            
         #Check if the user can be create, if yes we login if no throw error
 
 
@@ -131,28 +135,33 @@ def feed():
         response.headers['X-Content-Type-Options'] = 'nosniff'
         return response
     else:
-        response = make_response(redirect(url_for('login')))
+        posts = databaseutils.get_all_posts()
+        response = make_response(render_template('feed.html',posts=posts,user=None,time=datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S"),login=False),200)
         response.headers['X-Content-Type-Options'] = 'nosniff'
         return response
+
+        '''response = make_response(redirect(url_for('login')))
+        response.headers['X-Content-Type-Options'] = 'nosniff'
+        return response
+        '''
+        
 
 @app.route('/post',methods=['POST', 'GET'])
 def post():
     token = request.cookies.get('auth',None)
     if(token !=None and databaseutils.check_token(token)):
         if request.method== "POST":
-            print('hello')
             content = html.escape(request.json['content'])
             title = html.escape(request.json['title'])
             user = databaseutils.get_user_by_token(token)
             databaseutils.add_post(user,content,title)
-            print('hello')
             return make_response('Post Successful!',200)
         else:
-            response = make_response(redirect(url_for('feed')))
+            response = make_response('Post failed! Not post method',200)
             response.headers['X-Content-Type-Options'] = 'nosniff'
             return response
     else:
-        response = make_response(redirect(url_for('login')))
+        response =  make_response('Post failed! Not signed in',200)
         response.headers['X-Content-Type-Options'] = 'nosniff'
         return response
 

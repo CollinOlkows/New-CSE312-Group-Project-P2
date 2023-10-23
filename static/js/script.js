@@ -28,7 +28,7 @@ function like_post(post_id) {
         const request = new XMLHttpRequest();
         request.onreadystatechange = function () {
             if (this.readyState === 4 && this.status === 200) {
-                console.log(JSON.parse(this.response));
+                //console.log(JSON.parse(this.response));
                 data = JSON.parse(this.response)
                 like_value.value=data['emoji']+data['likes']
             }
@@ -79,5 +79,5 @@ function updateChat() {
 
 function feed_start(){
     updateChat();
-    setInterval(updateChat, 4000);
+    setInterval(updateChat, 2000);
 }

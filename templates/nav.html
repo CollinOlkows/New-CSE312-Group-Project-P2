@@ -3,14 +3,14 @@
         {%if login == false%}
         <a href="{{url_for('index')}}" class="nav-a">Home</a>
         {%else%}
-        <a href="{{url_for('index')}}" class="nav-a">Profile</a>
+        <a class="nav-a">{{user.username}}</a>
+        <a href="{{url_for('feed')}}" class="nav-a"> Feed</a>
         {%endif%}
         <div>
             {%if login == false%}
             <a href="{{url_for('login')}}" class="nav-a">Login </a>
             <a href="{{url_for('signup')}}" class="nav-a"> Sign Up</a> 
             {%else%}
-            <a href="{{url_for('feed')}}" class="nav-a"> Feed</a>
             <a href="{{url_for('logout')}}" class="nav-a">Logout</a>
             {%endif%}
         </div>
