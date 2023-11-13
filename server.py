@@ -33,9 +33,16 @@ def handle_message(message):
     if message != 'User connected!':
         send(message, broadcast=True)
 
-@socketio.on('my event')
+@socketio.on('lobby_make')
+def make_lobby(lobby):
+    print('here')
+    emit('lobby_made',{'lobby_name':'info'},to='lobby')
+
+@socketio.on('join lobby')
 def test_message(message):
-    emit('my response', {'data': message['data']})
+    join_room('lobby')
+    print(rooms())
+    emit('lobby joined', {'data': 'Connected to lobby'})
 
 @socketio.on('my broadcast event')
 def test_message(message):
