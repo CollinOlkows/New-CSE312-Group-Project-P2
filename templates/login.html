@@ -14,9 +14,7 @@
             <div class="box">
                 <form action="{{ url_for('login') }}" method="POST">
                     <input type="text" id="username" placeholder="USERNAME" name="username" required>
-                    <br>
                     <input type="password" placeholder="PASSWORD" id="password" name="password" required>
-                    <br><br>
                     <button type="submit">Login</button>
                 </form>
             </div>
@@ -28,13 +26,13 @@
             <div class="box">
                 <form action="{{ url_for('signup') }}" method="POST">
                     <input type="text" placeholder="USERNAME" id="newUsername" name="newUsername" required>
-                    <br>
+
                     <input type="text" placeholder="EMAIL" id="Email" name="Email" required>
-                    <br>
+   
                     <input type="password" placeholder="PASSWORD" id="newPassword" name="newPassword" required>
-                    <br>
+              
                     <input type="password" placeholder="CONFIRM PASSWORD" id="confirmPassword" name="confirmPassword" required>
-                    <br><br>
+             
                     <button type="submit" name="Signup">Sign Up</button>
                 </form>
             </div>

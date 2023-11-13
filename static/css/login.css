@@ -13,8 +13,8 @@
     display: flex;
     flex-direction: column; /* Change to column for vertical stacking */
     width: 75%;
-    padding: 50px;
-    margin-top: 1%; /* Closer to the top */
+    padding: 0.5rem;
+    margin-top: 0.5%; /* Closer to the top */
 }
 
 .box {
@@ -29,11 +29,10 @@
 
 input[type="text"], input[type="password"], button {
     font-family: 'Lexend Giga';
-    padding: 8px;
+    padding: 6px;
     margin-bottom: 10px;
     border-radius: 10px;
-    padding-left: 1rem;
-    font-size: 1.5em;
+    font-size: 0.95em;
     text-align: center;
     width: 90%;
 }
@@ -47,15 +46,22 @@ button, input[type="submit"] {
     font-family: 'Lexend Giga', sans-serif;
     background-color: var(--dark-blue);
     color: white;
-    font-size: large;
+    font-size: 0.96em;
     padding: 5%;
     border: none;
     border-radius: 10px;
     cursor: pointer;
-    width: 96%;
+    width: 97%;
     display: block;
     margin: 10px auto;
 }
+
+button {
+    padding: 2%;
+    margin-top: 1%;
+}
+
+
 
 button:hover, input[type="submit"]:hover {
     background-color: var(--color_three);
