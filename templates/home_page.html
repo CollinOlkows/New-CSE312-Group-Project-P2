@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game Start Page</title>
+    <title>HOME</title>
     <link rel="stylesheet" href="../static/css/home_page.css">
 </head>
 <body>
@@ -13,32 +13,34 @@
             <div class="form-container">
                 <form>
                     <div class="form-group">
-                        <label for="rounds">Rounds</label>
+                        <label for="rounds">ROUNDS</label>
                         <input type="number" id="rounds" name="rounds" min="1" max="10" value="1">
                     </div>
                     <div class="form-group">
-                        <label for="libraries">Libraries</label>
+                        <label for="libraries">LIBRARIES</label>
                         <select id="libraries" name="libraries">
-                            <option value="website_gallery">Website Gallery</option>
-                            <option value="player_gallery">Player Gallery</option>
+                            <option value="website_gallery">WEBSITE GALLERY</option>
+                            <option value="player_gallery">PERSONAL GALLERY</option>
+                            <option value="player_gallery">LOBBY GALLERY</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="artists">No. of Artists</label>
+                        <label for="artists">NO. OF ARTISTS</label>
                         <input type="number" id="artists" name="artists" min="2" max="6" value="2">
                     </div>
                     <div class="form-group">
-                        <label for="privacy">Privacy</label>
+                        <label for="privacy">PRIVACY</label>
                         <select id="privacy" name="privacy">
-                            <option value="private">Private</option>
-                            <option value="public">Public</option>
+                            <option value="private">PRIVATE</option>
+                            <option value="public">PUBLIC</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="lobby_photo">Lobby Photo</label>
-                        <input type="file" id="lobby_photo" name="lobby_photo" accept="image/*">
+                        <label for="lobby_photo">LOBBY PHOTO</label>
+                        <input type="file" id="lobby_photo" name="lobby_photo" accept="image/*" onchange="previewFile()">
+                        <div id="preview"></div> <!-- Container for image preview -->
                     </div>
-                    <button type="submit">Start Game</button>
+                    <button type="submit">START GAME</button>
                 </form>
             </div>
         </div>
@@ -46,18 +48,34 @@
             <div class="join-game">
                 <h2>JOIN GAME</h2>
                 <div class="button-container">
-                    <button class="dark-blue">Private Game</button>
-                    <button class="dark-blue">Public Games</button>
+                    <button class="dark-blue">PRIVATE GAME</button>
+                    <button class="dark-blue">PUBLIC GAME</button>
                 </div>
             </div>
             <div class="gallery">
                 <h2>GALLERY</h2>
                 <div class="button-container">
-                    <button class="navy-blue">Image Gallery</button>
-                    <button class="navy-blue">Winning Gallery</button>
+                    <button class="dark-blue">IMAGE GALLERY</button>
+                    <button class="dark-blue">WINNING GALLERY</button>
                 </div>
             </div>
         </div>
     </div>
+
+    <script>
+        function previewFile() {
+            const preview = document.getElementById('preview');
+            const file = document.getElementById('lobby_photo').files[0];
+            const reader = new FileReader();
+
+            reader.addEventListener("load", function () {
+                preview.innerHTML = '<img src="' + reader.result + '" width="200" alt="Image preview" />';
+            }, false);
+
+            if (file) {
+                reader.readAsDataURL(file);
+            }
+        }
+    </script>
 </body>
 </html>
