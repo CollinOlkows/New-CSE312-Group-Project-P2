@@ -40,6 +40,7 @@ $(document).ready(function(){
     })
     socket.on('end_game',function(msg)  {
         alert(msg['user']+' Has won the game. The answer was '+msg['value']+' please return to the main menu to start a new game')
+        window.location = '/home-page'
     })
     socket.on('update_users',function(msg)  {
         let un = document.createElement('p');

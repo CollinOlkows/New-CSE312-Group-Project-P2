@@ -92,7 +92,7 @@ def test_message(count):
         it = random.randint(1,50)
         print(f'sending {count["lobby"]}')
         emit('count_update', {'count': item.count+1,'id':count['lobby']},broadcast=True)
-        emit('update_users',{'user':count['user'],'count':item.count+1,'game_value':it},broadcast=True)
+        emit('update_users',{'user':count['user'],'count':item.count+1,'game_value':it},to=count['lobby'])
 
 
 @socketio.on('connect')
