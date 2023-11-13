@@ -10,7 +10,8 @@
 
 <script>
     $(document).ready(function(){
-        var socket = io();
+        var socket = io({transports: ["websocket"]});
+        console.log(socket.io.engine.transport.name)
         socket.on('my response', function(msg) {
         console.log(msg.data)
     });
