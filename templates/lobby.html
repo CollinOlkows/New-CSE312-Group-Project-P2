@@ -21,6 +21,11 @@ $(document).ready(function(){
     socket.on('lobby joined',function(msg)  {
         console.log(msg)
     })
+
+    socket.on('count_update',function(msg)  {
+        console.log(msg)
+    })
+
     socket.on('lobby_made',function(msg)  {
         //{'lobby_name': roomName, 'Description': description, 'Image_url': Image_url, 'id' : id}
         console.log(msg);
@@ -39,11 +44,15 @@ $(document).ready(function(){
         let but = document.createElement('a')
         but.href="/lobby/"+msg['id']
         but.innerHTML = 'Join Lobby'
-        d.insertAdjacentElement("afterbegin",but);
-        d.insertAdjacentElement("afterbegin",desc);
-        d.insertAdjacentElement("afterbegin",img);
-        d.insertAdjacentElement("afterbegin",title);
-        d.insertAdjacentElement("afterbegin",name);
+        let count = document.createElement('p')
+        count.id='count_'+msg[id]
+        count.innerHTML = msg[count] +'/6'
+        d.insertAdjacentElement("afterbegin",count)
+        d.insertAdjacentElement("afterend",title);
+        d.insertAdjacentElement("afterend",img);
+        d.insertAdjacentElement("afterend",desc);
+        d.insertAdjacentElement("afterend",name);
+        d.insertAdjacentElement("afterend",but);
         
 
     })
