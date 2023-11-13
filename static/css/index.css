@@ -1,14 +1,28 @@
 @import "style.css";
 
+
+
 .homewrap{
     display: flex;
     justify-content: center;
+}
+
+h1 {
+    text-align: center;
+    font-size: 3.25em;
+    margin-bottom: 0.1rem;
 }
 
 .home{
     display: flex;
     flex-direction: column;
 }
+
+p {
+    text-align: center;
+    margin-top: 0.2rem;
+}
+
 
 .login-form{
     padding-left: 2vmax;
@@ -24,4 +38,17 @@
     width: 10vmax;
     background-color: var(--background-color);
     border: 0cap;
+}
+
+.enter-button {
+    width: 95%; /* Adjust this to match the width of the MODERN ART header */
+    /* Add additional styling here as needed */
+    background-color: var(--font-color);
+    font-size: 1.15em;
+    height: 100%;
+    color: aliceblue;
+    border-radius: 10px;
+    padding: 1%;
+
+
 }
