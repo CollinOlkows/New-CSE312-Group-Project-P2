@@ -38,7 +38,7 @@ def send_static(path):
 
 @app.route('/')
 def index():
-    response = make_response(render_template('index.html'),200)
+    response = make_response(render_template('example.html'),200)
     response.headers['X-Content-Type-Options'] = 'nosniff'
     return response
 
