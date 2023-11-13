@@ -21,11 +21,12 @@ images = db['images']
 users -> {username:username,passhash:passwordhash,salt:passwordsalt,_id:user_id,followers,following,token,exp_date}
 posts ->{_id:post_id,post_owner:user_id,content:content,creation_date:date,likes:[User_id],owner_username:username,comments:[Comment]}
 comments ->{_id:comment_id,content:comment_content,date:creation_date,type:Parent or Child(thread or reply),post_origin,comment_owner,owner_username}
-
+lobby -> {'host':host,'title':title,'desc':desc,'img_url':img_url,'user_count':user_count}
 images - > {'username':username,'description':image_description,'image_name':image_name}
 '''
 
 #wrappers for easy working with users
+
 class user:
     def __init__(self,user_obj):
         self.username = user_obj['username']
@@ -36,6 +37,15 @@ class user:
         self.following = user_obj['following']
         self.token = user_obj['token']
         self.token_date = user_obj['token_date']
+
+class lobby:
+    def __init__(self,lobby_obj):
+        self.host = lobby_obj['host']
+        self.id = lobby_obj['_id']
+        self.title = lobby_obj['title']
+        self.desc = lobby_obj['desc']
+        self.name = lobby_obj['img_url']
+        self.count = lobby_obj['user_count']
 
 class img:
     def __init__(self,image_obj):
@@ -263,3 +273,6 @@ def get_images():
     for im in image:
         out.append(img(im))
     return out
+
+def insert_lobby(host,title,desc,img_url,user_count=1):
+    return str(lobbys.insert_one({'host':host,'title':title,'desc':desc,'img_url':img_url,'user_count':user_count}).inserted_id)

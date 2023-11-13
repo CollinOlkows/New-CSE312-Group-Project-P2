@@ -1,3 +1,4 @@
 .metals
 .vscode
 wizards_and_associates
+__pycache__
