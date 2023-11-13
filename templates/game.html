@@ -8,6 +8,7 @@
 {% endblock %}
 {% block content %}
 <p id="log"></p>
+<label id="game" value="{{code}}" hidden></label>
 <a href="{{url_for('createlobby')}}"><button>Make Lobby</button></a>
 <script>
 $(document).ready(function(){

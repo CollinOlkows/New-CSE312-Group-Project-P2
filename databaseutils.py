@@ -12,6 +12,7 @@ posts = db['posts']
 comments = db['comments']
 lobbys = db['lobbys']
 images = db['images']
+users_in = db['users_in']
 
 
 
@@ -276,7 +277,9 @@ def get_images():
     return out
 
 def insert_lobby(host,title,desc,img_url,user_count=1,roomcode=None):
-    return str(lobbys.insert_one({'host':host,'title':title,'desc':desc,'img_url':img_url,'user_count':user_count,'roomcode':roomcode}).inserted_id)
+    id = str(lobbys.insert_one({'host':host,'title':title,'desc':desc,'img_url':img_url,'user_count':user_count,'roomcode':roomcode}).inserted_id)
+    users_in.insert_one({'room': id,'users':[]})
+    return id
 
 def get_lobbies():
     lob = lobbys.find({'roomcode':None})
@@ -327,3 +330,20 @@ def increase_lobby_count(id):
 def decrease_lobby_count(id):
     lob = get_lobby_by_id(id)
     return lobbys.find_one_and_update({'_id':ObjectId(id)},{'$set':{'user_count':lob.count-1}})
+
+def get_users_in_room_by_id(id):
+    return users_in.find_one({'room':id})['users']
+
+def add_user_to_lobby(id,user):
+    u = users_in.find_one({'room':id})
+    us = u.users_in
+    us.append(user)
+    users_in.find_one_and_update({'room':id},{'$set':{'users':us}})
+    return
+
+def remove_user_from_lobby(id,user):
+    u = users_in.find_one({'room':id})
+    us = u.users_in
+    us.remove(user)
+    users_in.find_one_and_update({'room':id},{'$set':{'users':us}})
+    return
