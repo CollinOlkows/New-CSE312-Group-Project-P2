@@ -29,7 +29,8 @@ user_rooms = []
 @socketio.on('lobby_make')
 def make_lobby(lobby):
     print('here')
-    user_rooms.append(lobby.data)
+    user_rooms.append(lobby['data'])
+    print(user_rooms)
     emit('lobby_made', {'lobby_name': 'info'}, to='lobby')
 
 
