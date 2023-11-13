@@ -38,7 +38,10 @@ def make_lobby(lobby):
     print(isPrivate)
     if isPrivate == "false":
         print('is private is false')
+        databaseutils.insert_lobby('test','test','test','/catalog/logo.png',roomcode=None)
         emit('lobby_made', {'lobby_name': roomName, 'Description': description, 'Image_url': Image_url}, broadcast=True)
+    else:
+        databaseutils.insert_lobby('test','test','test','/catalog/logo.png',roomcode=None)
 
 
 @socketio.on('join')

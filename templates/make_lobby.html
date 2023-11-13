@@ -16,9 +16,9 @@
         console.log(msg.data)
     });
         $('form#make_lobby').submit(function(event) {
-        let Title = document.getElementById("Title").innerText;
-        let Description = document.getElementById("Description").innerText;
-        let Image_url = document.getElementById("Image").innerText;
+        let Title = document.getElementById("Title").value;
+        let Description = document.getElementById("Description").value;
+        let Image_url = document.getElementById("Image").value;
         let private = "false";
         if(document.getElementById('private').checked) {
             private = "true"

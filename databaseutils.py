@@ -44,7 +44,7 @@ class lobby:
         self.id = lobby_obj['_id']
         self.title = lobby_obj['title']
         self.desc = lobby_obj['desc']
-        self.name = lobby_obj['img_url']
+        self.img = lobby_obj['img_url']
         self.count = lobby_obj['user_count']
         self.roomcode = lobby_obj['roomcode']
 
