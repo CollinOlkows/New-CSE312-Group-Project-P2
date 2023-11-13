@@ -1,1 +1,5 @@
 @import "style.css";
+
+.lobby_inst{
+    background-color: var(color_one);
+}

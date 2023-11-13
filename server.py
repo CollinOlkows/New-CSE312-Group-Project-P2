@@ -206,7 +206,8 @@ def createlobby():
 @app.route('/lobby')
 def lobby():
     if login_status(request.cookies.get('auth', None)):
-        response = make_response(render_template('lobby.html'), 200)
+        lobbies = databaseutils.get_lobbies()
+        response = make_response(render_template('lobby.html',lobby=lobbies), 200)
         response.headers['X-Content-Type-Options'] = 'nosniff'
         return response
     else:

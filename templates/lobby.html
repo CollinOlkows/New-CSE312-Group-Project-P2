@@ -31,4 +31,13 @@ $(document).ready(function(){
     <input type="text" placeholder="Join Code" name="code">
     <input type="submit" value="Join">
 </form>
+
+{%for obj in lobby%}
+<div class="lobby_inst">
+    <p>obj.host</p>
+    <p>obj.title</p>
+    <img src=obj.img_url>
+    <p>obj.desc</p>
+</div>
+{%endfor%}
 {% endblock %}
