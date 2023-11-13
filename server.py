@@ -1,6 +1,6 @@
 import os
 from flask import Flask,make_response,send_from_directory,render_template,request,redirect,url_for,flash
-from flask_socketio import SocketIO, send
+from flask_socketio import SocketIO, send, rooms,emit,join_room,close_room
 import databaseutils
 import bcrypt
 import html
@@ -33,9 +33,22 @@ def handle_message(message):
     if message != 'User connected!':
         send(message, broadcast=True)
 
+@socketio.on('my event')
+def test_message(message):
+    emit('my response', {'data': message['data']})
 
+@socketio.on('my broadcast event')
+def test_message(message):
+    emit('my response', {'data': message['data']}, broadcast=True)
 
+@socketio.on('connect')
+def test_connect():
+    emit('my response', {'data': 'Connected'})
 
+@socketio.on('disconnect')
+def test_disconnect():
+    print('Client disconnected')
+    
 ###############################
 # Flask helper functions
 def login_status(cookie):
