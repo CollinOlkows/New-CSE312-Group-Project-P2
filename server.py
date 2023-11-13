@@ -29,6 +29,8 @@ user_rooms = []
 @socketio.on('lobby_make')
 def make_lobby(lobby):
     print('here')
+    #'name': title, 'description': description, 'artists': artists, 'privacy': privacy}
+    print(lobby)
     roomName = html.escape(lobby['name'])
     description = html.escape(lobby['description'])
     artists = html.escape(lobby['artists'])
