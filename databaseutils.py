@@ -279,7 +279,7 @@ def insert_lobby(host,title,desc,img_url,user_count=1,roomcode=None):
     return str(lobbys.insert_one({'host':host,'title':title,'desc':desc,'img_url':img_url,'user_count':user_count,'roomcode':roomcode}).inserted_id)
 
 def get_lobbies():
-    lob = lobbys.find()
+    lob = lobbys.find({'roomcode':None})
     out = []
     for l in lob:
         out.append(lobby(l))
