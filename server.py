@@ -41,7 +41,7 @@ def make_lobby(lobby):
     print(isPrivate)
     if isPrivate == "public":
         print('is private is false')
-        id = databaseutils.insert_lobby('test',roomName,description,Image_url,roomcode=None)
+        id = databaseutils.insert_lobby('test',roomName,description,Image_url,user_count=0,roomcode=None)
         emit('lobby_made', {'lobby_name': roomName, 'Description': description, 'artists': artists, 'id' : id,'count':0}, broadcast=True)
     else:
         id = databaseutils.insert_lobby('test',roomName,description,Image_url,roomcode=None)
