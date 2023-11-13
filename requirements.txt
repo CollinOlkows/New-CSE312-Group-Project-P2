@@ -2,4 +2,4 @@ flask
 pymongo
 bcrypt
 flask-socketio
-werkzeug
+Werkzeug
