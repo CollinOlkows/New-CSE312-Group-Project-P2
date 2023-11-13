@@ -72,7 +72,7 @@ $(document).ready(function(){
     {%endif%}
     <p>{{obj.host}}</p>
     <p>{{obj.title}}</p>
-    <img src="{{url_for('send_static',path=obj.img)}}" class="lobby_img">
+    <img src="{{url_for('send_static',path='/catalog/'+obj.img)}}" class="lobby_img">
     <p>{{obj.desc}}</p>
     {%if 6 > obj.count%}
         <a href="{{url_for('lobbyin',string=obj.id)}}"><button>Join Server</button></a>

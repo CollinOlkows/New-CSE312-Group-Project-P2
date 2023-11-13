@@ -7,39 +7,8 @@
     <link rel="stylesheet" href="../static/css/home_page.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.4/socket.io.js" integrity="sha512-aMGMvNYu8Ue4G+fHa359jcPb1u+ytAF+P2SCb+PxrjCdO3n3ZTxJ30zuH39rimUggmTwmh2u7wvQsDTHESnmfQ==" crossorigin="anonymous"></script>
-    <script>
-        function previewFile() {
-            const preview = document.getElementById('preview');
-            const file = document.getElementById('lobby_photo').files[0];
-            const reader = new FileReader();
-
-            reader.addEventListener("load", function () {
-                preview.innerHTML = '<img src="' + reader.result + '" width="200" alt="Image preview" />';
-            }, false);
-
-            if (file) {
-                reader.readAsDataURL(file);
-            }
-        }
-        $(document).ready(function(){
-        var socket = io({transports: ["websocket"]});
-        console.log(socket.io.engine.transport.name)
-        socket.on('my response', function(msg) {
-        console.log(msg.data)
-        });
-        $('form#create_game').submit(function(event) {
-            let user = document.getElementById('user').value;
-            let description = document.getElementById('description').value;
-            let title = document.getElementById('title').value;
-            let artists = document.getElementById('artists').value;
-            let privacy = document.getElementById('privacy').value;
-            socket.emit('lobby_make', {'name': title, 'description': description, 'artists': artists, 'privacy': privacy, 'host':user})
-        });
-    });
-    </script>
 </head>
 <body>
-    <label id="user" value="{{user}}" hidden></label>
     <div class="container">
         <div class="left">
             <h2>START GAME</h2>
@@ -69,6 +38,7 @@
                         <input type="file" id="file" name="file" accept="image/*" onchange="previewFile()">
                         <div id="preview"></div> <!-- Container for image preview -->
                     </div>
+                    <p id="u" value="{{user}}" style="visibility: hidden;">{{user}}</p>
                     <button type="submit">START GAME</button>
                 </form>
             </div>
@@ -90,5 +60,37 @@
             </div>
         </div>
     </div>
+    
 </body>
+<script>
+    function previewFile() {
+        const preview = document.getElementById('preview');
+        const file = document.getElementById('lobby_photo').files[0];
+        const reader = new FileReader();
+
+        reader.addEventListener("load", function () {
+            preview.innerHTML = '<img src="' + reader.result + '" width="200" alt="Image preview" />';
+        }, false);
+
+        if (file) {
+            reader.readAsDataURL(file);
+        }
+    }
+    $(document).ready(function(){
+    var socket = io({transports: ["websocket"]});
+    console.log(socket.io.engine.transport.name)
+    socket.on('my response', function(msg) {
+    console.log(msg.data)
+    });
+    $('form#create_game').submit(function(event) {
+        let u = document.getElementById('u').innerHTML;
+        let description = document.getElementById('description').value;
+        let title = document.getElementById('title').value;
+        let artists = document.getElementById('artists').value;
+        let privacy = document.getElementById('privacy').value;
+        socket.emit('lobby_make', {'host':u,'name': title, 'description': description, 'artists': artists, 'privacy': privacy})
+    });
+});
+</script>
+
 </html>

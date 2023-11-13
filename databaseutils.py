@@ -42,7 +42,7 @@ class user:
 class lobby:
     def __init__(self,lobby_obj):
         self.host = lobby_obj['host']
-        self.id = lobby_obj['_id']
+        self.id = str(lobby_obj['_id'])
         self.title = lobby_obj['title']
         self.desc = lobby_obj['desc']
         self.img = lobby_obj['img_url']
@@ -289,7 +289,8 @@ def get_lobbies():
     return out
 
 def get_lobby_by_host(host):
-    find = lobby(lobbys.find_one({'host':host}))
+    find = lobbys.find_one({'host':host})
+    print(find)
     if(find!=None):
         return lobby(find)
     else:
@@ -356,3 +357,10 @@ def remove_user_from_lobby(id,user):
     us.remove(user)
     users_in.find_one_and_update({'room':id},{'$set':{'users':us}})
     return
+
+def get_image_by_username(username):
+    find = img(lobbys.find_one({'username':username}))
+    if(find!=None):
+        return img(find)
+    else:
+        return None
