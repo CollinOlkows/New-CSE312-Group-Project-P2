@@ -20,7 +20,8 @@
                         <label for="libraries">LIBRARIES</label>
                         <select id="libraries" name="libraries">
                             <option value="website_gallery">WEBSITE GALLERY</option>
-                            <option value="player_gallery">PLAYER GALLERY</option>
+                            <option value="player_gallery">PERSONAL GALLERY</option>
+                            <option value="player_gallery">LOBBY GALLERY</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -36,7 +37,8 @@
                     </div>
                     <div class="form-group">
                         <label for="lobby_photo">LOBBY PHOTO</label>
-                        <input type="file" id="lobby_photo" name="lobby_photo" accept="image/*">
+                        <input type="file" id="lobby_photo" name="lobby_photo" accept="image/*" onchange="previewFile()">
+                        <div id="preview"></div> <!-- Container for image preview -->
                     </div>
                     <button type="submit">START GAME</button>
                 </form>
@@ -59,5 +61,21 @@
             </div>
         </div>
     </div>
+
+    <script>
+        function previewFile() {
+            const preview = document.getElementById('preview');
+            const file = document.getElementById('lobby_photo').files[0];
+            const reader = new FileReader();
+
+            reader.addEventListener("load", function () {
+                preview.innerHTML = '<img src="' + reader.result + '" width="200" alt="Image preview" />';
+            }, false);
+
+            if (file) {
+                reader.readAsDataURL(file);
+            }
+        }
+    </script>
 </body>
 </html>

@@ -6,11 +6,10 @@
 }
 
 body {
-    font-family: 'Lexend Giga', sans-serif; /* Updated the font family */
+    font-family: 'Lexend Giga';
     background-color: var(--background-color);
 }
 
-/* Include the font face */
 @font-face {
     font-family: 'Lexend Giga';
     src: url('/font/LexendGiga-Regular.ttf') format('truetype');
@@ -19,11 +18,11 @@ body {
 .container {
     display: flex;
     justify-content: space-between;
-    gap: 10%; /* Add a gap between flex items */
+    gap: 10%;
 }
 
 .left, .right {
-    width: calc(49.5% - 0.5%); /* Adjust the width to account for the gap */
+    width: calc(49.5% - 0.5%);
 }
 
 .form-container, .button-container {
@@ -49,40 +48,62 @@ label {
     font-size: 1.5em;
 }
 
-select {
-    font-family: 'Lexend Giga'; /* Set font family */
-    width: 95%; /* Set uniform width */
+select, input[type="number"], input[type="file"] {
+    font-family: 'Lexend Giga';
     padding: 8px;
     margin-bottom: 10px;
     border-radius: 10px;
-    padding-left: 1rem; /* Uniform padding */
+    padding-left: 1rem;
+    font-size: 1.5em;
+    text-align: center;
+}
+
+select {
+    width: 100%
 }
 
 
 input[type="number"] {
-    font-family: 'Lexend Giga'; /* Set font family */
-    width: 90.5%; /* Set uniform width */
-    padding: 8px;
-    margin-bottom: 10px;
-    border-radius: 10px;
-    padding-left: 1rem; /* Uniform padding */
-    
+    width: 93.8%;
 }
 
-
+/* Custom File Upload Button */
 input[type="file"] {
-    font-family: 'Lexend Giga'; /* Set font family */
-    padding: 8px;
-    margin-bottom: 10px;
-    border-radius: 10px;
-    padding-left: 1rem; /* Uniform padding */
+    width: 95%;
+    border: 2px solid var(--dark-blue);
 }
 
+input[type="file"]::file-selector-button {
+    background-color: var(--dark-blue);
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    border: none;
+    transition: background-color 0.3s ease;
+}
 
+input[type="file"]::file-selector-button:hover {
+    background-color: var(--hover);
+}
 
+/* Image Preview Style */
+#preview {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
+}
+
+#preview img {
+    max-width: 100%; /* Ensures the image does not exceed the container width */
+    max-height: 400px; /* Adjust as needed */
+    object-fit: contain; /* Keeps aspect ratio */
+    border-radius: 10px; /* Optional, for rounded corners */
+}
 
 button {
-    font-family: 'Lexend Giga', sans-serif; /* Updated the font family */
+    font-family: 'Lexend Giga', sans-serif;
     background-color: var(--dark-blue);
     color: white;
     font-size: large;
@@ -90,21 +111,13 @@ button {
     border: none;
     border-radius: 10px;
     cursor: pointer;
-    width: 96%; /* Adjust button width */
-    display: block; /* Make each button a block element */
-    margin: 10px auto; /* Center the button and add margin for spacing */
+    width: 96%;
+    display: block;
+    margin: 10px auto;
 }
 
 button:hover {
     background-color: var(--hover);
-}
-
-.dark-blue {
-    background-color: var(--dark-blue);
-}
-
-.navy-blue {
-    background-color: var(--blue);
 }
 
 /* Responsive Design */
