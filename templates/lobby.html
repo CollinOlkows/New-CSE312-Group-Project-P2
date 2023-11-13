@@ -35,13 +35,15 @@ $(document).ready(function(){
         title.innerHTML = msg['lobby_name'];
         let desc = document.createElement("p");
         desc.innerHTML = msg['Description'];
+        let but = document.createElement('a')
+        but.href="/lobby/"+msg['id']
+        but.innerHTML = 'Join Lobby'
+        d.insertAdjacentElement("afterbegin",but);
         d.insertAdjacentElement("afterbegin",desc);
         d.insertAdjacentElement("afterbegin",img);
         d.insertAdjacentElement("afterbegin",title);
         d.insertAdjacentElement("afterbegin",name);
-        let but = document.createElement('a')
-        but.href="/lobby/"+msg['id']
-        but.innerHTML = 'Join Lobby'
+        
 
     })
 });

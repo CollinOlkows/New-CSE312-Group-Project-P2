@@ -29,10 +29,10 @@ user_rooms = []
 @socketio.on('lobby_make')
 def make_lobby(lobby):
     print('here')
-    roomName = lobby['name']
-    description = lobby['Description']
-    Image_url = lobby['Image_url']
-    isPrivate = lobby['private']
+    roomName = html.escape(lobby['name'])
+    description = html.escape(lobby['Description'])
+    Image_url = html.escape(lobby['Image_url'])
+    isPrivate = html.escape(lobby['private'])
     user_rooms.append(roomName)
     print(user_rooms)
     print(isPrivate)
@@ -283,6 +283,11 @@ def dispfile(path):
     response.headers['X-Content-Type-Options'] = 'nosniff'
     return response
 
+@app.route('/home-page')
+def home_page():
+    response = make_response(render_template('home_page.html'), 200)
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    return response
 
 @app.route('/lobby/<string:string>')
 def lobbyin(string):
