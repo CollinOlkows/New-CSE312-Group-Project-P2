@@ -285,6 +285,16 @@ def get_lobbies():
         out.append(lobby(l))
     return out
 
+def get_lobby_by_host(host):
+    return lobbys.find_one({'host':host})
+
+def get_lobby_by_id(id):
+    obj_id = ObjectId(id)
+    return lobbys.find_one({'_id':obj_id})
+
+def get_lobby_by_roomcode(code):
+    return lobbys.find_one({'roomcode':code})
+
 def remove_lobby_by_id(id):
     id_obj= ObjectId(id)
     rem = lobbys.find_one_and_delete({'_id':id_obj})

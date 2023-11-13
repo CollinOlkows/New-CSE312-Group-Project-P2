@@ -1,5 +1,9 @@
 @import "style.css";
 
 .lobby_inst{
-    background-color: var(color_one);
+    background-color: var(--color_one);
+}
+.lobby_img{
+    height: 5vmax;
+    width: 5vmax;
 }
