@@ -20,15 +20,34 @@ app.secret_key = 'SecretCodeHushHush'
 app.config['SECRET'] = 'SecretCodeHushHush'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 socketio = SocketIO(app, cors_allowed_orgins="*")
-
+user_rooms = []
 
 #############################
 # Socket Stuff
 
+
 @socketio.on('lobby_make')
 def make_lobby(lobby):
     print('here')
+    user_rooms.append(lobby.data)
     emit('lobby_made', {'lobby_name': 'info'}, to='lobby')
+
+
+@socketio.on('join')
+def on_join(data):
+    username = data['username']
+    room = data['room']
+    join_room(room)
+    send(username + ' has entered the room.', to=room)
+
+
+@socketio.on('leave')
+def on_leave(data):
+    username = data['username']
+    room = data['room']
+    leave_room(room)
+    send(username + ' has left the room.', to=room)
+
 
 
 @socketio.on('join lobby')
@@ -264,22 +283,6 @@ def lobbyin(string):
         response.headers['X-Content-Type-Options'] = 'nosniff'
         response.set_cookie('auth', '', max_age=0)
         return response
-
-
-@socketio.on('join')
-def on_join(data):
-    username = data['username']
-    room = data['room']
-    join_room(room)
-    send(username + ' has entered the room.', to=room)
-
-
-@socketio.on('leave')
-def on_leave(data):
-    username = data['username']
-    room = data['room']
-    leave_room(room)
-    send(username + ' has left the room.', to=room)
 
 
 socketio.run(app=app, host='0.0.0.0', port=8080, allow_unsafe_werkzeug=True)
