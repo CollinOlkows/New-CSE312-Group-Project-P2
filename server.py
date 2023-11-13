@@ -27,11 +27,6 @@ socketio = SocketIO(app, cors_allowed_orgins="*")
 
 #############################
 # Socket Stuff
-@socketio.on('message')
-def handle_message(message):
-    print('Message Recieved: ')
-    if message != 'User connected!':
-        send(message, broadcast=True)
 
 @socketio.on('lobby_make')
 def make_lobby(lobby):
@@ -44,17 +39,10 @@ def test_message(message):
     print(rooms())
     emit('lobby joined', {'data': 'Connected to lobby'})
 
-@socketio.on('my broadcast event')
-def test_message(message):
-    emit('my response', {'data': message['data']}, broadcast=True)
-
 @socketio.on('connect')
 def test_connect():
     emit('my response', {'data': 'Connected'})
 
-@socketio.on('disconnect')
-def test_disconnect():
-    print('Client disconnected')
     
 ###############################
 # Flask helper functions

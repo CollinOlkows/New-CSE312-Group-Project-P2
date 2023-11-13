@@ -11,6 +11,9 @@
 <script>
     $(document).ready(function(){
         var socket = io();
+        socket.on('my response', function(msg) {
+        console.log(msg.data)
+    });
         $('form#make_lobby').submit(function(event) {
         socket.emit('lobby_make', {data: 'Lobby_name'});
     });

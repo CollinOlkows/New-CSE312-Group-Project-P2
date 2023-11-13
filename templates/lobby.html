@@ -13,7 +13,7 @@
 $(document).ready(function(){
     var socket = io();
     socket.on('my response', function(msg) {
-        $('#log').append('<p>Received: ' + msg.data + '</p>');
+        console.log(msg.data)
     });
     socket.emit('join lobby', {data: 'some_data'});
     socket.on('lobby joined',function(msg)  {
