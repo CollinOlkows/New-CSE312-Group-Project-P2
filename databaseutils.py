@@ -336,8 +336,9 @@ def get_users_in_room_by_id(id):
 
 def add_user_to_lobby(id,user):
     u = users_in.find_one({'room':id})
-    us = u.users_in
-    us.append(user)
+    us = u['users']
+    if(user not in us):
+        us.append(user)
     users_in.find_one_and_update({'room':id},{'$set':{'users':us}})
     return
 

@@ -17,7 +17,7 @@ $(document).ready(function(){
     socket.on('my response', function(msg) {
         console.log(msg.data)
     });
-    socket.emit('update_count', {'lobby': '{{code}}'});
+    socket.emit('update_count', {'lobby': '{{code}}','user':'{{user}}'});
     socket.on('lobby joined',function(msg)  {
         console.log(msg)
     })
@@ -26,8 +26,13 @@ $(document).ready(function(){
     })
 });
 
-
-
 </script>
+
+<div id="User_List">
+    <h1>Users In</h1>
+    {%for u in users%}
+    <p>{{u}}</p>
+    {%endfor%}
+</div>
 
 {% endblock %}

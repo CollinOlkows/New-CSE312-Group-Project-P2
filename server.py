@@ -72,10 +72,13 @@ def test_message(message):
 
 @socketio.on('update_count')
 def test_message(count):
-    item = databaseutils.get_lobby_by_id(count['lobby'])
-    databaseutils.increase_lobby_count(count['lobby'])
-    print(f'sending {count["lobby"]}')
-    emit('count_update', {'count': item.count+1,'id':count['lobby']},broadcast=True)
+    users = databaseutils.get_users_in_room_by_id(count['lobby'])
+    if(count['user'] not in users):
+        databaseutils.add_user_to_lobby(count['lobby'],count['user'])
+        item = databaseutils.get_lobby_by_id(count['lobby'])
+        databaseutils.increase_lobby_count(count['lobby'])
+        print(f'sending {count["lobby"]}')
+        emit('count_update', {'count': item.count+1,'id':count['lobby']},broadcast=True)
 
 
 @socketio.on('connect')
@@ -294,9 +297,21 @@ def home_page():
 
 @app.route('/lobby/<string:string>')
 def lobbyin(string):
+    if(request.cookies.get('lobby',None)!=None and request.cookies.get('lobby',None)!=string):
+        if(databaseutils.get_lobby_by_id(request.cookies.get('lobby',None))==None):
+            resp = make_response(redirect('/lobby/'+string))
+            resp.headers['X-Content-Type-Options'] = 'nosniff'
+            resp.set_cookie('lobby','',max_age=0) 
+            return resp
+        else:
+            resp = make_response(redirect('/lobby/'+request.cookies.get('lobby',None)))
+            resp.headers['X-Content-Type-Options'] = 'nosniff'
+            return resp
     if login_status(request.cookies.get('auth', None)):
-        response = make_response(render_template('game.html',code=string), 200)
+        user = databaseutils.get_user_by_token(request.cookies.get('auth', None))
+        response = make_response(render_template('game.html',code=string,users=databaseutils.get_users_in_room_by_id(string),user=user.username), 200)
         response.headers['X-Content-Type-Options'] = 'nosniff'
+        response.set_cookie('lobby',string,max_age=7200)
         return response
     else:
         response = make_response(redirect('login'))
