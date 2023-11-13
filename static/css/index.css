@@ -1,5 +1,7 @@
 @import "style.css";
 
+
+
 .homewrap{
     display: flex;
     justify-content: center;
@@ -36,4 +38,17 @@ p {
     width: 10vmax;
     background-color: var(--background-color);
     border: 0cap;
+}
+
+.enter-button {
+    width: 95%; /* Adjust this to match the width of the MODERN ART header */
+    /* Add additional styling here as needed */
+    background-color: var(--font-color);
+    font-size: 1.15em;
+    height: 100%;
+    color: aliceblue;
+    border-radius: 10px;
+    padding: 1%;
+
+
 }

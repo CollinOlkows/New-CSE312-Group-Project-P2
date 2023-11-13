@@ -1,26 +1,19 @@
 {% extends "base.html" %}
-{% block title %}Modern Art{% endblock %} 
+{% block title %}Modern Art{% endblock %}
+
 {% block head %}
-<link  rel="stylesheet" href="{{url_for('send_static',path='css/index.css')}}">
-
-
-
-
-
+<link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
 {% endblock %}
+
 {% block content %}
 <div class="homewrap">
     <div class="home">
         <h1>MODERN ART</h1>
-        <p>THE ARTIST SHOULD HAVE NO LIMITS YAYAYA</p>
-        <div class="login-form">
-            <a href="{{url_for('login')}}"><button>Login</button></a>
-            <a href="{{url_for('signup')}}"><button>Signup</button></a>
-        </div>
-        <br>
-        <a href="{{url_for('lobby')}}"><button>ENTER</button></a>
-        <a href="{{url_for('catalog')}}"><button>Catalog</button></a>
+        <p>THE ARTIST SHOULD HAVE NO LIMITS</p>
+        <!-- Button to route to login.html -->
+        <form action="{{ url_for('login') }}">
+            <button type="submit" class="enter-button">ENTER</button>
+        </form>
     </div>
 </div>
-
 {% endblock %}
