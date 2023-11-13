@@ -285,7 +285,7 @@ def home_page():
 @app.route('/lobby/<string:string>')
 def lobbyin(string):
     if login_status(request.cookies.get('auth', None)):
-        response = make_response(render_template('lobby.html',code=string), 200)
+        response = make_response(render_template('game.html',code=string), 200)
         response.headers['X-Content-Type-Options'] = 'nosniff'
         return response
     else:

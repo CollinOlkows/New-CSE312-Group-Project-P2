@@ -33,6 +33,7 @@ $(document).ready(function(){
     <input type="submit" value="Join">
 </form>
 
+<div id="lobby_listings">
 {%for obj in lobby%}
 <div class="lobby_inst">
     <p>{{obj.host}}</p>
@@ -40,6 +41,7 @@ $(document).ready(function(){
     <img src="{{url_for('send_static',path=obj.img)}}" class="lobby_img">
     <p>{{obj.desc}}</p>
     <a href="{{url_for('lobbyin',string=obj.id)}}"><button>Join Server</button></a>
+</div>
 </div>
 {%endfor%}
 {% endblock %}
