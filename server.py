@@ -304,6 +304,46 @@ def lobbyin(string):
         response.set_cookie('auth', '', max_age=0)
         return response
 
+@app.route('/lobbycreate',methods=['POST'])
+def lobbycreate():
+    if login_status(request.cookies.get('auth', None)):
+        if request.method == 'GET':
+            response = make_response(render_template('uploadcatalog.html'), 200)
+            response.headers['X-Content-Type-Options'] = 'nosniff'
+            return response
+        else:
+            # check if the post request has the file part
+            if 'file' not in request.files:
+                flash('No file part')
+                return redirect(url_for('upload'))
+            file = request.files['file']
+            # If the user does not select a file, the browser submits an
+            # empty file without a filename.
+            if file.filename == '':
+                flash('No selected file')
+                return redirect(url_for('upload'))
+            if file and allowed_file(file.filename):
+                user = databaseutils.get_user_by_token(request.cookies.get('auth', None))
+                desc = 'Temp desc'
+                igname = 'Temp image name'
+                ext = get_ext(secure_filename(file.filename))
+                # Filename needs to be generated into something unique... id from insert into database would work.
+                filename = str(
+                    databaseutils.save_image(username=user.username, image_description=desc, image_name=igname,
+                                             ext=ext).inserted_id)
+                # filename = secure_filename(file.filename)
+
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename + ext))
+                return redirect(url_for('dispfile', path=filename + ext))
+            else:
+                flash('Filetype not allowed')
+                return redirect(url_for('upload'))
+
+    else:
+        response = make_response(redirect('login'))
+        response.headers['X-Content-Type-Options'] = 'nosniff'
+        response.set_cookie('auth', '', max_age=0)
+        return response
 
 socketio.run(app=app, host='0.0.0.0', port=8080, allow_unsafe_werkzeug=True)
 

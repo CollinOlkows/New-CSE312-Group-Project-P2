@@ -42,7 +42,7 @@
         <div class="left">
             <h2>START GAME</h2>
             <div class="form-container">
-                <form id="create_game" method="post">
+                <form action="/lobbyhost" id="create_game" method="post" enctype=multipart/form-data>
                     <div class="form-group">
                         <label for="title">TITLE</label>
                         <input type="text" id="title" name="title" maxlength="30">
@@ -58,8 +58,8 @@
                     <div class="form-group">
                         <label for="privacy">PRIVACY</label>
                         <select id="privacy" name="privacy">
-                            <option value="private">PRIVATE</option>
                             <option value="public">PUBLIC</option>
+                            <option value="private" style="visibility: hidden;">PRIVATE</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -75,15 +75,15 @@
             <div class="join-game">
                 <h2>JOIN GAME</h2>
                 <div class="button-container">
-                    <button class="dark-blue">PRIVATE GAME</button>
                     <button class="dark-blue">PUBLIC GAME</button>
+                    <button class="dark-blue" style="visibility: hidden;">PRIVATE GAME</button>
                 </div>
             </div>
             <div class="gallery">
                 <h2>GALLERY</h2>
                 <div class="button-container">
                     <button class="dark-blue">IMAGE GALLERY</button>
-                    <button class="dark-blue">WINNING GALLERY</button>
+                    <button class="dark-blue" style="visibility: hidden;">WINNING GALLERY</button>
                 </div>
             </div>
         </div>
