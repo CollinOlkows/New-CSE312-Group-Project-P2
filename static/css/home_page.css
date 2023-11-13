@@ -64,7 +64,7 @@ select {
 
 
 input[type="number"] {
-    width: 93.8%;
+    width: 94.8%;
 }
 
 /* Custom File Upload Button */
@@ -86,6 +86,24 @@ input[type="file"]::file-selector-button {
 input[type="file"]::file-selector-button:hover {
     background-color: var(--hover);
 }
+
+input[type="text"], textarea {
+    /* Your styling here */
+    font-family: 'Lexend Giga';
+    padding: 8px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+    padding-left: 1rem;
+    font-size: 1.5em;
+    text-align: left;
+    width: 95%
+}
+
+textarea {
+    width: 95%; /* Adjust as needed */
+    resize: vertical; /* Allows vertical resizing */
+}
+
 
 /* Image Preview Style */
 #preview {
