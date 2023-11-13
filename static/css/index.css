@@ -5,10 +5,22 @@
     justify-content: center;
 }
 
+h1 {
+    text-align: center;
+    font-size: 3.25em;
+    margin-bottom: 0.1rem;
+}
+
 .home{
     display: flex;
     flex-direction: column;
 }
+
+p {
+    text-align: center;
+    margin-top: 0.2rem;
+}
+
 
 .login-form{
     padding-left: 2vmax;
