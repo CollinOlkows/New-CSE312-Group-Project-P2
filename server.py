@@ -30,16 +30,17 @@ user_rooms = []
 def make_lobby(lobby):
     print('here')
     roomName = html.escape(lobby['name'])
-    description = html.escape(lobby['Description'])
-    Image_url = html.escape(lobby['Image_url'])
-    isPrivate = html.escape(lobby['private'])
+    description = html.escape(lobby['description'])
+    artists = html.escape(lobby['artists'])
+    isPrivate = html.escape(lobby['privacy'])
     user_rooms.append(roomName)
+    Image_url = "placeholder"
     print(user_rooms)
     print(isPrivate)
-    if isPrivate == "false":
+    if isPrivate == "public":
         print('is private is false')
         id = databaseutils.insert_lobby('test',roomName,description,Image_url,roomcode=None)
-        emit('lobby_made', {'lobby_name': roomName, 'Description': description, 'Image_url': Image_url, 'id' : id,'count':0}, broadcast=True)
+        emit('lobby_made', {'lobby_name': roomName, 'Description': description, 'artists': artists, 'id' : id,'count':0}, broadcast=True)
     else:
         id = databaseutils.insert_lobby('test',roomName,description,Image_url,roomcode=None)
 
@@ -281,13 +282,8 @@ def dispfile(path):
     response.headers['X-Content-Type-Options'] = 'nosniff'
     return response
 
-@app.route('/home-page')
-def home_page():
-    response = make_response(render_template('home_page.html'), 200)
-    response.headers['X-Content-Type-Options'] = 'nosniff'
-    return response
 
-@app.route('/home-page')
+@app.route('/home-page',  methods=['GET', 'POST'])
 def home_page():
     response = make_response(render_template('home_page.html'), 200)
     response.headers['X-Content-Type-Options'] = 'nosniff'
