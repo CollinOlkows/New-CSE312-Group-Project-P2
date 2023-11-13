@@ -38,10 +38,10 @@ def make_lobby(lobby):
     print(isPrivate)
     if isPrivate == "false":
         print('is private is false')
-        databaseutils.insert_lobby('test','test','test','/catalog/logo.png',roomcode=None)
-        emit('lobby_made', {'lobby_name': roomName, 'Description': description, 'Image_url': Image_url}, broadcast=True)
+        id = databaseutils.insert_lobby('test',roomName,description,Image_url,roomcode=None)
+        emit('lobby_made', {'lobby_name': roomName, 'Description': description, 'Image_url': Image_url, 'id' : id}, broadcast=True)
     else:
-        databaseutils.insert_lobby('test','test','test','/catalog/logo.png',roomcode=None)
+        id = databaseutils.insert_lobby('test',roomName,description,Image_url,roomcode=None)
 
 
 @socketio.on('join')
@@ -129,12 +129,12 @@ def login():
             username = html.escape(request.form['username'])
             password = request.form['password']
             if not databaseutils.check_username_exists(username):
-                response = make_response(render_template('login.html', error='Username or password incorrect'), 200)
+                response = make_response(render_template('login.html', error='Username or password incorrect',error1=None), 200)
                 response.headers['X-Content-Type-Options'] = 'nosniff'
                 return response
             else:
                 if password is None or password == '' or password == ' ':
-                    response = make_response(render_template('login.html', error='Password field empty'), 200)
+                    response = make_response(render_template('login.html', error='Password field empty',error1=None), 200)
                     response.headers['X-Content-Type-Options'] = 'nosniff'
                     return response
                 else:
@@ -148,7 +148,7 @@ def login():
                         response.headers['X-Content-Type-Options'] = 'nosniff'
                         return response
                     else:
-                        response = make_response(render_template('login.html', error='Username or password incorrect'),
+                        response = make_response(render_template('login.html', error='Username or password incorrect',error1=None),
                                                  200)
                         response.headers['X-Content-Type-Options'] = 'nosniff'
                         return response
@@ -162,20 +162,20 @@ def signup():
     error = None
     if not login_status(request.cookies.get('auth', None)):
         if request.method == 'GET':
-            response = make_response(render_template('signup.html', error=None), 200)
+            response = make_response(render_template('login.html', error=None,error1=None), 200)
             response.headers['X-Content-Type-Options'] = 'nosniff'
             return response
         else:
-            username = html.escape(request.form['username'])
-            password = request.form['password']
-            password2 = request.form['password2']
+            username = html.escape(request.form['newUsername'])
+            password = request.form['newPassword']
+            password2 = request.form['confirmPassword']
             if databaseutils.check_username_exists(username):
-                response = make_response(render_template('signup.html', error='User already exists'), 200)
+                response = make_response(render_template('login.html', error1='User already exists',error=None), 200)
                 response.headers['X-Content-Type-Options'] = 'nosniff'
                 return response
             else:
                 if password is None or password == '' or password == ' ' or password != password2:
-                    response = make_response(render_template('signup.html', error='Password empty or do not match'),
+                    response = make_response(render_template('login.html', error1='Password empty or do not match',error=None),
                                              200)
                     response.headers['X-Content-Type-Options'] = 'nosniff'
                     return response
@@ -186,7 +186,7 @@ def signup():
                         resp.headers['X-Content-Type-Options'] = 'nosniff'
                         return resp
                     else:
-                        response = make_response(render_template('signup.html', error='Unable to add user'), 200)
+                        response = make_response(render_template('login.html', error1='Unable to add user',error=None), 200)
                         response.headers['X-Content-Type-Options'] = 'nosniff'
                         return response
     else:

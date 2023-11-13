@@ -21,7 +21,28 @@ $(document).ready(function(){
         console.log(msg)
     })
     socket.on('lobby_made',function(msg)  {
-        console.log(msg)
+        //{'lobby_name': roomName, 'Description': description, 'Image_url': Image_url, 'id' : id}
+        console.log(msg);
+        let d = document.createElement("div");
+        document.getElementById('lobby_listings').insertAdjacentElement("afterbegin",d);
+        d.classList.add("lobby_inst");
+        let name = document.createElement("p");
+        name.innerHTML = msg['lobby_name'];
+        let img = document.createElement("img");
+        img.src="/catalog/"+msg['Image_url'];
+        img.classList.add('lobby_img');
+        let title = document.createElement("p");
+        title.innerHTML = msg['lobby_name'];
+        let desc = document.createElement("p");
+        desc.innerHTML = msg['Description'];
+        d.insertAdjacentElement("afterbegin",desc);
+        d.insertAdjacentElement("afterbegin",img);
+        d.insertAdjacentElement("afterbegin",title);
+        d.insertAdjacentElement("afterbegin",name);
+        let but = document.createElement('a')
+        but.href="/lobby/"+msg['id']
+        but.innerHTML = 'Join Lobby'
+
     })
 });
 
