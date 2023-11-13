@@ -283,3 +283,18 @@ def get_lobbies():
     for l in lob:
         out.append(lobby(l))
     return out
+
+def remove_lobby_by_id(id):
+    id_obj= ObjectId(id)
+    rem = lobbys.find_one_and_delete({'_id':id_obj})
+    if(rem != None):
+        return True
+    else:
+        return False
+
+def remove_lobby_by_host(host):
+    rem = lobbys.find_one_and_delete({'host':host})
+    if(rem != None):
+        return True
+    else:
+        return False
