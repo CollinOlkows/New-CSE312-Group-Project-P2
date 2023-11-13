@@ -29,19 +29,19 @@ user_rooms = []
 @socketio.on('lobby_make')
 def make_lobby(lobby):
     print('here')
-    roomName = lobby['name']
-    description = lobby['Description']
-    Image_url = lobby['Image_url']
-    isPrivate = lobby['private']
+    roomName = html.escape(lobby['name'])
+    description = html.escape(lobby['Description'])
+    Image_url = html.escape(lobby['Image_url'])
+    isPrivate = html.escape(lobby['private'])
     user_rooms.append(roomName)
     print(user_rooms)
     print(isPrivate)
     if isPrivate == "false":
         print('is private is false')
-        databaseutils.insert_lobby('test','test','test','/catalog/logo.png',roomcode=None)
-        emit('lobby_made', {'lobby_name': roomName, 'Description': description, 'Image_url': Image_url}, broadcast=True)
+        id = databaseutils.insert_lobby('test',roomName,description,Image_url,roomcode=None)
+        emit('lobby_made', {'lobby_name': roomName, 'Description': description, 'Image_url': Image_url, 'id' : id,'count':0}, broadcast=True)
     else:
-        databaseutils.insert_lobby('test','test','test','/catalog/logo.png',roomcode=None)
+        id = databaseutils.insert_lobby('test',roomName,description,Image_url,roomcode=None)
 
 
 @socketio.on('join')
@@ -66,6 +66,12 @@ def test_message(message):
     join_room('lobby')
     print(rooms())
     emit('lobby joined', {'data': 'Connected to lobby'})
+
+@socketio.on('update_count')
+def test_message(count):
+    item = databaseutils.get_lobby_by_id(count)
+    databaseutils.increase_lobby_count(count)
+    emit('count_update', {'count': item.count+1})
 
 
 @socketio.on('connect')
@@ -129,12 +135,12 @@ def login():
             username = html.escape(request.form['username'])
             password = request.form['password']
             if not databaseutils.check_username_exists(username):
-                response = make_response(render_template('login.html', error='Username or password incorrect'), 200)
+                response = make_response(render_template('login.html', error='Username or password incorrect',error1=None), 200)
                 response.headers['X-Content-Type-Options'] = 'nosniff'
                 return response
             else:
                 if password is None or password == '' or password == ' ':
-                    response = make_response(render_template('login.html', error='Password field empty'), 200)
+                    response = make_response(render_template('login.html', error='Password field empty',error1=None), 200)
                     response.headers['X-Content-Type-Options'] = 'nosniff'
                     return response
                 else:
@@ -148,7 +154,7 @@ def login():
                         response.headers['X-Content-Type-Options'] = 'nosniff'
                         return response
                     else:
-                        response = make_response(render_template('login.html', error='Username or password incorrect'),
+                        response = make_response(render_template('login.html', error='Username or password incorrect',error1=None),
                                                  200)
                         response.headers['X-Content-Type-Options'] = 'nosniff'
                         return response
@@ -162,20 +168,20 @@ def signup():
     error = None
     if not login_status(request.cookies.get('auth', None)):
         if request.method == 'GET':
-            response = make_response(render_template('signup.html', error=None), 200)
+            response = make_response(render_template('login.html', error=None,error1=None), 200)
             response.headers['X-Content-Type-Options'] = 'nosniff'
             return response
         else:
-            username = html.escape(request.form['username'])
-            password = request.form['password']
-            password2 = request.form['password2']
+            username = html.escape(request.form['newUsername'])
+            password = request.form['newPassword']
+            password2 = request.form['confirmPassword']
             if databaseutils.check_username_exists(username):
-                response = make_response(render_template('signup.html', error='User already exists'), 200)
+                response = make_response(render_template('login.html', error1='User already exists',error=None), 200)
                 response.headers['X-Content-Type-Options'] = 'nosniff'
                 return response
             else:
                 if password is None or password == '' or password == ' ' or password != password2:
-                    response = make_response(render_template('signup.html', error='Password empty or do not match'),
+                    response = make_response(render_template('login.html', error1='Password empty or do not match',error=None),
                                              200)
                     response.headers['X-Content-Type-Options'] = 'nosniff'
                     return response
@@ -186,7 +192,7 @@ def signup():
                         resp.headers['X-Content-Type-Options'] = 'nosniff'
                         return resp
                     else:
-                        response = make_response(render_template('signup.html', error='Unable to add user'), 200)
+                        response = make_response(render_template('login.html', error1='Unable to add user',error=None), 200)
                         response.headers['X-Content-Type-Options'] = 'nosniff'
                         return response
     else:
@@ -283,6 +289,11 @@ def dispfile(path):
     response.headers['X-Content-Type-Options'] = 'nosniff'
     return response
 
+@app.route('/home-page')
+def home_page():
+    response = make_response(render_template('home_page.html'), 200)
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    return response
 
 @app.route('/lobby/<string:string>')
 def lobbyin(string):

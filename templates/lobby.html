@@ -20,8 +20,40 @@ $(document).ready(function(){
     socket.on('lobby joined',function(msg)  {
         console.log(msg)
     })
-    socket.on('lobby_made',function(msg)  {
+
+    socket.on('count_update',function(msg)  {
         console.log(msg)
+    })
+
+    socket.on('lobby_made',function(msg)  {
+        //{'lobby_name': roomName, 'Description': description, 'Image_url': Image_url, 'id' : id}
+        console.log(msg);
+        let d = document.createElement("div");
+        document.getElementById('lobby_listings').insertAdjacentElement("afterbegin",d);
+        d.classList.add("lobby_inst");
+        let name = document.createElement("p");
+        name.innerHTML = msg['lobby_name'];
+        let img = document.createElement("img");
+        img.src="/catalog/"+msg['Image_url'];
+        img.classList.add('lobby_img');
+        let title = document.createElement("p");
+        title.innerHTML = msg['lobby_name'];
+        let desc = document.createElement("p");
+        desc.innerHTML = msg['Description'];
+        let but = document.createElement('a')
+        but.href="/lobby/"+msg['id']
+        but.innerHTML = 'Join Lobby'
+        let count = document.createElement('p')
+        count.id='count_'+msg[id]
+        count.innerHTML = msg[count] +'/6'
+        d.insertAdjacentElement("afterbegin",count)
+        d.insertAdjacentElement("afterend",title);
+        d.insertAdjacentElement("afterend",img);
+        d.insertAdjacentElement("afterend",desc);
+        d.insertAdjacentElement("afterend",name);
+        d.insertAdjacentElement("afterend",but);
+        
+
     })
 });
 
