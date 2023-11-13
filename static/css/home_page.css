@@ -2,11 +2,18 @@
     --background-color: #F9DEC9;
     --blue: #667281;
     --dark-blue: #032041;
+    --hover: #723D45;
 }
 
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Lexend Giga', sans-serif; /* Updated the font family */
     background-color: var(--background-color);
+}
+
+/* Include the font face */
+@font-face {
+    font-family: 'Lexend Giga';
+    src: url('/font/LexendGiga-Regular.ttf') format('truetype');
 }
 
 .container {
@@ -16,19 +23,20 @@ body {
 }
 
 .left, .right {
-    width: calc(49% - 1%); /* Adjust the width to account for the gap */
+    width: calc(49.5% - 0.5%); /* Adjust the width to account for the gap */
 }
 
 .form-container, .button-container {
     background-color: var(--blue);
-    padding: 15px;
-    border-radius: 5px;
-    margin-top: 10px;
+    padding: 1rem;
+    border-radius: 10px;
 }
 
 h2 {
     color: #000000;
     text-align: center;
+    font-size: 3em;
+    margin-bottom: 0.25rem;
 }
 
 .form-group {
@@ -38,25 +46,57 @@ h2 {
 label {
     display: block;
     margin-bottom: 5px;
+    font-size: 1.5em;
 }
 
-input[type="number"], select, input[type="file"] {
-    width: 90%;
+select {
+    font-family: 'Lexend Giga'; /* Set font family */
+    width: 95%; /* Set uniform width */
     padding: 8px;
     margin-bottom: 10px;
+    border-radius: 10px;
+    padding-left: 1rem; /* Uniform padding */
 }
 
+
+input[type="number"] {
+    font-family: 'Lexend Giga'; /* Set font family */
+    width: 90.5%; /* Set uniform width */
+    padding: 8px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+    padding-left: 1rem; /* Uniform padding */
+    
+}
+
+
+input[type="file"] {
+    font-family: 'Lexend Giga'; /* Set font family */
+    padding: 8px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+    padding-left: 1rem; /* Uniform padding */
+}
+
+
+
+
 button {
+    font-family: 'Lexend Giga', sans-serif; /* Updated the font family */
     background-color: var(--dark-blue);
     color: white;
-    padding: 10px 15px;
+    font-size: large;
+    padding: 5%;
     border: none;
-    border-radius: 5px;
+    border-radius: 10px;
     cursor: pointer;
+    width: 96%; /* Adjust button width */
+    display: block; /* Make each button a block element */
+    margin: 10px auto; /* Center the button and add margin for spacing */
 }
 
 button:hover {
-    background-color: var(--blue);
+    background-color: var(--hover);
 }
 
 .dark-blue {
@@ -79,10 +119,10 @@ button:hover {
     }
 
     .right {
-        margin-top: 20px;
+        margin-top: 10px;
     }
 
     .join-game, .gallery {
-        margin-top: 20px;
+        margin-top: 10px;
     }
 }
