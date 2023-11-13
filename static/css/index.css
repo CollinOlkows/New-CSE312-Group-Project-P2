@@ -11,6 +11,7 @@ h1 {
     text-align: center;
     font-size: 3.25em;
     margin-bottom: 0.1rem;
+    color: var(--dark-blue);
 }
 
 .home{
@@ -21,6 +22,7 @@ h1 {
 p {
     text-align: center;
     margin-top: 0.2rem;
+    color: var(--dark-blue);
 }
 
 
@@ -29,7 +31,7 @@ p {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    background-color: var(--color_two);
+    background-color: var(--dark-blue);
 }
 
 .field-color{
@@ -43,7 +45,7 @@ p {
 .enter-button {
     width: 95%; /* Adjust this to match the width of the MODERN ART header */
     /* Add additional styling here as needed */
-    background-color: var(--font-color);
+    background-color: var(--dark-blue);
     font-size: 1.15em;
     height: 100%;
     color: aliceblue;
