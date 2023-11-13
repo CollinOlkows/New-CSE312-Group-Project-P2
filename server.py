@@ -70,9 +70,10 @@ def test_message(message):
 
 @socketio.on('update_count')
 def test_message(count):
-    item = databaseutils.get_lobby_by_id(count)
-    databaseutils.increase_lobby_count(count)
-    emit('count_update', {'count': item.count+1})
+    item = databaseutils.get_lobby_by_id(count['lobby'])
+    databaseutils.increase_lobby_count(count['lobby'])
+    print(f'sending {count["lobby"]}')
+    emit('count_update', {'count': item.count+1,'id':count['lobby']},broadcast=True)
 
 
 @socketio.on('connect')
