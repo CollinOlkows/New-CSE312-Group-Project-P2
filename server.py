@@ -1,6 +1,6 @@
 import os
 from flask import Flask,make_response,send_from_directory,render_template,request,redirect,url_for,flash
-from flask_socketio import SocketIO, send, rooms,emit,join_room,close_room
+from flask_socketio import SocketIO, send, rooms,emit,join_room,close_room, leave_room
 import databaseutils
 import bcrypt
 import html
@@ -262,5 +262,20 @@ def lobbyin(string):
         return response
 
 
+@socketio.on('join')
+def on_join(data):
+    username = data['username']
+    room = data['room']
+    join_room(room)
+    send(username + ' has entered the room.', to=room)
 
-socketio.run(app=app,host='0.0.0.0',port=8080)
+
+@socketio.on('leave')
+def on_leave(data):
+    username = data['username']
+    room = data['room']
+    leave_room(room)
+    send(username + ' has left the room.', to=room)
+
+
+socketio.run(app=app, host='0.0.0.0', port=8080, allow_unsafe_werkzeug=True)
