@@ -5,13 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HOME</title>
     <link rel="stylesheet" href="../static/css/home_page.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.4/socket.io.js" integrity="sha512-aMGMvNYu8Ue4G+fHa359jcPb1u+ytAF+P2SCb+PxrjCdO3n3ZTxJ30zuH39rimUggmTwmh2u7wvQsDTHESnmfQ==" crossorigin="anonymous"></script>
 </head>
 <body>
     <div class="container">
         <div class="left">
             <h2>START GAME</h2>
             <div class="form-container">
-                <form>
+                <form id="create_game">
                     <div class="form-group">
                         <label for="rounds">ROUNDS</label>
                         <input type="number" id="rounds" name="rounds" min="1" max="10" value="1">
@@ -76,6 +78,12 @@
                 reader.readAsDataURL(file);
             }
         }
+        $('form#create_game').submit(function(event) { 
+            let rounds = document.getElementById("rounds").value;
+            let artists = document.getElementById('artists').value;
+            let privacy = document.getElementById('privacy').value;
+            socket.emit('lobby_make', {'rounds': rounds, 'artists': artists, 'privacy': privacy})
+        });
     </script>
 </body>
 </html>
