@@ -1,0 +1,88 @@
+:root {
+    --background-color: #F9DEC9;
+    --blue: #667281;
+    --dark-blue: #032041;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: var(--background-color);
+}
+
+.container {
+    display: flex;
+    justify-content: space-between;
+    gap: 10%; /* Add a gap between flex items */
+}
+
+.left, .right {
+    width: calc(49% - 1%); /* Adjust the width to account for the gap */
+}
+
+.form-container, .button-container {
+    background-color: var(--blue);
+    padding: 15px;
+    border-radius: 5px;
+    margin-top: 10px;
+}
+
+h2 {
+    color: #000000;
+    text-align: center;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+input[type="number"], select, input[type="file"] {
+    width: 90%;
+    padding: 8px;
+    margin-bottom: 10px;
+}
+
+button {
+    background-color: var(--dark-blue);
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: var(--blue);
+}
+
+.dark-blue {
+    background-color: var(--dark-blue);
+}
+
+.navy-blue {
+    background-color: var(--blue);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+        gap: 0; /* Remove the gap for smaller screens */
+    }
+
+    .left, .right {
+        width: 100%;
+    }
+
+    .right {
+        margin-top: 20px;
+    }
+
+    .join-game, .gallery {
+        margin-top: 20px;
+    }
+}
