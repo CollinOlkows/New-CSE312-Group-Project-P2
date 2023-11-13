@@ -34,10 +34,10 @@ $(document).ready(function(){
 
 {%for obj in lobby%}
 <div class="lobby_inst">
-    <p>obj.host</p>
-    <p>obj.title</p>
-    <img src=obj.img_url>
-    <p>obj.desc</p>
+    <p>{{obj.host}}</p>
+    <p>{{obj.title}}</p>
+    <img src="{{url_for('send_static',path=obj.img)}}">
+    <p>{{obj.desc}}</p>
 </div>
 {%endfor%}
 {% endblock %}
