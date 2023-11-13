@@ -16,6 +16,8 @@
         console.log(msg.data)
     });
         $('form#make_lobby').submit(function(event) {
+        let Title = document.getElementById("Title");
+        let Description = document.getElementBy("Description");
         socket.emit('lobby_make', {'name': 'Lobby_name', 'Description': 'This is a good lobby!', 'Image_url' : '/images/logo.png', 'private':'false'});
     });
     });
@@ -23,9 +25,9 @@
     </script>
 
 <form id="make_lobby">
-    <input type="text" placeholder="Lobby Title" name="name">
-    <input type="text" placeholder="Desciption" name="desc">
-    <input type="text" placeholder="Lobby Image" name="LobbyImage">
+    <input type="text" placeholder="Lobby Title" name="name" id="Title">
+    <input type="text" placeholder="Description" name="desc" id="Description">
+    <input type="text" placeholder="Lobby Image" name="LobbyImage" id="Image">
     <input type="submit" value="Make Lobby">
 </form>
 {% endblock %}

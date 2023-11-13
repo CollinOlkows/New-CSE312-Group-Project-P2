@@ -35,8 +35,10 @@ def make_lobby(lobby):
     isPrivate = lobby['private']
     user_rooms.append(roomName)
     print(user_rooms)
+    print(isPrivate)
     if isPrivate == "false":
-        emit('lobby_made', {'lobby_name': roomName, 'Description': description, 'Image_url': Image_url})
+        print('is private is false')
+        emit('lobby_made', {'lobby_name': roomName, 'Description': description, 'Image_url': Image_url}, broadcast=True)
 
 
 @socketio.on('join')
