@@ -10,6 +10,7 @@
 <p id="log"></p>
 <a href="{{url_for('createlobby')}}"><button>Make Lobby</button></a>
 <script>
+
 $(document).ready(function(){
     var socket = io({transports: ["websocket"]});
     console.log(socket.io.engine.transport.name)
