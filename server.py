@@ -29,9 +29,14 @@ user_rooms = []
 @socketio.on('lobby_make')
 def make_lobby(lobby):
     print('here')
-    user_rooms.append(lobby['data'])
+    roomName = lobby['name']
+    description = lobby['Description']
+    Image_url = lobby['Image_url']
+    isPrivate = lobby['private']
+    user_rooms.append(roomName)
     print(user_rooms)
-    emit('lobby_made', {'lobby_name': 'info'}, to='lobby')
+    if isPrivate == "false":
+        emit('lobby_made', {'lobby_name': roomName, 'Description': description, 'Image_url': Image_url})
 
 
 @socketio.on('join')
