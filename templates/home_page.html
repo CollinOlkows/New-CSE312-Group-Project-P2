@@ -28,21 +28,23 @@
         console.log(msg.data)
         });
         $('form#create_game').submit(function(event) {
+            let user = document.getElementById('user').value;
             let description = document.getElementById('description').value;
             let title = document.getElementById('title').value;
             let artists = document.getElementById('artists').value;
             let privacy = document.getElementById('privacy').value;
-            socket.emit('lobby_make', {'name': title, 'description': description, 'artists': artists, 'privacy': privacy})
+            socket.emit('lobby_make', {'name': title, 'description': description, 'artists': artists, 'privacy': privacy, 'host':user})
         });
     });
     </script>
 </head>
 <body>
+    <label id="user" value="{{user}}" hidden></label>
     <div class="container">
         <div class="left">
             <h2>START GAME</h2>
             <div class="form-container">
-                <form action="/lobbyhost" id="create_game" method="post" enctype=multipart/form-data>
+                <form action="/lobbycreate" id="create_game" method="post" enctype=multipart/form-data>
                     <div class="form-group">
                         <label for="title">TITLE</label>
                         <input type="text" id="title" name="title" maxlength="30">
@@ -64,7 +66,7 @@
                     </div>
                     <div class="form-group">
                         <label for="lobby_photo">LOBBY PHOTO</label>
-                        <input type="file" id="lobby_photo" name="lobby_photo" accept="image/*" onchange="previewFile()">
+                        <input type="file" id="file" name="file" accept="image/*" onchange="previewFile()">
                         <div id="preview"></div> <!-- Container for image preview -->
                     </div>
                     <button type="submit">START GAME</button>

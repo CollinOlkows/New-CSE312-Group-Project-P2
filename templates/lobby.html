@@ -61,20 +61,22 @@ $(document).ready(function(){
 
 
 </script>
-<form>
-    <input type="text" placeholder="Join Code" name="code">
-    <input type="submit" value="Join">
-</form>
 
 <div id="lobby_listings">
 {%for obj in lobby%}
 <div class="lobby_inst">
+    {%if 6 > obj.count%}
     <p id="count_{{obj.id}}">{{obj.count}}/6</p>
+    {%else%}
+    <p id="count_{{obj.id}}">{{obj.count}}/6 Lobby Full!</p>
+    {%endif%}
     <p>{{obj.host}}</p>
     <p>{{obj.title}}</p>
     <img src="{{url_for('send_static',path=obj.img)}}" class="lobby_img">
     <p>{{obj.desc}}</p>
-    <a href="{{url_for('lobbyin',string=obj.id)}}"><button>Join Server</button></a>
+    {%if 6 > obj.count%}
+        <a href="{{url_for('lobbyin',string=obj.id)}}"><button>Join Server</button></a>
+    {%endif%}
 </div>
 </div>
 {%endfor%}

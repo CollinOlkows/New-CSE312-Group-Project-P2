@@ -289,11 +289,19 @@ def get_lobbies():
     return out
 
 def get_lobby_by_host(host):
-    return lobby(lobbys.find_one({'host':host}))
+    find = lobby(lobbys.find_one({'host':host}))
+    if(find!=None):
+        return lobby(find)
+    else:
+        return None
 
 def get_lobby_by_id(id):
     obj_id = ObjectId(id)
-    return lobby(lobbys.find_one({'_id':obj_id}))
+    find = lobbys.find_one({'_id':obj_id})
+    if(find!=None):
+        return lobby(lobbys.find_one({'_id':obj_id}))
+    else:
+        return None
 
 def get_lobby_by_roomcode(code):
     return lobby(lobbys.find_one({'roomcode':code}))

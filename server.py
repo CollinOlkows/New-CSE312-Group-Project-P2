@@ -37,12 +37,13 @@ def make_lobby(lobby):
     isPrivate = html.escape(lobby['privacy'])
     user_rooms.append(roomName)
     Image_url = "placeholder"
+    lob = databaseutils.get_lobby_by_host(lobby['host'])
     print(user_rooms)
     print(isPrivate)
     if isPrivate == "public":
         print('is private is false')
         id = databaseutils.insert_lobby('test',roomName,description,Image_url,user_count=0,roomcode=None)
-        emit('lobby_made', {'lobby_name': roomName, 'Description': description, 'artists': artists, 'id' : id,'count':0}, broadcast=True)
+        emit('lobby_made', {'lobby_name': lob.title, 'Description': lob.desc, 'artists': artists, 'id' : lob.id,'count':0,'Image_url':lob.img}, broadcast=True)
     else:
         id = databaseutils.insert_lobby('test',roomName,description,Image_url,roomcode=None)
 
@@ -79,6 +80,7 @@ def test_message(count):
         databaseutils.increase_lobby_count(count['lobby'])
         print(f'sending {count["lobby"]}')
         emit('count_update', {'count': item.count+1,'id':count['lobby']},broadcast=True)
+        emit('update_users',{'user':count['user']},broadcast=True)
 
 
 @socketio.on('connect')
@@ -90,6 +92,7 @@ def test_connect():
 # Flask helper functions
 def login_status(cookie):
     if cookie is not None:
+        print(cookie)
         return databaseutils.check_token(cookie)
     return False
 
@@ -159,7 +162,7 @@ def login():
                         return response
 
     else:
-        return redirect(url_for('lobby'))
+        return redirect(url_for('home_page'))
 
 
 @app.route('/signup', methods=['GET', 'POST'])
@@ -215,7 +218,7 @@ def createlobby():
 def lobby():
     if login_status(request.cookies.get('auth', None)):
         lobbies = databaseutils.get_lobbies()
-        response = make_response(render_template('lobby.html',lobby=lobbies), 200)
+        response = make_response(render_template('lobby.html',lobby=lobbies,error=None), 200)
         response.headers['X-Content-Type-Options'] = 'nosniff'
         return response
     else:
@@ -291,12 +294,24 @@ def dispfile(path):
 
 @app.route('/home-page',  methods=['GET', 'POST'])
 def home_page():
-    response = make_response(render_template('home_page.html'), 200)
-    response.headers['X-Content-Type-Options'] = 'nosniff'
-    return response
+    if login_status(request.cookies.get('auth', None)):
+        user = databaseutils.get_user_by_token(request.cookies.get('auth', None))
+        response = make_response(render_template('home_page.html',user=user.username), 200)
+        response.headers['X-Content-Type-Options'] = 'nosniff'
+        return response
+    else:
+        response = make_response(redirect('login'))
+        response.headers['X-Content-Type-Options'] = 'nosniff'
+        response.set_cookie('auth', '', max_age=0)
+        return response
 
 @app.route('/lobby/<string:string>')
 def lobbyin(string):
+    if login_status(request.cookies.get('auth', None)) == False:
+        response = make_response(redirect('login'))
+        response.headers['X-Content-Type-Options'] = 'nosniff'
+        response.set_cookie('auth', '', max_age=0)
+        return response
     if(request.cookies.get('lobby',None)!=None and request.cookies.get('lobby',None)!=string):
         if(databaseutils.get_lobby_by_id(request.cookies.get('lobby',None))==None):
             resp = make_response(redirect('/lobby/'+string))
@@ -304,20 +319,42 @@ def lobbyin(string):
             resp.set_cookie('lobby','',max_age=0) 
             return resp
         else:
-            resp = make_response(redirect('/lobby/'+request.cookies.get('lobby',None)))
-            resp.headers['X-Content-Type-Options'] = 'nosniff'
-            return resp
-    if login_status(request.cookies.get('auth', None)):
-        user = databaseutils.get_user_by_token(request.cookies.get('auth', None))
-        response = make_response(render_template('game.html',code=string,users=databaseutils.get_users_in_room_by_id(string),user=user.username), 200)
-        response.headers['X-Content-Type-Options'] = 'nosniff'
-        response.set_cookie('lobby',string,max_age=7200)
-        return response
+            if(databaseutils.get_lobby_by_id(string).count<6):
+                resp = make_response(redirect('/lobby/'+request.cookies.get('lobby',None)))
+                resp.headers['X-Content-Type-Options'] = 'nosniff'
+                return resp
+            else:
+                resp = make_response(redirect('/lobby'))
+                resp.headers['X-Content-Type-Options'] = 'nosniff'
+                return resp
+    if(databaseutils.get_lobby_by_id(string).count>6):
+            if(request.cookies.get('lobby',None)==string):
+                print('1')
+                if login_status(request.cookies.get('auth', None)):
+                    user = databaseutils.get_user_by_token(request.cookies.get('auth', None))
+                    response = make_response(render_template('game.html',code=string,users=databaseutils.get_users_in_room_by_id(string),user=user.username), 200)
+                    response.headers['X-Content-Type-Options'] = 'nosniff'
+                    #response.set_cookie('lobby',string,max_age=7200)
+                    return response
+
+            else:
+                print('2')
+                resp = make_response(redirect('/lobby'))
+                resp.headers['X-Content-Type-Options'] = 'nosniff'
+                return resp
     else:
-        response = make_response(redirect('login'))
-        response.headers['X-Content-Type-Options'] = 'nosniff'
-        response.set_cookie('auth', '', max_age=0)
-        return response
+        if login_status(request.cookies.get('auth', None)):
+            print('3')
+            user = databaseutils.get_user_by_token(request.cookies.get('auth', None))
+            response = make_response(render_template('game.html',code=string,users=databaseutils.get_users_in_room_by_id(string),user=user.username), 200)
+            response.headers['X-Content-Type-Options'] = 'nosniff'
+            response.set_cookie('lobby',string,max_age=7200)
+            return response
+        else:
+            response = make_response(redirect('login'))
+            response.headers['X-Content-Type-Options'] = 'nosniff'
+            response.set_cookie('auth', '', max_age=0)
+            return response
 
 @app.route('/lobbycreate',methods=['POST'])
 def lobbycreate():
@@ -327,32 +364,36 @@ def lobbycreate():
             response.headers['X-Content-Type-Options'] = 'nosniff'
             return response
         else:
+            user_sess = request.cookies.get('lobby',None)
+            if user_sess!=None:
+                t = databaseutils.get_lobby_by_id(user_sess)
+                if(t!=None):
+                    redirect(url_for('lobbyin',string=user_sess))
             # check if the post request has the file part
-            if 'file' not in request.files:
-                flash('No file part')
-                return redirect(url_for('upload'))
-            file = request.files['file']
-            # If the user does not select a file, the browser submits an
-            # empty file without a filename.
-            if file.filename == '':
-                flash('No selected file')
-                return redirect(url_for('upload'))
-            if file and allowed_file(file.filename):
+            if 'file' in request.files and request.files['file'].filename != '' and allowed_file(request.files['file'].filename):
                 user = databaseutils.get_user_by_token(request.cookies.get('auth', None))
                 desc = 'Temp desc'
                 igname = 'Temp image name'
+                file = request.files['file']
                 ext = get_ext(secure_filename(file.filename))
                 # Filename needs to be generated into something unique... id from insert into database would work.
                 filename = str(
                     databaseutils.save_image(username=user.username, image_description=desc, image_name=igname,
                                              ext=ext).inserted_id)
                 # filename = secure_filename(file.filename)
-
                 file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename + ext))
-                return redirect(url_for('dispfile', path=filename + ext))
+                title = request.form.get('title')
+                desc = request.form.get('description')
+
+                id = databaseutils.insert_lobby(user.username,title,desc,'/catalog/'+filename + ext,user_count=0)
+                return redirect(url_for('lobbyin', string=id))
             else:
-                flash('Filetype not allowed')
-                return redirect(url_for('upload'))
+                user = databaseutils.get_user_by_token(request.cookies.get('auth', None))
+                title = request.form.get('title')
+                desc = request.form.get('description')
+                id = databaseutils.insert_lobby(user.username,title,desc,'/images/logo.png',user_count=0)
+                
+                return redirect(url_for('lobbyin', string=id))
 
     else:
         response = make_response(redirect('login'))

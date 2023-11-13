@@ -9,7 +9,6 @@
 {% block content %}
 <p id="log"></p>
 <label id="game" value="{{code}}" hidden></label>
-<a href="{{url_for('createlobby')}}"><button>Make Lobby</button></a>
 <script>
 $(document).ready(function(){
     var socket = io({transports: ["websocket"]});
@@ -24,15 +23,22 @@ $(document).ready(function(){
     socket.on('lobby_made',function(msg)  {
         console.log(msg)
     })
+    socket.on('update_users',function(msg)  {
+        let un = document.createElement('p')
+        un.innerHTML = msg['user']
+        document.getElementById('User_List').insertAdjacentElement('afterbegin',un)
+    })
 });
 
 </script>
 
-<div id="User_List">
+<div id="User_div">
     <h1>Users In</h1>
+    <div id="User_List">
     {%for u in users%}
     <p>{{u}}</p>
     {%endfor%}
+    </div>
 </div>
 
 {% endblock %}
