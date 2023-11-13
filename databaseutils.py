@@ -4,16 +4,25 @@ import datetime
 import html
 from hashlib import sha256
 from bson.objectid import ObjectId
-mongo_client = MongoClient("mongo")
+#mongo_client = MongoClient("mongo")
+mongo_client = MongoClient("localhost")
 db = mongo_client["cse312"]
 users = db['users']
 posts = db['posts']
 comments = db['comments']
+lobbys = db['lobbys']
+images = db['images']
+
+
+
+#Comments and posts have become obsolete for this project. Will Be updated at a later time
 
 '''
 users -> {username:username,passhash:passwordhash,salt:passwordsalt,_id:user_id,followers,following,token,exp_date}
 posts ->{_id:post_id,post_owner:user_id,content:content,creation_date:date,likes:[User_id],owner_username:username,comments:[Comment]}
 comments ->{_id:comment_id,content:comment_content,date:creation_date,type:Parent or Child(thread or reply),post_origin,comment_owner,owner_username}
+
+images - > {'username':username,'description':image_description,'image_name':image_name}
 '''
 
 #wrappers for easy working with users
@@ -27,6 +36,15 @@ class user:
         self.following = user_obj['following']
         self.token = user_obj['token']
         self.token_date = user_obj['token_date']
+
+class img:
+    def __init__(self,image_obj):
+        self.username = image_obj['username']
+        self.id = image_obj['_id']
+        self.desc = image_obj['description']
+        self.name = image_obj['image_name']
+        self.ext = image_obj['ext']
+        self.fp = '/catalog/'+str(image_obj['_id'])+image_obj['ext']
 
 #wrappers for easy working with posts
 class post:
@@ -205,7 +223,7 @@ def delete_post_by_id(id):
 def delete_comment():
     pass
 
-def set_user_token(username,token,date):
+def set_user_token(username,token,date=datetime.datetime.now()):
     hash = sha256(token.encode('utf-8')).hexdigest()
     return users.update_many({'username':username},{"$set":{'token':str(hash),"token_date":date}})
 
@@ -216,6 +234,13 @@ def get_user_by_token(token):
         return user(u)
     else:
         return None
+
+def check_username_exists(username):
+    test = users.find_one({'username':username})
+    if(test == None):
+        return False
+    else:
+        return True
 
 def check_token(token):
     hash = sha256(token.encode('utf-8')).hexdigest()
@@ -228,3 +253,13 @@ def check_token(token):
             return True
     else:
         return False
+    
+def save_image(username,image_description,image_name,ext):
+    return images.insert_one({'username':username,'description':image_description,'image_name':image_name,'ext':ext})
+
+def get_images():
+    image = images.find()
+    out = []
+    for im in image:
+        out.append(img(im))
+    return out

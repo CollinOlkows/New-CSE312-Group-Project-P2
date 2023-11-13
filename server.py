@@ -1,224 +1,253 @@
-from flask import Flask,make_response,send_from_directory,render_template,request,redirect,url_for
+import os
+from flask import Flask,make_response,send_from_directory,render_template,request,redirect,url_for,flash
+from flask_socketio import SocketIO, send
 import databaseutils
 import bcrypt
 import html
 import secrets
 import json
 import datetime
+from werkzeug.utils import secure_filename
+
+UPLOAD_FOLDER = './static/catalog'
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
 
 #File for all the server stuff
-
+#########################################
+#Sever Set Ups
 app = Flask(__name__)
+app.secret_key = 'SecretCodeHushHush'
+app.config['SECRET'] = 'SecretCodeHushHush'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+socketio = SocketIO(app, cors_allowed_orgins="*")
 
+
+
+
+#############################
+# Socket Stuff
+@socketio.on('message')
+def handle_message(message):
+    print('Message Recieved: ')
+    if message != 'User connected!':
+        send(message, broadcast=True)
+
+
+
+
+###############################
+# Flask helper functions
+def login_status(cookie):
+    if(cookie!=None):
+        return databaseutils.check_token(cookie)
+    return False
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+def get_ext(filename):
+    return '.'+filename.rsplit('.',1)[1]
+
+####################################################################
+# Flask Routes
+
+
+#Serving Static Files up with nosniff
 @app.route('/<path:path>')
 def send_static(path):
     response = make_response(send_from_directory('static', path),200)
     response.headers['X-Content-Type-Options'] = 'nosniff'
     return response
 
+
 @app.route('/')
 def index():
-    token = request.cookies.get('auth',None)
-    if(token !=None and databaseutils.check_token(token)):
-        u = databaseutils.get_user_by_token(token)
-        response = make_response(render_template('index.html',login=True,user=u))
+    if(login_status(request.cookies.get('auth',None)) == False):
+        response = make_response(render_template('index.html'),200)
+        response.headers['X-Content-Type-Options'] = 'nosniff'
         return response
     else:
-        u = None
-        login = False
-        if token != None:
-            u = databaseutils.get_user_by_token(token)
-            login = True
-        #check if users logged in, if yes show feed tab and username
-        response = make_response(render_template('index.html',user=u,login=login),200)
+        response = make_response(render_template('index.html'),200)
+        response.headers['X-Content-Type-Options'] = 'nosniff'
+        return response
+        response = make_response(redirect('lobby'))
         response.headers['X-Content-Type-Options'] = 'nosniff'
         return response
 
-@app.route('/login',methods=['POST', 'GET'])
+
+@app.route('/login',methods=['GET','POST'])
 def login():
-    #check if users logged in, if yes redirect to feed
-    login=False
-    token = request.cookies.get('auth',None)
-    if(token !=None and databaseutils.check_token(token)):
-        user = databaseutils.get_user_by_token(token)
-        response = make_response(render_template('login.html',error='User is already Logged in!',login=True,user=user),200)
-        response.headers['X-Content-Type-Options'] = 'nosniff'
-        return response
-    if request.method == 'GET':
-        response = make_response(render_template('login.html',error='',login=login),200)
-        response.headers['X-Content-Type-Options'] = 'nosniff'
-        return response
-    else:
-        username = request.form.get('username',None)
-        if username != None and username != '' and username != ' ':
-            username = html.escape(username)
-        else:
-            response = make_response(render_template('login.html',error='Username Empty',login=login),200)
-            response.headers['X-Content-Type-Options'] = 'nosniff'
-            return response
-        password = request.form.get('password')
-        if(password == None or password==''):
-            response = make_response(render_template('login.html',error='password empty',login=login),200)
-            response.headers['X-Content-Type-Options'] = 'nosniff'
-            return response
-        user = databaseutils.get_user_by_username(username)
-        if(user == None):
-            response = make_response(render_template('login.html',error='No User Found',login=login),200)
+    error = None
+    if(login_status(request.cookies.get('auth',None)) == False):
+        if(request.method=='GET'):
+            response = make_response(render_template('login.html',error=error),200)
             response.headers['X-Content-Type-Options'] = 'nosniff'
             return response
         else:
-            ph=bcrypt.hashpw(password.encode(),user.salt)
-            if ph==user.passhash:
-                token = secrets.token_hex()
-                databaseutils.set_user_token(username,token,datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))
-                response = make_response(redirect(url_for('index', _external=True)))
-                response.set_cookie('auth',token,max_age=7200,httponly=True)
-                return response
-            response = make_response(render_template('login.html',error='Password Incorrect',login=login,user=None),200)
-            response.headers['X-Content-Type-Options'] = 'nosniff'
-            return response
-                
-
-@app.route('/signup',methods=['POST', 'GET'])
-def signup():
-    token = request.cookies.get('auth',None)
-    if(token !=None and databaseutils.check_token(token=token)):
-        response = make_response(redirect(url_for('feed', _external=True)))
-        return response
-    #if users signed in redirect to home or feed
-    else:
-        if request.method == 'GET':
-            response = make_response(render_template('signup.html',error='',login=False,user=None),200)
-            response.headers['X-Content-Type-Options'] = 'nosniff'
-            return response
-        else:
-            login = False
-            username = request.form.get('username',None)
-            password = request.form.get('password',None)
-            password_confirm = request.form.get('password_confirm',None)
-            if(password!=password_confirm or password =='' or password == None):
-                error = "Password empty or do not match"
-                response = make_response(render_template('signup.html',error=error,login=login,user=None),200)
+            username = html.escape(request.form['username'])
+            password = request.form['password']
+            if(databaseutils.check_username_exists(username) == False):
+                response = make_response(render_template('login.html',error='Username or password incorrect'),200)
                 response.headers['X-Content-Type-Options'] = 'nosniff'
-                return response
-            if(username==None or username=='' or username == ' '):
-                error = "Username Field Empty"
-                response = make_response(render_template('signup.html',error=error,login=login,user=None),200)
-                response.headers['X-Content-Type-Options'] = 'nosniff'
-                return response
-            username=html.escape(username)
-            error = ''
-            test = databaseutils.add_user(username,password)
-            if(test):
-                #Set User Cookie Here
-                token = secrets.token_hex()
-                databaseutils.set_user_token(username,token,datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))
-                response = make_response(redirect(url_for('feed', _external=True)))
-                response.set_cookie('auth',token,max_age=7200,httponly=True)
                 return response
             else:
-                error = "Username Already Exists"
-                response = make_response(render_template('signup.html',error=error,login=login,user=None),200)
-                response.headers['X-Content-Type-Options'] = 'nosniff'
-                return response
-            
-        #Check if the user can be create, if yes we login if no throw error
+                if(password == None or password == '' or password == ' '):
+                    response = make_response(render_template('login.html',error='Password field empty'),200)
+                    response.headers['X-Content-Type-Options'] = 'nosniff'
+                    return response
+                else:
+                    user = databaseutils.get_user_by_username(username)
+                    passhash = bcrypt.hashpw(password.encode('utf-8'),user.salt)
+                    if(passhash == user.passhash):
+                        response = redirect('lobby')
+                        cookie = secrets.token_hex()
+                        databaseutils.set_user_token(username,cookie)
+                        response.set_cookie('auth',cookie,max_age=7200)
+                        response.headers['X-Content-Type-Options'] = 'nosniff'
+                        return response
+                    else:
+                        response = make_response(render_template('login.html',error='Username or password incorrect'),200)
+                        response.headers['X-Content-Type-Options'] = 'nosniff'
+                        return response
 
-
-@app.route('/feed')
-def feed():
-    token = request.cookies.get('auth',None)
-    if(token !=None and databaseutils.check_token(token=token)):
-        posts = databaseutils.get_all_posts()
-        user = databaseutils.get_user_by_token(token=token)
-        response = make_response(render_template('feed.html',posts=posts,user=user,time=datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S"),login=True),200)
-        response.headers['X-Content-Type-Options'] = 'nosniff'
-        return response
     else:
-        posts = databaseutils.get_all_posts()
-        response = make_response(render_template('feed.html',posts=posts,user=None,time=datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S"),login=False),200)
-        response.headers['X-Content-Type-Options'] = 'nosniff'
-        return response
+        return redirect(url_for('lobby'))
+    
 
-        '''response = make_response(redirect(url_for('login')))
-        response.headers['X-Content-Type-Options'] = 'nosniff'
-        return response
-        '''
-        
-
-@app.route('/post',methods=['POST', 'GET'])
-def post():
-    token = request.cookies.get('auth',None)
-    if(token !=None and databaseutils.check_token(token)):
-        if request.method== "POST":
-            content = html.escape(request.json['content'])
-            title = html.escape(request.json['title'])
-            user = databaseutils.get_user_by_token(token)
-            databaseutils.add_post(user,content,title)
-            return make_response('Post Successful!',200)
-        else:
-            response = make_response('Post failed! Not post method',200)
+@app.route('/signup',methods=['GET','POST'])
+def signup():
+    error = None
+    if(login_status(request.cookies.get('auth',None)) == False):
+        if(request.method=='GET'):
+            response = make_response(render_template('signup.html',error=None),200)
             response.headers['X-Content-Type-Options'] = 'nosniff'
             return response
+        else:
+            username = html.escape(request.form['username'])
+            password = request.form['password']
+            password2 = request.form['password2']
+            if(databaseutils.check_username_exists(username)):
+                response = make_response(render_template('signup.html',error='User already exists'),200)
+                response.headers['X-Content-Type-Options'] = 'nosniff'
+                return response
+            else:
+                if(password == None or password == '' or password == ' ' or password!=password2):
+                    response = make_response(render_template('signup.html',error='Password empty or do not match'),200)
+                    response.headers['X-Content-Type-Options'] = 'nosniff'
+                    return response
+                else:
+                    check = databaseutils.add_user(username,password)
+                    if(check):
+                        resp = make_response(redirect('login'))
+                        resp.headers['X-Content-Type-Options'] = 'nosniff'
+                        return resp
+                    else:
+                        response = make_response(render_template('signup.html',error='Unable to add user'),200)
+                        response.headers['X-Content-Type-Options'] = 'nosniff'
+                        return response
     else:
-        response =  make_response('Post failed! Not signed in',200)
+        return redirect(url_for('lobby'))
+
+
+@app.route('/createlobby')
+def createlobby():
+    if(login_status(request.cookies.get('auth',None))):
+        response = make_response(render_template('make_lobby.html'),200)
         response.headers['X-Content-Type-Options'] = 'nosniff'
         return response
-
-@app.route('/like_post',methods=['POST'])
-def like_post():
-    token = request.cookies.get('auth',None)
-    if(token !=None and databaseutils.check_token(token)):
-        user = databaseutils.get_user_by_token(token=token)
-        post_id = html.escape(request.json['post_id'])
-        post = databaseutils.get_post_by_id(post_id)
-        status = databaseutils.update_post_likes(post_id,user.id)
-        return make_response(json.dumps(status),200)
     else:
-        response = make_response(redirect(url_for('login')))
+        response = make_response(redirect('login'))
         response.headers['X-Content-Type-Options'] = 'nosniff'
+        response.set_cookie('auth','',max_age=0)
+        return response
+
+@app.route('/lobby')
+def lobby():
+    if(login_status(request.cookies.get('auth',None))):
+        response = make_response(render_template('lobby.html'),200)
+        response.headers['X-Content-Type-Options'] = 'nosniff'
+        return response
+    else:
+        response = make_response(redirect('login'))
+        response.headers['X-Content-Type-Options'] = 'nosniff'
+        response.set_cookie('auth','',max_age=0)
         return response
     
-@app.route('/logout')
-def logout():
-    token = request.cookies.get('auth',None)
-    if(token !=None and databaseutils.check_token(token)):
-        user = databaseutils.get_user_by_token(token)
-        #remove token from user database
-        response = make_response(redirect(url_for('index')))
-        response.set_cookie('auth','',max_age=0,httponly=True)
-        return response
-    else:
-        response = make_response(redirect(url_for('index')))
-        response.set_cookie('auth','',max_age=0,httponly=True)
-        return response
-
-@app.route('/get_posts',methods=['POST'])
-def getposts():
-    token = request.cookies.get('auth',None)
-    if(token !=None and databaseutils.check_token(token)):
-        user = databaseutils.get_user_by_token(token=token)
-        time = html.escape(request.json['time'])
-        posts = databaseutils.get_all_posts()
-        output = []
-        for post in posts:
-            obj = {'username':post.owner_username,'title':post.title,'content':post.content,'id':str(post.post_id),'like_count':post.like_count,'emoji':databaseutils.check_likes(post.post_id,user.id),'time_checked':datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S")}
-            output.append(obj)
-        return make_response(json.dumps(output),200)
-    else:
-        response = make_response(redirect(url_for('login')))
-        response.headers['X-Content-Type-Options'] = 'nosniff'
-        return response
-
-@app.route('/profile/<string:user_id>')
-def profile(user_id):
-    token = request.cookies.get('auth',None)
-    if(token !=None and databaseutils.check_token(token=token)):
-        response = make_response(render_template('profile.html'),200)
+@app.route('/catalog')
+def catalog():
+    if(login_status(request.cookies.get('auth',None))):
+        images = databaseutils.get_images()
+        response = make_response(render_template('catalog.html',images=images),200)
         response.headers['X-Content-Type-Options'] = 'nosniff'
         return response
     else:
-        return redirect(url_for('login'))
+        response = make_response(redirect('login'))
+        response.headers['X-Content-Type-Options'] = 'nosniff'
+        response.set_cookie('auth','',max_age=0)
+        return response
+    
 
-app.run(host='0.0.0.0',port=8080)
+#Convert the flash things into error messages and retrun to the same page
+@app.route('/upload',methods=['GET', 'POST'])
+def upload():
+    if(login_status(request.cookies.get('auth',None))):
+        if(request.method == 'GET'):
+            response = make_response(render_template('uploadcatalog.html'),200)
+            response.headers['X-Content-Type-Options'] = 'nosniff'
+            return response
+        else:
+            # check if the post request has the file part
+            if 'file' not in request.files:
+                flash('No file part')
+                return redirect(url_for('upload'))
+            file = request.files['file']
+            # If the user does not select a file, the browser submits an
+            # empty file without a filename.
+            if file.filename == '':
+                flash('No selected file')
+                return redirect(url_for('upload'))
+            if file and allowed_file(file.filename):
+                user = databaseutils.get_user_by_token(request.cookies.get('auth',None))
+                desc = 'Temp desc'
+                igname = 'Temp image name'
+                ext = get_ext(secure_filename(file.filename))
+                #Filename needs to be generated into something unique... id from insert into database would work.
+                filename = str(databaseutils.save_image(username=user.username,image_description=desc,image_name=igname,ext=ext).inserted_id)
+                #filename = secure_filename(file.filename)
+
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename+ext))
+                return redirect(url_for('dispfile', path=filename+ext))
+            else:
+                flash('Filetype not allowed')
+                return redirect(url_for('upload'))
+
+    else:
+        response = make_response(redirect('login'))
+        response.headers['X-Content-Type-Options'] = 'nosniff'
+        response.set_cookie('auth','',max_age=0)
+        return response
+
+@app.route('/dispfile/<path:path>')
+def dispfile(path):
+    response = make_response(render_template('showimage.html',image_name=f'/catalog/{path}'),200)
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    return response
+
+
+@app.route('/lobby/<string:string>')
+def lobbyin(string):
+    if(login_status(request.cookies.get('auth',None))):
+        response = make_response(render_template('lobby.html'),200)
+        response.headers['X-Content-Type-Options'] = 'nosniff'
+        return response
+    else:
+        response = make_response(redirect('login'))
+        response.headers['X-Content-Type-Options'] = 'nosniff'
+        response.set_cookie('auth','',max_age=0)
+        return response
+
+
+
+socketio.run(app=app,host='0.0.0.0',port=8080)

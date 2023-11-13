@@ -1,44 +1,27 @@
-@font-face {
-    font-family: InterDisplay-Thin;
-    src: url('/InterDisplay-Thin.otf');
+@import "style.css";
+
+.homewrap{
+    display: flex;
+    justify-content: center;
 }
 
-body{
-    padding: 0;
-    margin: 0;
-}
-.buttons{
-    width: 20vmax;
-    height: 2vmax;
-    background-color: #4267B2;
-    font-style: InterDisplay-Thin;
-    font-size: 1vmax;
-    color: white;
-    border-radius: 1vmax;
-}
-.container{
+.home{
     display: flex;
-    justify-content: space-evenly;
-}
-.container-form{
-    display: flex;
-    justify-content: space-evenly;
     flex-direction: column;
 }
 
-
-.container_center{
+.login-form{
+    padding-left: 2vmax;
     display: flex;
+    flex-direction: column;
     justify-content: center;
-    gap: 5vmax;
+    background-color: var(--color_two);
 }
-.image_main_square{
-    width: 25vmax;
-    height: 25vmax;
-}
-h1{
-    font-size: 3vmax;
-}
-p{
-    font-size: 1vmax;
+
+.field-color{
+    font-family: LexGiga-Reg;
+    height: 2vmax;
+    width: 10vmax;
+    background-color: var(--background-color);
+    border: 0cap;
 }

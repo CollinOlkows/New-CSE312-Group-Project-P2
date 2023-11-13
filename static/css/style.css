@@ -1,12 +1,16 @@
 @font-face {
-    font-family: InterDisplay-Thin;
-    src: url('/InterDisplay-Thin.otf');
+    font-family: LexGiga-Reg;
+    src: url('/font/LexendGiga-Regular.ttf');
 }
 
 :root {
-    --font-color: white;
-    --background-color: #191414;
-    font-family: InterDisplay-Thin;
+    --font-color: #25291C;
+    --background-color: #F9DEC9;
+    --color_one : #472D30;
+    --color_two : #E9AFA3;
+    --color_three : #723D46;
+    font-family: LexGiga-Reg;
+    font-size: x-large;
 }
 
 body{

@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Posts{% endblock %}
+{% block head %}
+<link  rel="stylesheet" href="{{url_for('send_static',path='css/catalog.css')}}">
+{% endblock %}
+{% block content %}
+    <a href="{{url_for('upload')}}"><button>Upload to the catalog!</button></a>
+    {%for img_obj in images%}
+    <div class="Image_Obj">
+        <p>Owner: {{img_obj.username}}</p>
+        <p>Image name: {{img_obj.name}}</p>
+        <img class='Img_class' src="{{url_for('send_static',path=img_obj.fp)}}">
+        <p>Image description: {{img_obj.desc}}</p>
+    </div>
+    {%endfor%}
+{% endblock %}

@@ -4,5 +4,6 @@
 <link  rel="stylesheet" href="{{url_for('send_static',path='css/post.css')}}">
 {% endblock %}
 {% block content %}
-        
+        <a href="{{url_for('catalog')}}"><button>Check Out the Catalog!</button></a>
+        <img src="{{url_for('send_static',path=image_name)}}">
 {% endblock %}

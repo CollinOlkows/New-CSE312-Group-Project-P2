@@ -1,24 +1,12 @@
-.nav-bar{
-    background-color: #4267B2;
-    font-size: 2rem;
-    color: white;
+@import "style.css";
+
+.bar{
+    display: flex;
+    align-content: space-between;
 }
 
-.nav-a {
-    color: white;
-    text-decoration: none;
-    padding-bottom: .25%;
-}
-.nav-a:hover{
-    background-color: #385897;
-}
-.left-elm{
-    align-self: flex-end;
-}
-.nav-container{
-    display: flex;
-    justify-content: space-between;
-    gap: 1rem;
-    padding-left: .5%;
-    padding-right: .5%;
+.logo{
+    padding-left: 1vmax;
+    width: 5vmax;
+    height: 5vmax;
 }

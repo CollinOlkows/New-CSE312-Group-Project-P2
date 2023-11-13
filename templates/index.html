@@ -1,29 +1,21 @@
 {% extends "base.html" %}
-{% block title %}Bookface{% endblock %} 
+{% block title %}Modern Art{% endblock %} 
 {% block head %}
 <link  rel="stylesheet" href="{{url_for('send_static',path='css/index.css')}}">
 {% endblock %}
 {% block content %}
-        <div class="container_center" style="padding-top: 10%;">
-            <div class="container-form">
-                <h1>Bookface</h1>
-                <p>"Yes. I am the popular social networking site known as Bookface." -Jim Halpert</p>
-            </div>
-            <div class="container-form">
-                {% if login == false %}
-                <form action="{{url_for('login')}}">
-                    <input type="submit" value="login" class="buttons">
-                </form>
-
-                <form action="{{url_for('signup')}}">
-                    <input type="submit" value="signup" class="buttons">
-                </form>
-                {% else %}
-                <form action="{{url_for('feed')}}">
-                    <input type="submit" value="feed" class="buttons">
-                </form>
-                {%endif%}
-            </div>
+<div class="homewrap">
+    <div class="home">
+        <h1>Modern Art</h1>
+        <p>The artist should have no limits</p>
+        <div class="login-form">
+            <a href="{{url_for('login')}}"><button>Login</button></a>
+            <a href="{{url_for('signup')}}"><button>Signup</button></a>
         </div>
         <br>
+        <a href="{{url_for('lobby')}}"><button>ENTER</button></a>
+        <a href="{{url_for('catalog')}}"><button>Catalog</button></a>
+    </div>
+</div>
+
 {% endblock %}

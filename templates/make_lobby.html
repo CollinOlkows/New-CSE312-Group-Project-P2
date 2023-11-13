@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Login{% endblock %}
+{% block head %}
+<link  rel="stylesheet" href="{{url_for('send_static',path='css/make_lobby.css')}}">
+{% endblock %}
+{% block content %}
+<form>
+    <input type="text" placeholder="Lobby Title" name="name">
+    <input type="text" placeholder="Desciption" name="desc">
+    <input type="text" placeholder="Lobby Image" name="LobbyImage">
+    <input type="submit" value="Make Lobby">
+</form>
+{% endblock %}
