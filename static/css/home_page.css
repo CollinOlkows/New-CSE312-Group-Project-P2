@@ -12,10 +12,11 @@ body {
 .container {
     display: flex;
     justify-content: space-between;
+    gap: 10%; /* Add a gap between flex items */
 }
 
 .left, .right {
-    width: 50%;
+    width: calc(49% - 1%); /* Adjust the width to account for the gap */
 }
 
 .form-container, .button-container {
@@ -26,7 +27,8 @@ body {
 }
 
 h2 {
-    color: #fff;
+    color: #000000;
+    text-align: center;
 }
 
 .form-group {
@@ -69,6 +71,7 @@ button:hover {
 @media (max-width: 768px) {
     .container {
         flex-direction: column;
+        gap: 0; /* Remove the gap for smaller screens */
     }
 
     .left, .right {
