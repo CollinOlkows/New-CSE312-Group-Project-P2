@@ -1,6 +1,6 @@
 import os
-from flask import Flask,make_response,send_from_directory,render_template,request,redirect,url_for,flash
-from flask_socketio import SocketIO, send, rooms,emit,join_room,close_room, leave_room
+from flask import Flask, make_response, send_from_directory, render_template, request, redirect, url_for, flash
+from flask_socketio import SocketIO, send, rooms, emit, join_room, close_room, leave_room
 import databaseutils
 import bcrypt
 import html
@@ -12,17 +12,14 @@ from werkzeug.utils import secure_filename
 UPLOAD_FOLDER = './static/catalog'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
-
-#File for all the server stuff
+# File for all the server stuff
 #########################################
-#Sever Set Ups
+# Sever Set Ups
 app = Flask(__name__)
 app.secret_key = 'SecretCodeHushHush'
 app.config['SECRET'] = 'SecretCodeHushHush'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 socketio = SocketIO(app, cors_allowed_orgins="*")
-
-
 
 
 #############################
@@ -31,7 +28,8 @@ socketio = SocketIO(app, cors_allowed_orgins="*")
 @socketio.on('lobby_make')
 def make_lobby(lobby):
     print('here')
-    emit('lobby_made',{'lobby_name':'info'},to='lobby')
+    emit('lobby_made', {'lobby_name': 'info'}, to='lobby')
+
 
 @socketio.on('join lobby')
 def test_message(message):
@@ -39,45 +37,49 @@ def test_message(message):
     print(rooms())
     emit('lobby joined', {'data': 'Connected to lobby'})
 
+
 @socketio.on('connect')
 def test_connect():
     emit('my response', {'data': 'Connected'})
 
-    
+
 ###############################
 # Flask helper functions
 def login_status(cookie):
-    if(cookie!=None):
+    if cookie is not None:
         return databaseutils.check_token(cookie)
     return False
 
+
 def allowed_file(filename):
     return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+        filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
 
 def get_ext(filename):
-    return '.'+filename.rsplit('.',1)[1]
+    return '.' + filename.rsplit('.', 1)[1]
+
 
 ####################################################################
 # Flask Routes
 
 
-#Serving Static Files up with nosniff
+# Serving Static Files up with nosniff
 @app.route('/<path:path>')
 def send_static(path):
-    response = make_response(send_from_directory('static', path),200)
+    response = make_response(send_from_directory('static', path), 200)
     response.headers['X-Content-Type-Options'] = 'nosniff'
     return response
 
 
 @app.route('/')
 def index():
-    if(login_status(request.cookies.get('auth',None)) == False):
-        response = make_response(render_template('index.html'),200)
+    if not login_status(request.cookies.get('auth', None)):
+        response = make_response(render_template('index.html'), 200)
         response.headers['X-Content-Type-Options'] = 'nosniff'
         return response
     else:
-        response = make_response(render_template('index.html'),200)
+        response = make_response(render_template('index.html'), 200)
         response.headers['X-Content-Type-Options'] = 'nosniff'
         return response
         response = make_response(redirect('lobby'))
@@ -85,74 +87,76 @@ def index():
         return response
 
 
-@app.route('/login',methods=['GET','POST'])
+@app.route('/login', methods=['GET', 'POST'])
 def login():
     error = None
-    if(login_status(request.cookies.get('auth',None)) == False):
-        if(request.method=='GET'):
-            response = make_response(render_template('login.html',error=error),200)
+    if not login_status(request.cookies.get('auth', None)):
+        if request.method == 'GET':
+            response = make_response(render_template('login.html', error=error), 200)
             response.headers['X-Content-Type-Options'] = 'nosniff'
             return response
         else:
             username = html.escape(request.form['username'])
             password = request.form['password']
-            if(databaseutils.check_username_exists(username) == False):
-                response = make_response(render_template('login.html',error='Username or password incorrect'),200)
+            if not databaseutils.check_username_exists(username):
+                response = make_response(render_template('login.html', error='Username or password incorrect'), 200)
                 response.headers['X-Content-Type-Options'] = 'nosniff'
                 return response
             else:
-                if(password == None or password == '' or password == ' '):
-                    response = make_response(render_template('login.html',error='Password field empty'),200)
+                if password is None or password == '' or password == ' ':
+                    response = make_response(render_template('login.html', error='Password field empty'), 200)
                     response.headers['X-Content-Type-Options'] = 'nosniff'
                     return response
                 else:
                     user = databaseutils.get_user_by_username(username)
-                    passhash = bcrypt.hashpw(password.encode('utf-8'),user.salt)
-                    if(passhash == user.passhash):
+                    passhash = bcrypt.hashpw(password.encode('utf-8'), user.salt)
+                    if passhash == user.passhash:
                         response = redirect('lobby')
                         cookie = secrets.token_hex()
-                        databaseutils.set_user_token(username,cookie)
-                        response.set_cookie('auth',cookie,max_age=7200)
+                        databaseutils.set_user_token(username, cookie)
+                        response.set_cookie('auth', cookie, max_age=7200)
                         response.headers['X-Content-Type-Options'] = 'nosniff'
                         return response
                     else:
-                        response = make_response(render_template('login.html',error='Username or password incorrect'),200)
+                        response = make_response(render_template('login.html', error='Username or password incorrect'),
+                                                 200)
                         response.headers['X-Content-Type-Options'] = 'nosniff'
                         return response
 
     else:
         return redirect(url_for('lobby'))
-    
 
-@app.route('/signup',methods=['GET','POST'])
+
+@app.route('/signup', methods=['GET', 'POST'])
 def signup():
     error = None
-    if(login_status(request.cookies.get('auth',None)) == False):
-        if(request.method=='GET'):
-            response = make_response(render_template('signup.html',error=None),200)
+    if not login_status(request.cookies.get('auth', None)):
+        if request.method == 'GET':
+            response = make_response(render_template('signup.html', error=None), 200)
             response.headers['X-Content-Type-Options'] = 'nosniff'
             return response
         else:
             username = html.escape(request.form['username'])
             password = request.form['password']
             password2 = request.form['password2']
-            if(databaseutils.check_username_exists(username)):
-                response = make_response(render_template('signup.html',error='User already exists'),200)
+            if databaseutils.check_username_exists(username):
+                response = make_response(render_template('signup.html', error='User already exists'), 200)
                 response.headers['X-Content-Type-Options'] = 'nosniff'
                 return response
             else:
-                if(password == None or password == '' or password == ' ' or password!=password2):
-                    response = make_response(render_template('signup.html',error='Password empty or do not match'),200)
+                if password is None or password == '' or password == ' ' or password != password2:
+                    response = make_response(render_template('signup.html', error='Password empty or do not match'),
+                                             200)
                     response.headers['X-Content-Type-Options'] = 'nosniff'
                     return response
                 else:
-                    check = databaseutils.add_user(username,password)
-                    if(check):
+                    check = databaseutils.add_user(username, password)
+                    if check:
                         resp = make_response(redirect('login'))
                         resp.headers['X-Content-Type-Options'] = 'nosniff'
                         return resp
                     else:
-                        response = make_response(render_template('signup.html',error='Unable to add user'),200)
+                        response = make_response(render_template('signup.html', error='Unable to add user'), 200)
                         response.headers['X-Content-Type-Options'] = 'nosniff'
                         return response
     else:
@@ -161,48 +165,50 @@ def signup():
 
 @app.route('/createlobby')
 def createlobby():
-    if(login_status(request.cookies.get('auth',None))):
-        response = make_response(render_template('make_lobby.html'),200)
+    if login_status(request.cookies.get('auth', None)):
+        response = make_response(render_template('make_lobby.html'), 200)
         response.headers['X-Content-Type-Options'] = 'nosniff'
         return response
     else:
         response = make_response(redirect('login'))
         response.headers['X-Content-Type-Options'] = 'nosniff'
-        response.set_cookie('auth','',max_age=0)
+        response.set_cookie('auth', '', max_age=0)
         return response
+
 
 @app.route('/lobby')
 def lobby():
-    if(login_status(request.cookies.get('auth',None))):
-        response = make_response(render_template('lobby.html'),200)
+    if login_status(request.cookies.get('auth', None)):
+        response = make_response(render_template('lobby.html'), 200)
         response.headers['X-Content-Type-Options'] = 'nosniff'
         return response
     else:
         response = make_response(redirect('login'))
         response.headers['X-Content-Type-Options'] = 'nosniff'
-        response.set_cookie('auth','',max_age=0)
+        response.set_cookie('auth', '', max_age=0)
         return response
-    
+
+
 @app.route('/catalog')
 def catalog():
-    if(login_status(request.cookies.get('auth',None))):
+    if login_status(request.cookies.get('auth', None)):
         images = databaseutils.get_images()
-        response = make_response(render_template('catalog.html',images=images),200)
+        response = make_response(render_template('catalog.html', images=images), 200)
         response.headers['X-Content-Type-Options'] = 'nosniff'
         return response
     else:
         response = make_response(redirect('login'))
         response.headers['X-Content-Type-Options'] = 'nosniff'
-        response.set_cookie('auth','',max_age=0)
+        response.set_cookie('auth', '', max_age=0)
         return response
-    
 
-#Convert the flash things into error messages and retrun to the same page
-@app.route('/upload',methods=['GET', 'POST'])
+
+# Convert the flash things into error messages and retrun to the same page
+@app.route('/upload', methods=['GET', 'POST'])
 def upload():
-    if(login_status(request.cookies.get('auth',None))):
-        if(request.method == 'GET'):
-            response = make_response(render_template('uploadcatalog.html'),200)
+    if login_status(request.cookies.get('auth', None)):
+        if request.method == 'GET':
+            response = make_response(render_template('uploadcatalog.html'), 200)
             response.headers['X-Content-Type-Options'] = 'nosniff'
             return response
         else:
@@ -217,16 +223,18 @@ def upload():
                 flash('No selected file')
                 return redirect(url_for('upload'))
             if file and allowed_file(file.filename):
-                user = databaseutils.get_user_by_token(request.cookies.get('auth',None))
+                user = databaseutils.get_user_by_token(request.cookies.get('auth', None))
                 desc = 'Temp desc'
                 igname = 'Temp image name'
                 ext = get_ext(secure_filename(file.filename))
-                #Filename needs to be generated into something unique... id from insert into database would work.
-                filename = str(databaseutils.save_image(username=user.username,image_description=desc,image_name=igname,ext=ext).inserted_id)
-                #filename = secure_filename(file.filename)
+                # Filename needs to be generated into something unique... id from insert into database would work.
+                filename = str(
+                    databaseutils.save_image(username=user.username, image_description=desc, image_name=igname,
+                                             ext=ext).inserted_id)
+                # filename = secure_filename(file.filename)
 
-                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename+ext))
-                return redirect(url_for('dispfile', path=filename+ext))
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename + ext))
+                return redirect(url_for('dispfile', path=filename + ext))
             else:
                 flash('Filetype not allowed')
                 return redirect(url_for('upload'))
@@ -234,26 +242,27 @@ def upload():
     else:
         response = make_response(redirect('login'))
         response.headers['X-Content-Type-Options'] = 'nosniff'
-        response.set_cookie('auth','',max_age=0)
+        response.set_cookie('auth', '', max_age=0)
         return response
+
 
 @app.route('/dispfile/<path:path>')
 def dispfile(path):
-    response = make_response(render_template('showimage.html',image_name=f'/catalog/{path}'),200)
+    response = make_response(render_template('showimage.html', image_name=f'/catalog/{path}'), 200)
     response.headers['X-Content-Type-Options'] = 'nosniff'
     return response
 
 
 @app.route('/lobby/<string:string>')
 def lobbyin(string):
-    if(login_status(request.cookies.get('auth',None))):
-        response = make_response(render_template('lobby.html'),200)
+    if login_status(request.cookies.get('auth', None)):
+        response = make_response(render_template('lobby.html'), 200)
         response.headers['X-Content-Type-Options'] = 'nosniff'
         return response
     else:
         response = make_response(redirect('login'))
         response.headers['X-Content-Type-Options'] = 'nosniff'
-        response.set_cookie('auth','',max_age=0)
+        response.set_cookie('auth', '', max_age=0)
         return response
 
 
