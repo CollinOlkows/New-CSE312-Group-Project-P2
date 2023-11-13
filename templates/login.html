@@ -1,44 +1,44 @@
 {% extends "base.html" %}
 {% block title %}Login{% endblock %}
+
 {% block head %}
-<link  rel="stylesheet" href="{{url_for('send_static',path='css/login.css')}}">
+<link rel="stylesheet" href="{{ url_for('send_static', path='css/login.css') }}">
 {% endblock %}
+
 {% block content %}
-
-
-
 <div class="bodyc">
+    <div class="container">
+        <!-- Login Section -->
+        <div class="section">
+            <h2>LOGIN</h2>
+            <div class="box">
+                <form action="{{ url_for('login') }}" method="POST">
+                    <input type="text" id="username" placeholder="USERNAME" name="username" required>
+                    <br>
+                    <input type="password" placeholder="PASSWORD" id="password" name="password" required>
+                    <br><br>
+                    <button type="submit">Login</button>
+                </form>
+            </div>
+        </div>
 
-<div class="container">
-    <div class="box">
-        <h2>LOGIN</h2>
-        <form action="{{url_for('login')}}" method="POST">
-            <label for="username"></label><input type="text" id="username" placeholder="USERNAME" name="username" required>
-            <br>
-            <label for="password"></label><input type="password" placeholder="PASSWORD" id="password" name="password" required>
-            <br>
-          <br>
-            <input type="submit" value="Login">
-        </form>
-    </div>
-
-    <div class="box">
-        <h2>SIGN UP</h2>
-        <form action="{{url_for('signup')}}" method="POST">
-            <label for="newUsername"></label><input type="text" placeholder="USERNAME" id="newUsername" name="newUsername" required>
-            <br>
-            <label for="Email"></label><input type="text" placeholder="EMAIL" id="Email" name="Email" required>
-            <br>
-            <label for="newPassword"></label><input type="password" placeholder="PASSWORD" id="newPassword" name="newPassword" required>
-            <br>
-            <label for="confirmPassword"></label><input type="password" placeholder="CONFIRM PASSWORD" id="confirmPassword" name="confirmPassword" required>
-            <br>
-          <br>
-            <input type="submit" value="Sign Up" name="Signup">
-        </form>
-
+        <!-- Sign Up Section -->
+        <div class="section">
+            <h2>SIGN UP</h2>
+            <div class="box">
+                <form action="{{ url_for('signup') }}" method="POST">
+                    <input type="text" placeholder="USERNAME" id="newUsername" name="newUsername" required>
+                    <br>
+                    <input type="text" placeholder="EMAIL" id="Email" name="Email" required>
+                    <br>
+                    <input type="password" placeholder="PASSWORD" id="newPassword" name="newPassword" required>
+                    <br>
+                    <input type="password" placeholder="CONFIRM PASSWORD" id="confirmPassword" name="confirmPassword" required>
+                    <br><br>
+                    <button type="submit" name="Signup">Sign Up</button>
+                </form>
+            </div>
+        </div>
     </div>
 </div>
-</div>
-
 {% endblock %}
