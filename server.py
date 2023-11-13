@@ -39,7 +39,7 @@ def make_lobby(lobby):
     if isPrivate == "false":
         print('is private is false')
         id = databaseutils.insert_lobby('test',roomName,description,Image_url,roomcode=None)
-        emit('lobby_made', {'lobby_name': roomName, 'Description': description, 'Image_url': Image_url, 'id' : id}, broadcast=True)
+        emit('lobby_made', {'lobby_name': roomName, 'Description': description, 'Image_url': Image_url, 'id' : id,'count':0}, broadcast=True)
     else:
         id = databaseutils.insert_lobby('test',roomName,description,Image_url,roomcode=None)
 
@@ -66,6 +66,12 @@ def test_message(message):
     join_room('lobby')
     print(rooms())
     emit('lobby joined', {'data': 'Connected to lobby'})
+
+@socketio.on('update_count')
+def test_message(count):
+    item = databaseutils.get_lobby_by_id(count)
+    databaseutils.increase_lobby_count(count)
+    emit('count_update', {'count': item.count+1})
 
 
 @socketio.on('connect')

@@ -16,7 +16,7 @@ $(document).ready(function(){
     socket.on('my response', function(msg) {
         console.log(msg.data)
     });
-    socket.emit('join lobby', {data: 'some_data'});
+    socket.emit('update_count', {'lobby': '{{code}}'});
     socket.on('lobby joined',function(msg)  {
         console.log(msg)
     })

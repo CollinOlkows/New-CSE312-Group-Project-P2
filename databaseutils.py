@@ -286,14 +286,14 @@ def get_lobbies():
     return out
 
 def get_lobby_by_host(host):
-    return lobbys.find_one({'host':host})
+    return lobby(lobbys.find_one({'host':host}))
 
 def get_lobby_by_id(id):
     obj_id = ObjectId(id)
-    return lobbys.find_one({'_id':obj_id})
+    return lobby(lobbys.find_one({'_id':obj_id}))
 
 def get_lobby_by_roomcode(code):
-    return lobbys.find_one({'roomcode':code})
+    return lobby(lobbys.find_one({'roomcode':code}))
 
 def remove_lobby_by_id(id):
     id_obj= ObjectId(id)
@@ -319,3 +319,11 @@ def remove_lobby_by_roomcode(roomcode):
             return False
     else:
         return False
+
+def increase_lobby_count(id):
+    lob = get_lobby_by_id(id)
+    return lobbys.find_one_and_update({'_id':ObjectId(id)},{'$set':{'user_count':lob.count+1}})
+
+def decrease_lobby_count(id):
+    lob = get_lobby_by_id(id)
+    return lobbys.find_one_and_update({'_id':ObjectId(id)},{'$set':{'user_count':lob.count-1}})
