@@ -161,7 +161,7 @@ def login():
                     user = databaseutils.get_user_by_username(username)
                     passhash = bcrypt.hashpw(password.encode('utf-8'), user.salt)
                     if passhash == user.passhash:
-                        response = redirect('lobby')
+                        response = redirect('home-page')
                         cookie = secrets.token_hex()
                         databaseutils.set_user_token(username, cookie)
                         response.set_cookie('auth', cookie, max_age=7200)
