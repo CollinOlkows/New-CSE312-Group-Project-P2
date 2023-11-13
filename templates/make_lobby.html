@@ -16,9 +16,14 @@
         console.log(msg.data)
     });
         $('form#make_lobby').submit(function(event) {
-        let Title = document.getElementById("Title");
-        let Description = document.getElementBy("Description");
-        socket.emit('lobby_make', {'name': 'Lobby_name', 'Description': 'This is a good lobby!', 'Image_url' : '/images/logo.png', 'private':'false'});
+        let Title = document.getElementById("Title").innerText;
+        let Description = document.getElementById("Description").innerText;
+        let Image_url = document.getElementById("Image").innerText;
+        let private = "false";
+        if(document.getElementById('private').checked) {
+            private = "true"
+        }
+        socket.emit('lobby_make', {'name': Title, 'Description': Description, 'Image_url' : Image_url, 'private': private});
     });
     });
     
@@ -28,6 +33,8 @@
     <input type="text" placeholder="Lobby Title" name="name" id="Title">
     <input type="text" placeholder="Description" name="desc" id="Description">
     <input type="text" placeholder="Lobby Image" name="LobbyImage" id="Image">
+    <input type="checkbox" id="private" name="private" value="Private">
+    <label for="private"> Private</label>
     <input type="submit" value="Make Lobby">
 </form>
 {% endblock %}
