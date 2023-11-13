@@ -16,7 +16,7 @@
         console.log(msg.data)
     });
         $('form#make_lobby').submit(function(event) {
-        socket.emit('lobby_make', {'name': 'Lobby_name', 'Description' : 'Image_url' : '/images/logo.png', 'private':'false'});
+        socket.emit('lobby_make', {'name': 'Lobby_name', 'Description': 'This is a good lobby!', 'Image_url' : '/images/logo.png', 'private':'false'});
     });
     });
     
