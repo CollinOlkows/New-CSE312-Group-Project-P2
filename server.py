@@ -321,6 +321,34 @@ def home_page():
         response.headers['X-Content-Type-Options'] = 'nosniff'
         response.set_cookie('auth', '', max_age=0)
         return response
+    
+
+@app.route('/profile', methods = ['GET', 'POST'])
+def settings_page(): 
+    if login_status(request.cookies.get('auth', None)):
+        user = databaseutils.get_user_by_token(request.cookies.get('auth', None))
+        response = make_response(render_template('profile.html',user=user.username), 200)
+        response.headers['X-Content-Type-Options'] = 'nosniff'
+        return response
+    else:
+        response = make_response(redirect('login'))
+        response.headers['X-Content-Type-Options'] = 'nosniff'
+        response.set_cookie('auth', '', max_age=0)
+        return response
+
+@app.route('/rick-roll', methods = ['GET'])
+def rick_roll():
+    if login_status(request.cookies.get('auth', None)):
+        user = databaseutils.get_user_by_token(request.cookies.get('auth', None))
+        response = make_response(render_template('rickroll.html',user=user.username), 200)
+        response.headers['X-Content-Type-Options'] = 'nosniff'
+        return response
+    else:
+        response = make_response(redirect('login'))
+        response.headers['X-Content-Type-Options'] = 'nosniff'
+        response.set_cookie('auth', '', max_age=0)
+        return response
+
 
 @app.route('/lobby/<string:string>')
 def lobbyin(string):
