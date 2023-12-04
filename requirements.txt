@@ -3,3 +3,6 @@ pymongo
 bcrypt
 flask-socketio
 Werkzeug
+google-api-python-client 
+google-auth-httplib2 
+google-auth-oauthlib
