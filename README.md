@@ -1,24 +1,26 @@
-# App Name TBD
+# App Name Modern Art
+
+# Deployed Link: https://www.wizardsandassociates.me/
 
 ## Progress / Todo List
 
 ### Required
-- [ ] Backend
-    - [ ] Database
-        - [ ] Add Users
-        - [ ] Add Posts
-        - [ ] Retreve Users
-        - [ ] Delete Posts
-        - [ ] Verify Users
-        - [ ] Delete Users
-    - [ ] Server
-        - [ ] Create Users Adds to database
-        - [ ] Home Landing Page
-        - [ ] Make Posts
-        - [ ] Token Authentication
+- [x] Backend
+    - [x] Database
+        - [x] Add Users
+        - [x] Retreve Users
+        - [x] Verify Users
+    - [x] Server
+        - [x] Create Users Adds to database
+        - [x] Home Landing Page
+        - [x] Make Posts
+        - [x] Token Authentication
 - [ ] Website/User Interface
-    - [ ] Login Section
-    - [ ] Post Page
+    - [x] Login Section
+    - [x] Post Page
     - [ ] Profile Page
-
+    - [ ] Settings Page
+- [ ] Game Functionaility
+    -[x] Lobbies
+ 
 ### Optional Features

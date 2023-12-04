@@ -4,8 +4,8 @@ import datetime
 import html
 from hashlib import sha256
 from bson.objectid import ObjectId
-mongo_client = MongoClient("mongo")
-#mongo_client = MongoClient("localhost")
+#mongo_client = MongoClient("mongo")
+mongo_client = MongoClient("localhost")
 db = mongo_client["group_project"]
 users = db['users']
 posts = db['posts']
