@@ -57,8 +57,8 @@ def CreateMessage(sender, to, subject, msgHtml, msgPlain):
     return body
 
 def verification_email(code,User,Email_To):
-    #host = 'www.wizardsandassociates.me'
-    host = 'localhost:8080'
+    host = 'www.wizardsandassociates.me'
+    #host = 'localhost:8080'
     link = f'{host}/verify/{code}'
     to = Email_To
     sender = "wizardsandassociates@gmail.com"
