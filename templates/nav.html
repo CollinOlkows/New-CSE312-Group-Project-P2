@@ -1,8 +1,16 @@
 <nav class="nav-bar">
     <div class="nav-container">
         <div class="bar">
-            <img src="{{url_for('send_static',path='images/logo.png')}}" class="logo">
+            <!-- Logo and Title -->
+            <img src="{{ url_for('send_static', path='images/logo.png') }}" class="logo" alt="Logo">
             <p>Modern Art</p>
+
+            <!-- Navigation Links -->
+            <ul class="nav-links">
+                <li><a href="{{ url_for('homepage') }}">Homepage</a></li>
+                <li><a href="{{ url_for('rickroll') }}">Rickroll</a></li>
+                <li><a href="{{ url_for('settings') }}">Profile</a></li>
+            </ul>
         </div>
     </div>
 </nav>

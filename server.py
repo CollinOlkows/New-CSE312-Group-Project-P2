@@ -11,6 +11,11 @@ import datetime
 import random
 from werkzeug.utils import secure_filename
 
+
+# brew services start mongodb/brew/mongodb-community
+# brew services stop mongodb/brew/mongodb-community
+
+
 UPLOAD_FOLDER = './static/catalog'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
