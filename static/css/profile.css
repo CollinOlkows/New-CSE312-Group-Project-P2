@@ -1,0 +1,83 @@
+@import "style.css";
+
+
+.container {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.profile-pic{
+    width: 80%;
+    height: auto;
+    border-radius: 10px;
+}
+
+.left-section, .right-section {
+    flex: 1;
+    padding: 20px;
+}
+
+.username {
+    color: var(--color_one);
+}
+
+.email-status {
+    color: red;
+}
+
+.resend-btn {
+    background-color: var(--dark-blue);
+    width: 80%;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+
+    padding-top: 2vw;
+    padding-bottom: 2vw;
+}
+
+.password-form {
+    background-color: var(--blue);
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.password-form label, .password-form input, .password-form button {
+    display: block;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.password-form button {
+    background-color: var(--dark-blue);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    width: 80%;
+    margin-left: 10%;
+    margin-right: 10%;
+
+    padding-top: 2vw;
+    padding-bottom: 2vw;
+}
+
+.normie-button{
+    width: 100%;
+    padding: 10px 20px; 
+    border-radius: 10px;
+    color: white;
+    margin-top: 5%;
+    background-color: var(--dark-blue);
+    text-align: center;
+
+    padding-top: 2vw;
+    padding-bottom: 2vw;
+}
+
+.inputs{
+    height: 4vw; 
+    border-radius: 10px;
+}
