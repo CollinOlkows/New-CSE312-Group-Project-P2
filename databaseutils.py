@@ -4,6 +4,7 @@ import datetime
 import html
 from hashlib import sha256
 from bson.objectid import ObjectId
+import server_utils
 #mongo_client = MongoClient("mongo")
 mongo_client = MongoClient("localhost")
 db = mongo_client["group_project"]
@@ -13,6 +14,7 @@ comments = db['comments']
 lobbys = db['lobbys']
 images = db['images']
 users_in = db['users_in']
+rates = db['rates']
 
 
 
@@ -24,6 +26,7 @@ posts ->{_id:post_id,post_owner:user_id,content:content,creation_date:date,likes
 comments ->{_id:comment_id,content:comment_content,date:creation_date,type:Parent or Child(thread or reply),post_origin,comment_owner,owner_username}
 lobby -> {'host':host,'title':title,'desc':desc,'img_url':img_url,'user_count':user_count}
 images - > {'username':username,'description':image_description,'image_name':image_name}
+rates -> {'address':address,'locked':false,exp_time:time}
 '''
 
 #wrappers for easy working with users
@@ -38,6 +41,9 @@ class user:
         self.following = user_obj['following']
         self.token = user_obj['token']
         self.token_date = user_obj['token_date']
+        self.email = user_obj['email']
+        self.email_verified = user_obj['email_verified']
+        self.verification_code = user_obj['veri']
 
 class lobby:
     def __init__(self,lobby_obj):
@@ -77,29 +83,70 @@ class comment:
         self.creation_date = datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S")
         self.content = content
 
+def apply_rate (addy):
+    check = rates.find_one({'address':addy})
+    if(check==None):
+        rates.insert_one({'address':addy,'locked':True,'exp':datetime.datetime.now()+datetime.timedelta(seconds=30)})
+    else:
+        if(datetime.datetime.now()>check['exp']):
+            rates.find_one_and_delete({'address':addy})
+            rates.insert_one({'address':addy,'locked':True,'exp':datetime.datetime.now()+datetime.timedelta(seconds=30)})
+def check_rate(addy):
+    check = rates.find_one({'address':addy})
+    if(check!=None):
+        if(datetime.datetime.now()>check['exp']):
+            rates.find_one_and_update({'address':addy},{'$set':{'locked':False}})
+            return False
+        return True
+    else:
+        return False
+
 #adds a user to the database if one does not exist
-def add_user(username,password):
+def add_user(username,password, email):
     check = users.find_one({'username':username})
     if(check != None):
         return False
     else:
         salt = bcrypt.gensalt()
         passhash = bcrypt.hashpw(password.encode('utf-8'),salt)
-        users.insert_one({'username':username,'passhash':passhash,'salt':salt,'followers':[],"following":[],'token':'','token_date':datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S")})
+        code = server_utils.make_url_for_ver()
+        users.insert_one({'username':username,'passhash':passhash,'salt':salt,'followers':[],"following":[],'token':'','token_date':datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S"),'email':email,'email_verified':False,'veri':code})
+        #send verification email
+        server_utils.verification_email(code,username,email)
         return True
 
+def update_user_by_vcode(code):
+    user_found = users.find_one({'veri':code})
+    if(user_found == None):
+        return False
+    else:
+        u = user(user_found)
+        update_user_email_verification_by_username(u.username)
+        return True
+
+#updates the users password, Requires users Username
+def update_user_email_verification_by_username(username):
+    user = users.find_one_and_update({'username':username},{"$set":{'email_verified':True,'veri':None}})
+    return user
+
+#updates the users password, Requires users ID
+def update_user_email_verification_by_id(id):
+    user = users.find_one_and_update({'_id':ObjectId(id)},{"$set":{'email_verified':True}})
+    return user
 
 #updates the users password, Requires users Username
 def update_user_pass_by_username(username,password):
     salt = bcrypt.gensalt()
     passhash = bcrypt.hashpw(password.encode('utf-8'),salt)
     user = users.find_one_and_update({'username':username},{"$set":{'passhash':passhash,'salt':salt}})
+    return user
 
 #updates the users password, Requires users ID
 def update_user_pass_by_id(id,password):
     salt = bcrypt.gensalt()
     passhash = bcrypt.hashpw(password.encode('utf-8'),salt)
     user = users.find_one_and_update({'_id':ObjectId(id)},{"$set":{'passhash':passhash,'salt':salt}})
+    return user
 
 #Gets the user and returns a user object if found or none if not using the users username
 def get_user_by_username(username):

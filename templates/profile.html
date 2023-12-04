@@ -1,33 +1,36 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../static/css/profile.css">
-    <title>User Profile</title>
-</head>
-<body>
-    <div class="container">
-        <div class="left-section">
-            <h1 class="username">GOGOS-OF-GREECE</h1>
-            <img src="../static/images/lebronDuck.jpeg" alt="Profile Picture" class='profile-pic'>
-            <p>EMAIL STATUS: <span class="email-status">False</span></p>
-            <button class="resend-btn">RESEND VERIFICATION</button>
-        </div>
-        <div class="right-section">
-            <form class="password-form">
-                <label for="current-password">CURRENT PASSWORD:</label>
-                <input type="password" id="current-password" name="current-password" class="inputs">
-                <label for="new-password">NEW PASSWORD:</label>
-                <input type="password" id="new-password" name="new-password" class="inputs">
-                <label for="confirm-password">CONFIRM NEW PASSWORD:</label>
-                <input type="password" id="confirm-password" name="confirm-password" class="inputs">
-                <button type="submit">CHANGE PASSWORD</button>
-            </form>
-            <button class="normie-button">GALLERY</button>
-            <button class="normie-button">SECRET PLACE</button>
-
-        </div>
+{% extends "base.html" %}
+{% block title %}Posts{% endblock %}
+{% block head %}
+<link rel="stylesheet" href="../static/css/profile.css">
+{% endblock %}
+{% block content %}
+<div class="container">
+    <h2 class=email-status> This page is WIP</h2>
+    <p class=email-status>The only functionality on this page that works is the email verification status</p>
+    <div class="left-section">
+        <h1 class="username">GOGOS-OF-GREECE</h1>
+        <img src="../static/images/lebronDuck.jpeg" alt="Profile Picture" class='profile-pic'>
+        <p>EMAIL STATUS: <span class="email-status">{{vef}}</span></p>
+        {%if vef == false%}
+            <!--><button class="resend-btn">RESEND VERIFICATION</button><!-->
+        {%endif%}
     </div>
-</body>
-</html>
+    <div class="right-section">
+        <form class="password-form">
+            <label for="current-password">CURRENT PASSWORD:</label>
+            <input type="password" id="current-password" name="current-password" class="inputs">
+            <label for="new-password">NEW PASSWORD:</label>
+            <input type="password" id="new-password" name="new-password" class="inputs">
+            <label for="confirm-password">CONFIRM NEW PASSWORD:</label>
+            <input type="password" id="confirm-password" name="confirm-password" class="inputs">
+            <button type="submit">CHANGE PASSWORD</button>
+        </form>
+        <button class="normie-button">GALLERY</button>
+        <button class="normie-button">SECRET PLACE</button>
+
+    </div>
+</div>
+{% endblock %}
+
+
+

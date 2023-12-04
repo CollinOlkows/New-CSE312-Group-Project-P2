@@ -10,6 +10,9 @@ import json
 import datetime
 import random
 from werkzeug.utils import secure_filename
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+
 
 
 # brew services start mongodb/brew/mongodb-community
@@ -28,6 +31,40 @@ app.config['SECRET'] = 'SecretCodeHushHush'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 socketio = SocketIO(app, cors_allowed_orgins="*")
 user_rooms = []
+
+
+#limiter = Limiter(get_remote_address, app=app,  storage_uri="mongodb://localhost:27017/group_project.rates",default_limits=["50 per 10 seconds"])
+def lt(limiter):
+    if(not databaseutils.apply_rate(get_remote_address())):
+        databaseutils.apply_rate(get_remote_address())
+
+limiter = Limiter(
+    key_func=get_remote_address,
+    app=app,
+    storage_uri="memory://",
+    default_limits=["50 per 10 seconds"],
+    storage_options={"lockout": True, "lockout_time": 30},
+    on_breach=lt
+    )
+
+test_limit = limiter.shared_limit("50 per 10 second", scope="global")
+
+
+
+
+
+@app.after_request
+def after_request(response):
+    lockout_active = databaseutils.check_rate(get_remote_address())
+    
+    if lockout_active:
+        databaseutils.apply_rate(get_remote_address())
+        response.status_code = 429
+        response.data = '429: Rate Limit Reached'
+        response.headers['X-Content-Type-Options'] = 'nosniff'
+
+    return response
+
 
 #############################
 # Socket Stuff
@@ -129,6 +166,7 @@ def get_ext(filename):
 
 # Serving Static Files up with nosniff
 @app.route('/<path:path>')
+@test_limit
 def send_static(path):
     response = make_response(send_from_directory('static', path), 200)
     response.headers['X-Content-Type-Options'] = 'nosniff'
@@ -136,6 +174,7 @@ def send_static(path):
 
 
 @app.route('/')
+@test_limit
 def index():
     response = make_response(render_template('index.html'), 200)
     response.headers['X-Content-Type-Options'] = 'nosniff'
@@ -143,23 +182,23 @@ def index():
 
 
 @app.route('/login', methods=['GET', 'POST'])
+@test_limit
 def login():
-    error = None
     if not login_status(request.cookies.get('auth', None)):
         if request.method == 'GET':
-            response = make_response(render_template('login.html', error=error), 200)
+            response = make_response(render_template('login.html'), 200)
             response.headers['X-Content-Type-Options'] = 'nosniff'
             return response
         else:
             username = html.escape(request.form['username'])
             password = request.form['password']
             if not databaseutils.check_username_exists(username):
-                response = make_response(render_template('login.html', error='Username or password incorrect',error1=None), 200)
+                response = make_response(render_template('login.html', error='Username or password incorrect'), 200)
                 response.headers['X-Content-Type-Options'] = 'nosniff'
                 return response
             else:
                 if password is None or password == '' or password == ' ':
-                    response = make_response(render_template('login.html', error='Password field empty',error1=None), 200)
+                    response = make_response(render_template('login.html', error='Password field empty'), 200)
                     response.headers['X-Content-Type-Options'] = 'nosniff'
                     return response
                 else:
@@ -173,7 +212,7 @@ def login():
                         response.headers['X-Content-Type-Options'] = 'nosniff'
                         return response
                     else:
-                        response = make_response(render_template('login.html', error='Username or password incorrect',error1=None),
+                        response = make_response(render_template('login.html', error='Username or password incorrect'),
                                                  200)
                         response.headers['X-Content-Type-Options'] = 'nosniff'
                         return response
@@ -183,35 +222,37 @@ def login():
 
 
 @app.route('/signup', methods=['GET', 'POST'])
+@test_limit
 def signup():
     error = None
     if not login_status(request.cookies.get('auth', None)):
         if request.method == 'GET':
-            response = make_response(render_template('login.html', error=None,error1=None), 200)
+            response = make_response(render_template('login.html'), 200)
             response.headers['X-Content-Type-Options'] = 'nosniff'
             return response
         else:
             username = html.escape(request.form['newUsername'])
             password = request.form['newPassword']
             password2 = request.form['confirmPassword']
+            email = request.form['newEmail']
             if databaseutils.check_username_exists(username):
-                response = make_response(render_template('login.html', error1='User already exists',error=None), 200)
+                response = make_response(render_template('login.html', error1='User already exists'), 200)
                 response.headers['X-Content-Type-Options'] = 'nosniff'
                 return response
             else:
                 if password is None or password == '' or password == ' ' or password != password2:
-                    response = make_response(render_template('login.html', error1='Password empty or do not match',error=None),
+                    response = make_response(render_template('login.html', error1='Password empty or do not match'),
                                              200)
                     response.headers['X-Content-Type-Options'] = 'nosniff'
                     return response
                 else:
-                    check = databaseutils.add_user(username, password)
+                    check = databaseutils.add_user(username, password, email)
                     if check:
                         resp = make_response(redirect('login'))
                         resp.headers['X-Content-Type-Options'] = 'nosniff'
                         return resp
                     else:
-                        response = make_response(render_template('login.html', error1='Unable to add user',error=None), 200)
+                        response = make_response(render_template('login.html', error1='Unable to add user'), 200)
                         response.headers['X-Content-Type-Options'] = 'nosniff'
                         return response
     else:
@@ -219,6 +260,7 @@ def signup():
 
 
 @app.route('/createlobby')
+@test_limit
 def createlobby():
     if login_status(request.cookies.get('auth', None)):
         response = make_response(render_template('make_lobby.html'), 200)
@@ -232,6 +274,7 @@ def createlobby():
 
 
 @app.route('/lobby')
+@test_limit
 def lobby():
     if login_status(request.cookies.get('auth', None)):
         lobbies = databaseutils.get_lobbies()
@@ -246,6 +289,7 @@ def lobby():
 
 
 @app.route('/catalog')
+@test_limit
 def catalog():
     if login_status(request.cookies.get('auth', None)):
         images = databaseutils.get_images()
@@ -261,6 +305,7 @@ def catalog():
 
 # Convert the flash things into error messages and retrun to the same page
 @app.route('/upload', methods=['GET', 'POST'])
+@test_limit
 def upload():
     if login_status(request.cookies.get('auth', None)):
         if request.method == 'GET':
@@ -301,8 +346,41 @@ def upload():
         response.set_cookie('auth', '', max_age=0)
         return response
 
+@app.route('/verify/<string:string>')
+@test_limit
+def verify(string):
+    if(string!=None):
+        check = databaseutils.update_user_by_vcode(string)
+
+        if check:
+            response = make_response('Successfully Verified Account', 200)
+            response.headers['X-Content-Type-Options'] = 'nosniff'
+            return response
+        else:
+            response = make_response('Invalid Verification Code or User already Verified', 200)
+            response.headers['X-Content-Type-Options'] = 'nosniff'
+            return response
+    else:
+        response = make_response('Invalid Verification Code or User already Verified', 200)
+        response.headers['X-Content-Type-Options'] = 'nosniff'
+        return response
+
+@app.route('/profile')
+@test_limit
+def profile():
+    if login_status(request.cookies.get('auth', None)):
+        user = databaseutils.get_user_by_token(request.cookies.get('auth', None))
+        response = make_response(render_template('profile.html',user=user.username,vef = user.email_verified), 200)
+        response.headers['X-Content-Type-Options'] = 'nosniff'
+        return response
+    else:
+        response = make_response(redirect('login'))
+        response.headers['X-Content-Type-Options'] = 'nosniff'
+        response.set_cookie('auth', '', max_age=0)
+        return response
 
 @app.route('/dispfile/<path:path>')
+@test_limit
 def dispfile(path):
     response = make_response(render_template('showimage.html', image_name=f'/catalog/{path}'), 200)
     response.headers['X-Content-Type-Options'] = 'nosniff'
@@ -310,6 +388,7 @@ def dispfile(path):
 
 
 @app.route('/home-page',  methods=['GET', 'POST'])
+@test_limit
 def home_page():
     if login_status(request.cookies.get('auth', None)):
         user = databaseutils.get_user_by_token(request.cookies.get('auth', None))
@@ -323,20 +402,8 @@ def home_page():
         return response
     
 
-@app.route('/profile', methods = ['GET', 'POST'])
-def settings_page(): 
-    if login_status(request.cookies.get('auth', None)):
-        user = databaseutils.get_user_by_token(request.cookies.get('auth', None))
-        response = make_response(render_template('profile.html',user=user.username), 200)
-        response.headers['X-Content-Type-Options'] = 'nosniff'
-        return response
-    else:
-        response = make_response(redirect('login'))
-        response.headers['X-Content-Type-Options'] = 'nosniff'
-        response.set_cookie('auth', '', max_age=0)
-        return response
-
 @app.route('/rick-roll', methods = ['GET'])
+@test_limit
 def rick_roll():
     if login_status(request.cookies.get('auth', None)):
         user = databaseutils.get_user_by_token(request.cookies.get('auth', None))
@@ -351,6 +418,7 @@ def rick_roll():
 
 
 @app.route('/lobby/<string:string>')
+@test_limit
 def lobbyin(string):
     if login_status(request.cookies.get('auth', None)) == False:
         response = make_response(redirect('login'))
@@ -403,6 +471,7 @@ def lobbyin(string):
             return response
 
 @app.route('/lobbycreate',methods=['POST'])
+@test_limit
 def lobbycreate():
     if login_status(request.cookies.get('auth', None)):
         if request.method == 'GET':

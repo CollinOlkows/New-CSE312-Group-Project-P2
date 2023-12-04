@@ -17,6 +17,9 @@
                     <br>
                     <input type="password" placeholder="PASSWORD" id="password" name="password" required>
                     <br><br>
+                    {%if error != None or error != ''%}
+                        <label>{{error}}</label>
+                    {%endif%}
                     <button type="submit">Login</button>
                 </form>
             </div>
@@ -35,6 +38,9 @@
                     <br>
                     <input type="password" placeholder="CONFIRM PASSWORD" id="confirmPassword" name="confirmPassword" required>
                     <br><br>
+                    {%if error1 != None or error1 != ''%}
+                        <label>{{error1}}</label>
+                    {%endif%}
                     <button type="submit" name="Signup">Sign Up</button>
                 </form>
             </div>

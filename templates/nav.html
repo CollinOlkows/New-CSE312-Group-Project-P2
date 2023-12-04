@@ -1,14 +1,15 @@
 <nav class="nav-bar">
+    <img src="{{ url_for('static', filename='images/logo.png') }}" class="logo" alt="Logo">
     <div class="nav-container">
         <div class="bar">
             <!-- Logo and Title -->
-            <img src="{{ url_for('static', filename='images/logo.png') }}" class="logo" alt="Logo">
             <p>Modern Art</p>
 
             <!-- Navigation Links -->
             <ul class="nav-links">
-                <li><a href="{{ url_for('home_page') }}">Homepage</a></li>
-                <li><a href="{{ url_for('rick_roll') }}">Rickroll</a></li>
+                <li><a href="{{ url_for('index') }}">Home</a></li>
+                <li><a href="{{ url_for('home_page') }}">Make Lobby</a></li>
+                <!--><li><a href="{{ url_for('rick_roll') }}">Rickroll</a></li> <!-->
                 <li><a href="{{ url_for('profile') }}">Profile</a></li>
             </ul>
         </div>

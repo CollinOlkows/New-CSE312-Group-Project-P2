@@ -6,7 +6,7 @@
     background-color: var(--blue);
     color: white;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
     padding: 10px;
 }
@@ -38,5 +38,11 @@
 
 /* Hover effect for links */
 .nav-links a:hover {
+    color: var(--dark-blue);
+}
+
+p {
+    text-align: center;
+    margin-top: 0.2rem;
     color: var(--dark-blue);
 }

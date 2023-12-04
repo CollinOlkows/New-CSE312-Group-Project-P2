@@ -8,6 +8,8 @@ from email.mime.text import MIMEText
 from apiclient import errors, discovery
 from config import get_creds
 from oauth2client import GOOGLE_REVOKE_URI, GOOGLE_TOKEN_URI, client
+import hashlib
+import secrets
 def get_credentials():
     c = get_creds()
     CLIENT_ID = c['client_id']
@@ -54,13 +56,23 @@ def CreateMessage(sender, to, subject, msgHtml, msgPlain):
     body = {'raw': raw}
     return body
 
-def main():
-    to = "wdbizier@buffalo.edu"
+def verification_email(code,User,Email_To):
+    #host = 'www.wizardsandassociates.me'
+    host = 'localhost:8080'
+    link = f'{host}/verify/{code}'
+    to = Email_To
     sender = "wizardsandassociates@gmail.com"
-    subject = "Hello there :)"
-    msgHtml = "Hi<br/>William is a bozo and should be eliminated"
-    msgPlain = "Hi\nPlain Email"
+    subject = "Modern Art Account Creation!"
+    msgHtml = f"""<html>
+                <head></head>
+                <body>
+                </p>Hello {User}!<br/>Thank you for signing up for Modern Art! Please follow this Link to verify your account! <br/> {link}</p>
+                </body>
+                </html>
+"""
+    msgPlain = f"Hello {User}!<br/>Thank you for signing up for Modern Art! Please follow this link to verify your account! <br/> {link}"
     SendMessage(sender, to, subject, msgHtml, msgPlain)
 
-if __name__ == '__main__':
-    main()
+def make_url_for_ver():
+    verification_code = secrets.token_hex(100)
+    return verification_code
