@@ -55,7 +55,7 @@ def CreateMessage(sender, to, subject, msgHtml, msgPlain):
     return body
 
 def main():
-    to = "cagogos@buffalo.edu"
+    to = "wdbizier@buffalo.edu"
     sender = "wizardsandassociates@gmail.com"
     subject = "Hello there :)"
     msgHtml = "Hi<br/>William is a bozo and should be eliminated"
