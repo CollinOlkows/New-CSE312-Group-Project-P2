@@ -35,8 +35,7 @@ user_rooms = []
 
 #limiter = Limiter(get_remote_address, app=app,  storage_uri="mongodb://localhost:27017/group_project.rates",default_limits=["50 per 10 seconds"])
 def lt(limiter):
-    if(not databaseutils.apply_rate(get_remote_address())):
-        databaseutils.apply_rate(get_remote_address())
+        databaseutils.apply_rate(request.remote_addr)
 
 limiter = Limiter(
     key_func=get_remote_address,
@@ -55,10 +54,10 @@ test_limit = limiter.shared_limit("50 per 10 second", scope="global")
 
 @app.after_request
 def after_request(response):
-    lockout_active = databaseutils.check_rate(get_remote_address())
-    
+    lockout_active = databaseutils.check_rate(request.remote_addr)
+    print(request.remote_addr)
     if lockout_active:
-        databaseutils.apply_rate(get_remote_address())
+        databaseutils.apply_rate(request.remote_addr)
         response.status_code = 429
         response.data = '429: Rate Limit Reached'
         response.headers['X-Content-Type-Options'] = 'nosniff'
@@ -519,5 +518,6 @@ def lobbycreate():
 #socketio.run(app=app, host='0.0.0.0', port=8080, allow_unsafe_werkzeug=True)
 
 if __name__ == "__main__":
-        socketio.run(app=app,host='0.0.0.0',allow_unsafe_werkzeug=True)
+        #socketio.run(app=app,host='0.0.0.0',allow_unsafe_werkzeug=True)
+        socketio.run(app=app, host='0.0.0.0', port=8080, allow_unsafe_werkzeug=True)
         #app.run()

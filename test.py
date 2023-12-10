@@ -1,3 +1,3 @@
-import datetime
-
-print(datetime.datetime.now()+datetime.timedelta(seconds=30)<datetime.datetime.now())
+import os
+packs_directory = './static/images/packs/default'
+print(os.listdir(packs_directory))

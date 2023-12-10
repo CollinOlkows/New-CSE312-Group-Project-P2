@@ -91,6 +91,7 @@ def apply_rate (addy):
         if(datetime.datetime.now()>check['exp']):
             rates.find_one_and_delete({'address':addy})
             rates.insert_one({'address':addy,'locked':True,'exp':datetime.datetime.now()+datetime.timedelta(seconds=30)})
+            
 def check_rate(addy):
     check = rates.find_one({'address':addy})
     if(check!=None):
