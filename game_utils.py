@@ -8,69 +8,93 @@ class card:
 
 class player:
     def __init__(self,username):
-        self.hand = []
         self.score = 0
         self.username = username
+        self.input = ''
+        self.judge = False
+        self.submit = False
+
+    def set_judge(self):
+        self.judge = True
+
+    def reset(self):
+        self.input = ''
+        self.judge = False
+        self.submit = False
+
+    def submit_answer(self,input):
+        self.input = input
+        self.submit = True
+    
+    def increase_score(self):
+        self.score +=1
     
     def print_attb(self):
-        print(f'username = {self.username}\n hand = {self.hand} \n score = {self.score}\n')
-    
-    def add_card(self):
-        pass
-
-class deck:
-    def __init__(self) -> None:
-        pass
-
+        print(f'username = {self.username}\n score = {self.score}\n')
+ 
 class pack:
-    def __init__(self,pack='default'):
-        self.packs_directory = './static/images/packs/'
-        self.pack_name = pack
-        self.deck = os.listdir(self.packs_directory+pack)
+    def __init__(self,pack_object):
+        self.path = pack_object['path']
+        self.packs_directory = './static/images/packs/' + pack_object['path']
+        self.owner = pack_object['username']
+        self.icon = 'logo.png'
+        self.public = pack_object['public']
+        self.description = pack_object['description']
+        self.pack_name = pack_object['pack_name']
+        self.id = pack_object['_id']
+        self.deck = os.listdir(self.packs_directory)
+
     
+    def refill_deck(self):
+        self.deck = os.listdir(self.packs_directory)
+
     def pick_image(self):
+        if(self.deck == 0):
+            self.refill_deck()
         image = random.randint(0,len(self.deck)-1)
         img_url = self.deck[image]
         del self.deck[image]
         return img_url
+    
+    def print_attb(self):
+        print(f'Directory: {self.packs_directory}\nPack Name: {self.pack_name}\nOwner: {self.owner}\nImage List {self.deck}\nID: {self.id}')
+        return 'Attributes Listed'
 
 
 
 class game:
-    def __init__(self,pack,max_player_count,rounds):
-        self.players = {}
+    def __init__(self,players,pack,player_count,max_player_count,host,rounds,lobby):
+        self.players = players # list of players
+        self.lobby = lobby
         self.pack = pack
-        self.player_count = 0
+        self.player_count = player_count
         self.max_players = max_player_count
-        self.host = ''
+        self.host = host
+        self.judge_candidate = list(range(0,len(players)))
+        self.current_judge = ''
         self.rounds = rounds
         self.state = 'Lobby'
     
+
+    def new_round(self):
+        self.judge_candidate = list(range(0,len(self.players)))
+
+    def end_turn(self):
+        for p in self.players:
+            p.reset()
+
+    def select_judge(self):
+        num = self.judge_candidate[random.randint(0,len(self.judge_candidate)-1)]
+        self.players[num].set_judge()
+        self.judge_candidate.remove(num)
+        self.current_judge = self.players[num]
+
     def start_game(self):
-        pass
+        current_image = self.pack.pick_image()
 
-    def deal_cards(self):
-        pass
 
-    #Adds a player to the dictionary of player. The key is the number they joined in and the value is their username
-    def add_player(self,username):
-        if(self.player_count < self.max_players and self.players.get(username,'')==''):
-            if(len(self.players)==0):
-                self.host = username
-            self.players[username] = player(username) 
-            self.player_count += 1
-        else:
-            print('Error, Game is no longer accepting players. Max players have been reached or user already in game')
 
-    #Removes a player based on their player number
-    def remove_player(self,username):
-        if(username == self.host or len(self.players)<=1 or self.player_count<=1):
-            print('error, lobby empty, need to delete the lobby now')
-        else:
-            del self.players[username]
-            self.player_count -= 1
-
-def test_pack():
+'''def test_pack():
     p = pack()
     print(p.deck)
     card = p.pick_image()
@@ -135,4 +159,4 @@ def main():
 
 if __name__ == "__main__":
     #test_pack()
-    test_game()
+    test_game()'''
