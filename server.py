@@ -520,16 +520,25 @@ def lobbycreate():
 @app.route('/packs')
 @test_limit
 def packs():
-    response = make_response(render_template('packs.html'), 200)
+    pack_list = databaseutils.get_all_packs()
+    print(pack_list)
+    response = make_response(render_template('packs.html',pack_list=pack_list), 200)
     response.headers['X-Content-Type-Options'] = 'nosniff'
     return response
 
-@app.route('/make_pack')
+@app.route('/make_pack',methods=['GET','POST'])
 @test_limit
 def make_pack():
-    response = make_response(render_template('make_pack.html'), 200)
-    response.headers['X-Content-Type-Options'] = 'nosniff'
-    return response
+    if request.method == 'GET':
+        response = make_response(render_template('make_pack.html'), 200)
+        response.headers['X-Content-Type-Options'] = 'nosniff'
+        return response
+    else:
+        print('Making Pack')
+        response = make_response(render_template('make_pack.html'), 200)
+        response.headers['X-Content-Type-Options'] = 'nosniff'
+        return response
+        
 
 
 #socketio.run(app=app, host='0.0.0.0', port=8080, allow_unsafe_werkzeug=True)
