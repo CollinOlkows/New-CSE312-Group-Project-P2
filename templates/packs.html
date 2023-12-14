@@ -8,11 +8,15 @@
         <br>
         {%for pack in pack_list%}
             {%if pack.public%}
+            <form action="/view_pack/{{pack.path}}">
             <div>
+                <button type="submit">
                     <h3>Name: {{pack.pack_name}}</h3>
+                    <img src="{{url_for('send_static',path='/catalog/'+pack.icon)}}" class="pack_img">
                     <h3>Creator: {{pack.owner}}</h3>
-                    <label value='{{pack.path}}'></label>
+                </button>
             </div>
+            </form>
             {%endif%}
         {%endfor%}
 {% endblock %}

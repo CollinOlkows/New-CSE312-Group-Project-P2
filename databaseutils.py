@@ -94,7 +94,7 @@ class pack:
         self.path = pack_object['path']
         self.packs_directory = './static/images/packs/' + pack_object['path']
         self.owner = pack_object['username']
-        self.icon = None
+        self.icon = 'logo.png'
         self.public = pack_object['public']
         self.description = None
         self.pack_name = pack_object['pack_name']
