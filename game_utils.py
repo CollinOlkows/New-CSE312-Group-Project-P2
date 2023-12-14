@@ -72,16 +72,31 @@ class game:
         self.host = host
         self.judge_candidate = list(range(0,len(players)))
         self.current_judge = ''
+        self.current_round = 0
         self.rounds = rounds
         self.state = 'Lobby'
+        self.start_game()
     
 
-    def new_round(self):
-        self.judge_candidate = list(range(0,len(self.players)))
+    def check_game_end(self):
+        if(self.current_round + 1 == self.rounds):
+            return True
+        else:
+            return False
 
-    def end_turn(self):
+    def award_points(self,winner):
         for p in self.players:
-            p.reset()
+            if p.username == winner:
+                p.increase_score()
+
+    def new_round(self):
+        if self.check_game_end():
+            pass # needs to end the game
+        else:
+            for p in self.players:
+                p.reset()
+            self.judge_candidate = list(range(0,len(self.players)))
+            self.current_round +=1
 
     def select_judge(self):
         num = self.judge_candidate[random.randint(0,len(self.judge_candidate)-1)]
@@ -89,8 +104,31 @@ class game:
         self.judge_candidate.remove(num)
         self.current_judge = self.players[num]
 
+#-----------------------------------------------------------------------
+
+    def get_player_scores(self):
+        output = {}
+        for p in self.players:
+            output[p.username] = p.score
+        return output
+
+    #Pretty much only going to ever call the end turn function
+
+    def end_turn(self,winner):
+        if len(self.judge_candidate == 0):
+            self.new_round()
+        else:
+            self.award_points(winner)
+            for p in self.players:
+                p.reset()
+            self.select_judge()
+            current_image = self.pack.pick_image()
+        
+    #Only called on initalization of game
+
     def start_game(self):
         current_image = self.pack.pick_image()
+        self.select_judge()
 
 
 
