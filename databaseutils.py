@@ -90,25 +90,59 @@ class comment:
 
 
 class pack:
-    def __init__(self,pack='default'):
-        self.packs_directory = './static/images/packs/'
-        self.pack_name = pack
-        self.deck = os.listdir(self.packs_directory+pack)
-    
-    def pick_image(self):
-        image = random.randint(0,len(self.deck)-1)
-        img_url = self.deck[image]
-        del self.deck[image]
-        return img_url
+    def __init__(self,pack_object):
+        self.path = pack_object['path']
+        self.packs_directory = './static/images/packs/' + pack_object['path']
+        self.owner = pack_object['username']
+        self.icon = None
+        self.public = pack_object['public']
+        self.description = None
+        self.pack_name = pack_object['pack_name']
+        self.id = pack_object['_id']
+        self.deck = os.listdir(self.packs_directory)
+
+    def print_attb(self):
+        print(f'Directory: {self.packs_directory}\nPack Name: {self.pack_name}\nOwner: {self.owner}\nImage List {self.deck}\nID: {self.id}')
+        return 'Attributes Listed'
+
+
+def get_all_packs():
+    pack_list = []
+    packs = db_packs.find({})
+    for p in packs:
+        pack_list.append(pack(p))
+    return pack_list
+
+def get_pack_by_username_and_pack_name(username,pack_name):
+    check = db_packs.find_one({'username':username,'pack_name':pack_name})
+    if(check != None):
+        return pack(check)
+    else:
+        return None
+
+def make_default_pack():
+    check = db_packs.find_one({'username':'collin','pack_name':'default'})
+    if check == None:
+        db_packs.insert_one({'username':'collin','pack_name':'default','icon':None,'path':'default','description':'Official Default Pack','public':True})
+        return True
+    return False
 
 #Creates a pack where the username is the creater and the name of the pack is an html escaped title with optional icon image
-def create_empty_pack(username,pack_name,icon = None, path = None):
-    insert = db_packs.insert_one({'username':username,'pack_name':pack_name,'icon':icon})
-    if(path == None):
-        new_path = str(insert.inserted_id)
-        db_packs.update_one({'username':username,'pack_name':pack_name},{'$set':{'path':new_path}})
+def create_empty_pack(username,pack_name,description,public,icon = None, path = None):
+    check = db_packs.find_one({'username':username,'pack_name':pack_name})
+    if check == None:
+        insert = db_packs.insert_one({'username':username,'pack_name':pack_name,'icon':icon,'description':description,'public':public})
+        if(path == None):
+            new_path = str(insert.inserted_id)
+            #path will always be the './static/images/packs/' + pack folder name.... these will not be named by the user except default
+            os.makedirs('./static/images/packs/'+new_path)
+            obj1 = db_packs.update_one({'username':username,'pack_name':pack_name},{'$set':{'path':new_path}})
+            return pack(obj1)
+        else:
+            obj1 = db_packs.update_one({'username':username,'pack_name':pack_name},{'$set':{'path':path}})
+            return pack(obj1)
     else:
-        db_packs.update_one({'username':username,'pack_name':pack_name},{'$set':{'path':path}})
+        return False
 
 def apply_rate (addy):
     check = rates.find_one({'address':addy})

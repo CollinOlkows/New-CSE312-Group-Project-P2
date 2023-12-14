@@ -5,4 +5,14 @@
 {% endblock %}
 {% block content %}
         <a href="{{url_for('make_pack')}}"><button>Create A Pack!</button></a>
+        <br>
+        {%for pack in pack_list%}
+            {%if pack.public%}
+            <div>
+                    <h3>Name: {{pack.pack_name}}</h3>
+                    <h3>Creator: {{pack.owner}}</h3>
+                    <label value='{{pack.path}}'></label>
+            </div>
+            {%endif%}
+        {%endfor%}
 {% endblock %}
