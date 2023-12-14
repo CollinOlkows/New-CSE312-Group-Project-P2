@@ -4,26 +4,84 @@
 <link rel="stylesheet" href="{{url_for('send_static', path='css/make_pack.css')}}">
 {% endblock %}
 {% block content %}
-    <form id="packForm">
-        <label for="packName">Pack Name</label>
-        <input type="text" id="packName" placeholder="Name">
-        
-        <label for="description">Description</label>
-        <input type="text" id="description" placeholder="Description">
+    <a href="/packs"><img src="{{url_for('send_static',path='./images/back_button.png')}}" class="backIMG"></a> 
 
-        <label for="private">Private</label>
-        <input type="checkbox" id="private">
+    <h1 class="titleCenter">
+        CREATE YOUR OWN PACK
+    </h1>
 
-        <label for="logo">Logo</label>
-        <input type="file" id="logo" multiple accept="image/*" onchange="previewImages()">
+    <h3 class="warning">
+        THIS IS THE ONLY TIME YOU CAN ADD FILES YOU BOZO SO CHOOSE WISLEY CUZ WE WILL NOT UPDATE THIS 
+        FOR A BIT OR NEVER OR IF GIVEN MONITARY INCENTIVE
+    </h3>
 
-        <div id="imagePreview" class="image-grid"></div>
-        <div id="fileCount">Total Files: 0</div>
+    <form id="packForm" class="packForm">
+        <div class="formSection">
+            <!-- <label for="packName" class="formLable">PACK NAME</label> -->
+            <h2>NAME</h2>
+            <input type="text" id="packName" placeholder="PACK NAME" class="inputText" oninput="limitInputLength(this, 30)">
+        </div>
 
-        <input type="submit" value="Make Pack">
+        <div class="formSection">
+            <!-- <label for="description" class="formLable">DESCRIPTION</label> -->
+            <h2>DESCRIPTION</h2>
+            <input type="text" id="description" placeholder="DESCRIPTION" class="inputText" oninput="limitInputLength(this, 1000)">
+        </div>
+
+        <div class="formSection">
+            <label for="private" class="formLable">PRIVATE</label>
+            <input type="checkbox" id="private" class="inputCheckBox">
+        </div>
+
+        <div class="formSection">
+            <!-- <label for="packImages" class="formLable">PACK THUMBNAIL</label> -->
+            <h2>PACK THUMBNAIL</h2>
+            <input type="file" id="logo" accept="image/*" onchange="previewLogo()" class="inputFile">
+            <div id="logoPreview" class="image-preview"></div>
+        </div>
+
+        <div class="formSection">
+            <!-- <label for="packImages" class="formLable">PACK IMAGES</label> -->
+            <h2>PACK IMAGES</h2>
+            <input type="file" id="packImages" multiple accept="image/*" onchange="previewImages()" class="inputFile">
+        </div>
+
+        <div class="formSection">
+            <div id="fileCount" class="formSubLable">TOTAL IMAGES: 0</div>
+            <div id="imagePreview" class="image-grid"></div>
+        </div>
+
+        <div class="formSection">
+            <input type="submit" value="MAKE PACK" class="inputSubmit">
+        </div>
+
     </form>
 
     <script>
+
+    function limitInputLength(element, maxLength) {
+        if (element.value.length > maxLength) {
+            element.value = element.value.substr(0, maxLength);
+        }
+    }
+
+    function previewLogo() {
+        var preview = document.querySelector('#logoPreview');
+        preview.innerHTML = '';
+        var file = document.querySelector('#logo').files[0];
+
+        if (file && /\.(jpe?g|png|gif)$/i.test(file.name)) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                var image = new Image();
+                image.width = 200; // Set the width
+                image.src = e.target.result;
+                image.classList.add('logo-image');
+                preview.appendChild(image);
+            };
+            reader.readAsDataURL(file);
+        }
+    }
     function previewImages() {
         var preview = document.querySelector('#imagePreview');
         preview.innerHTML = '';
@@ -33,7 +91,7 @@
             [].forEach.call(files, readAndPreview);
         }
 
-        function readAndPreview(file) {
+        function readAndPreview(file, index) {
             if (!/\.(jpe?g|png|gif)$/i.test(file.name)) {
                 return;
             }
@@ -43,7 +101,7 @@
                 imageContainer.classList.add('image-container');
 
                 var image = new Image();
-                image.width = 200; // Set the width
+                image.width = 300; // Set the width
                 image.title  = file.name;
                 image.src    = this.result;
                 imageContainer.appendChild(image);
@@ -52,6 +110,7 @@
                 deleteBtn.innerText = 'X';
                 deleteBtn.classList.add('delete-btn');
                 deleteBtn.onclick = function() {
+                    removeFile(index);
                     preview.removeChild(imageContainer);
                     updateFileCount(preview.children.length);
                 };
@@ -63,9 +122,23 @@
         }
 
         function updateFileCount(count) {
-            document.querySelector('#fileCount').innerText = 'Total Files: ' + count;
+            document.querySelector('#fileCount').innerText = 'TOTAL IMAGES BOZO: ' + count;
         }
     }
-    document.querySelector('#logo').addEventListener("change", previewImages);
+
+    document.querySelector('#packImages').addEventListener("change", previewImages);
+
+    function removeFile(index) {
+        var attachments = document.getElementById("packImages").files;
+        var fileBuffer = new DataTransfer();
+
+        for (let i = 0; i < attachments.length; i++) {
+            if (index !== i) {
+                fileBuffer.items.add(attachments[i]);
+            }
+        }
+
+        document.getElementById("packImages").files = fileBuffer.files;
+    }
     </script>
 {% endblock %}

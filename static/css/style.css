@@ -28,8 +28,3 @@
 body{
     background-color: var(--background-color);
 }
-
-.back_img{
-    height: 5vmax;
-    width: 5vmax;
-}
