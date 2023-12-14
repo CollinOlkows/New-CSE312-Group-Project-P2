@@ -1,18 +1,71 @@
 {% extends "base.html" %}
 {% block title %}Packs{% endblock %}
 {% block head %}
-<link  rel="stylesheet" href="{{url_for('send_static',path='css/make_pack.css')}}">
+<link rel="stylesheet" href="{{url_for('send_static', path='css/make_pack.css')}}">
 {% endblock %}
 {% block content %}
-        <form>
-            <label>Pack Name</label>
-            <input type="text" placeholder="Name">
-            <label>description</label>
-            <input type="text" placeholder="Name">
-            <label>private</label>
-            <input type="checkbox" placeholder="private">
-            <label>logo</label>
-            <input type="button" placeholder="Upload Image" value="Upload Image">
-            <input type="submit" placeholder="Make Pack" value="Make Pack">
-        </form>
+    <form id="packForm">
+        <label for="packName">Pack Name</label>
+        <input type="text" id="packName" placeholder="Name">
+        
+        <label for="description">Description</label>
+        <input type="text" id="description" placeholder="Description">
+
+        <label for="private">Private</label>
+        <input type="checkbox" id="private">
+
+        <label for="logo">Logo</label>
+        <input type="file" id="logo" multiple accept="image/*" onchange="previewImages()">
+
+        <div id="imagePreview" class="image-grid"></div>
+        <div id="fileCount">Total Files: 0</div>
+
+        <input type="submit" value="Make Pack">
+    </form>
+
+    <script>
+    function previewImages() {
+        var preview = document.querySelector('#imagePreview');
+        preview.innerHTML = '';
+        var files = this.files;
+        updateFileCount(files.length);
+        if (files) {
+            [].forEach.call(files, readAndPreview);
+        }
+
+        function readAndPreview(file) {
+            if (!/\.(jpe?g|png|gif)$/i.test(file.name)) {
+                return;
+            }
+            var reader = new FileReader();
+            reader.addEventListener("load", function() {
+                var imageContainer = document.createElement('div');
+                imageContainer.classList.add('image-container');
+
+                var image = new Image();
+                image.width = 200; // Set the width
+                image.title  = file.name;
+                image.src    = this.result;
+                imageContainer.appendChild(image);
+
+                var deleteBtn = document.createElement('button');
+                deleteBtn.innerText = 'X';
+                deleteBtn.classList.add('delete-btn');
+                deleteBtn.onclick = function() {
+                    preview.removeChild(imageContainer);
+                    updateFileCount(preview.children.length);
+                };
+                imageContainer.appendChild(deleteBtn);
+
+                preview.appendChild(imageContainer);
+            });
+            reader.readAsDataURL(file);
+        }
+
+        function updateFileCount(count) {
+            document.querySelector('#fileCount').innerText = 'Total Files: ' + count;
+        }
+    }
+    document.querySelector('#logo').addEventListener("change", previewImages);
+    </script>
 {% endblock %}
