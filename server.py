@@ -514,6 +514,23 @@ def lobbycreate():
         response.headers['X-Content-Type-Options'] = 'nosniff'
         response.set_cookie('auth', '', max_age=0)
         return response
+    
+
+    #Routes for the pack making stuff
+@app.route('/packs')
+@test_limit
+def packs():
+    response = make_response(render_template('packs.html'), 200)
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    return response
+
+@app.route('/make_pack')
+@test_limit
+def make_pack():
+    response = make_response(render_template('make_pack.html'), 200)
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    return response
+
 
 #socketio.run(app=app, host='0.0.0.0', port=8080, allow_unsafe_werkzeug=True)
 

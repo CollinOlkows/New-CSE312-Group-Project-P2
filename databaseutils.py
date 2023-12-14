@@ -5,6 +5,8 @@ import html
 from hashlib import sha256
 from bson.objectid import ObjectId
 import server_utils
+import random
+import os
 #mongo_client = MongoClient("mongo")
 mongo_client = MongoClient("localhost")
 db = mongo_client["group_project"]
@@ -15,6 +17,9 @@ lobbys = db['lobbys']
 images = db['images']
 users_in = db['users_in']
 rates = db['rates']
+db_packs = db['packs']
+
+deloyed_mode = False
 
 
 
@@ -83,6 +88,28 @@ class comment:
         self.creation_date = datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S")
         self.content = content
 
+
+class pack:
+    def __init__(self,pack='default'):
+        self.packs_directory = './static/images/packs/'
+        self.pack_name = pack
+        self.deck = os.listdir(self.packs_directory+pack)
+    
+    def pick_image(self):
+        image = random.randint(0,len(self.deck)-1)
+        img_url = self.deck[image]
+        del self.deck[image]
+        return img_url
+
+#Creates a pack where the username is the creater and the name of the pack is an html escaped title with optional icon image
+def create_empty_pack(username,pack_name,icon = None, path = None):
+    insert = db_packs.insert_one({'username':username,'pack_name':pack_name,'icon':icon})
+    if(path == None):
+        new_path = str(insert.inserted_id)
+        db_packs.update_one({'username':username,'pack_name':pack_name},{'$set':{'path':new_path}})
+    else:
+        db_packs.update_one({'username':username,'pack_name':pack_name},{'$set':{'path':path}})
+
 def apply_rate (addy):
     check = rates.find_one({'address':addy})
     if(check==None):
@@ -113,7 +140,8 @@ def add_user(username,password, email):
         code = server_utils.make_url_for_ver()
         users.insert_one({'username':username,'passhash':passhash,'salt':salt,'followers':[],"following":[],'token':'','token_date':datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S"),'email':email,'email_verified':False,'veri':code})
         #send verification email
-        server_utils.verification_email(code,username,email)
+        if deloyed_mode:
+            server_utils.verification_email(code,username,email)
         return True
 
 def update_user_by_vcode(code):
