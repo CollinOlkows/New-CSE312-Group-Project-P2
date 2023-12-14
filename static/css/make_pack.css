@@ -1,24 +1,108 @@
 @import "style.css";
 
-/* Grid for image previews */
-.image-grid {
+/* Grid for logo and image previews */
+.backIMG {
+    margin-top: 10px;
+    margin-left: 10px;
+    height: 5vmax;
+    width: 5vmax;
+}
+
+h2 {
+    font-size: var(--font-medium);
+}
+
+/* center the h1 lmao */
+.titleCenter {
+    text-align: center;
+}
+
+.warning {
+    margin-left: 10%;
+    margin-right: 10%;
+    text-align: center;
+}
+
+.packForm {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    
+    margin-left: 10%;
+    margin-right: 10%; 
+}
+
+.formSection{
+    margin-bottom: 2%;
+    text-align: center;
+}
+
+
+/* pack inputs n shit */
+
+.inputText {
+    width: 60vw;
+    border-radius: 10px;
+    padding: 1%;
+    font-size: var(--font-small);
+    text-align: center;
+    
+}
+
+.inputCheckBox {
+    width: 25px;
+    height: 25px;
+}
+
+.inputFile {
+    width: 100%;
+    border-radius: 10px;
+    padding: 1%;
+    font-size: var(--font-small);
+}
+
+.inputSubmit{
+    width: 75vw;
+    background-color: var(--dark-blue);
+    color: white;
+    border-radius: 10px;
+    padding: 2%;
+    font-size: var(--font-medium);
+}
+
+.formLable{
+    font-size: var(--font-medium);
+}
+
+.formSubLable{
+    text-align: center;
+    font-size: var(--font-small);
+}
+
+.logo-preview, .image-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
     gap: 10px;
     margin-top: 10px;
-
-    width: 80%;
-    margin-left: 20%;
-    margin-right: 20%;
 }
 
 
 
-.image-container {
+
+/* Container for individual logo and image */
+.logo-container, .image-container {
     position: relative;
     display: inline-block;
 }
 
+/* Style for images in the containers */
+.image-container img, .logo-container img {
+    width: 100%;
+    display: block;
+}
+
+/* Delete button style */
 .delete-btn {
     position: absolute;
     top: 0;
@@ -30,15 +114,24 @@
     border-radius: 5px;
 }
 
-
 /* Responsive adjustments */
 @media (max-width: 768px) {
-    .image-grid {
+    .logo-preview, .image-grid {
         grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-    
         width: 90%;
         margin-left: 5%;
         margin-right: 5%;
-    
     }
+
+    .packForm{
+
+        margin-left: 2.5%;
+        margin-right: 2.5%;
+    }
+
+
+    .inputText {
+        width: 70vw;       
+    }
+    
 }
