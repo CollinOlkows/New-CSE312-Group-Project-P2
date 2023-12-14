@@ -482,7 +482,8 @@ def lobbycreate():
             if user_sess!=None:
                 t = databaseutils.get_lobby_by_id(user_sess)
                 if(t!=None):
-                    redirect(url_for('lobbyin',string=user_sess))
+                    return redirect(url_for('lobbyin',string=user_sess))
+            
             # check if the post request has the file part
             if 'file' in request.files and request.files['file'].filename != '' and allowed_file(request.files['file'].filename):
                 user = databaseutils.get_user_by_token(request.cookies.get('auth', None))
