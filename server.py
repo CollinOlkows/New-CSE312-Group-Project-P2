@@ -41,12 +41,12 @@ limiter = Limiter(
     key_func=get_remote_address,
     app=app,
     storage_uri="memory://",
-    default_limits=["50 per 10 seconds"],
+    default_limits=["500 per 10 seconds"],
     storage_options={"lockout": True, "lockout_time": 30},
     on_breach=lt
     )
 
-test_limit = limiter.shared_limit("50 per 10 second", scope="global")
+test_limit = limiter.shared_limit("500 per 10 second", scope="global")
 
 
 
