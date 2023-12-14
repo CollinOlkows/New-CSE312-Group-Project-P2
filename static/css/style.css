@@ -13,13 +13,18 @@
     font-size: x-large;
     --blue: #667281;
     --dark-blue: #032041;
+
+    /* font size */
+    --font-bigger: 4rem; 
+    --font-big: 2.4721rem; 
+    --font-medium: 1.5279rem;  
+    --font-small: 0.9094rem;  
+    --font-text:  1rem; 
+
  
 
 }
 
 body{
     background-color: var(--background-color);
-    color: var(--font-color);
-    margin: 0;
-    padding: 0;
 }
