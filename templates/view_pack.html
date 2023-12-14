@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}{{pack.title}}{% endblock %}
+{% block head %}
+<link  rel="stylesheet" href="{{url_for('send_static',path='css/view_pack.css')}}">
+{% endblock %}
+{% block content %}
+<a href="{{url_for('packs')}}"><img src="{{url_for('send_static',path='./images/back_button.png')}}" class="back_img"></a>
+<h1>Pack: {{pack.pack_name}}</h1>
+<h1>Description: {{pack.description}}</h1>
+<h1>Images:</h1>
+{%for image in pack.deck%}
+    <img src="{{url_for('send_static',path=pack.packs_directory+'/'+image)}}" class="pack_img">
+{%endfor%}
+
+{% endblock %}

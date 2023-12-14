@@ -94,9 +94,9 @@ class pack:
         self.path = pack_object['path']
         self.packs_directory = './static/images/packs/' + pack_object['path']
         self.owner = pack_object['username']
-        self.icon = None
+        self.icon = 'logo.png'
         self.public = pack_object['public']
-        self.description = None
+        self.description = pack_object['description']
         self.pack_name = pack_object['pack_name']
         self.id = pack_object['_id']
         self.deck = os.listdir(self.packs_directory)
@@ -112,6 +112,13 @@ def get_all_packs():
     for p in packs:
         pack_list.append(pack(p))
     return pack_list
+
+def get_pack_by_path(path):
+    check = db_packs.find_one({'path':path})
+    if(check != None):
+        return pack(check)
+    else:
+        return None
 
 def get_pack_by_username_and_pack_name(username,pack_name):
     check = db_packs.find_one({'username':username,'pack_name':pack_name})
