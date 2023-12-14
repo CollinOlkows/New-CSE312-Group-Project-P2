@@ -11,7 +11,6 @@ import os
 mongo_client = MongoClient("localhost")
 db = mongo_client["group_project"]
 users = db['users']
-posts = db['posts']
 comments = db['comments']
 lobbys = db['lobbys']
 images = db['images']
@@ -23,7 +22,7 @@ deloyed_mode = False
 
 
 
-#Comments and posts have become obsolete for this project. Will Be updated at a later time
+
 
 '''
 users -> {username:username,passhash:passwordhash,salt:passwordsalt,_id:user_id,followers,following,token,exp_date}
@@ -58,7 +57,10 @@ class lobby:
         self.desc = lobby_obj['desc']
         self.img = lobby_obj['img_url']
         self.count = lobby_obj['user_count']
+        self.max_player = lobby_obj['max_player']
         self.roomcode = lobby_obj['roomcode']
+        self.started = lobby_obj['started']
+        self.game = lobby_obj['game']
 
 class img:
     def __init__(self,image_obj):
@@ -69,18 +71,6 @@ class img:
         self.ext = image_obj['ext']
         self.fp = '/catalog/'+str(image_obj['_id'])+image_obj['ext']
 
-#wrappers for easy working with posts
-class post:
-    def __init__(self,post_obj):
-        self.post_id = post_obj['_id']
-        self.post_owner = post_obj['post_owner']
-        self.title = post_obj['title']
-        self.content = post_obj['content']
-        self.creation_date = post_obj['creation_date']
-        self.likes = post_obj['likes']
-        self.like_count = len(self.likes)
-        self.owner_username = post_obj['owner_username']
-        self.comments = post_obj['comments']
 
 class comment:
     def __init__(self,person,content):
@@ -250,107 +240,12 @@ def get_username_by_id(id):
     else:
         return None
 
-#Returns a list of post objects that a specific id created
-def get_all_posts_by_user_id(id):
-    all_posts = posts.find({'post_owner':ObjectId(id)})
-    output = []
-    if(all_posts!=None):
-        for p in all_posts:
-            output.append(post(p))
-    else:
-        return None
-
-#Returns a list of post objects that a specific user created
-def get_all_posts_by_username(username):
-    all_posts = posts.find({'owner_username':username})
-    output = []
-    if(all_posts!=None):
-        for p in all_posts:
-            output.append(post(p))
-    else:
-        return None
-
-def delete_all_posts_by_username(username):
-    return posts.delete_many({"owner_username":username})
-
-def delete_all_posts_by_user_id(*id):
-    return posts.delete_many({"post_owner":ObjectId(id)})
-#----------------------------------------- 
-#if the user is deleted, posts are not, do we want all posts to also be deleted?
-#deletes a user by their id
-#Need to add an unfollow + Mass Unfollow
 def user_delete_by_id(id):
-    delete_all_posts_by_user_id(id=id)
     return users.delete_one({'_id':ObjectId(id)})
 
 #deletes a user by their username 
 def user_delete_by_username(username):
-    delete_all_posts_by_username(username=username)
     return users.delete_one({'username':username})
-
-def add_post(user,content,title):
-    #idk if dateime is correct here
-    return posts.insert_one({'post_owner':user.id,'content':content,'title':title,'owner_username':user.username,'creation_date':datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S"),'likes':[],'comments':[]})
-
-def get_post_by_id(id):
-    return posts.find_one({'_id':ObjectId(id)})
-
-def update_post_by_id(id,content):
-    return posts.update_one({'_id':ObjectId(id)},{"$set":{'content':content}})
-
-#like value is either 1 or -1 (like or dislike)
-def check_likes(id,user_id):
-    p = get_post_by_id(id=id)
-    if(p != None):
-        likes = p['likes']
-        if user_id in likes:
-            return '❤️'
-        else:
-            return '🖤'
-    else:
-        return '🖤'
-
-
-def update_post_likes(id,user_id):
-    p = get_post_by_id(id=id)
-    if(p != None):
-        likes = p['likes']
-        if user_id in likes:
-            likes.remove(user_id)
-            posts.update_one({'_id':ObjectId(id)},{"$set":{'likes':likes}})
-            return {'status':'User Unliked','liked':False,'likes':len(likes),'emoji':'🖤'}
-        else:
-            likes.append(user_id)
-            posts.update_one({'_id':ObjectId(id)},{"$set":{'likes':likes}})
-            return {'status':'User liked','liked':True,'likes':len(likes),'emoji':'❤️'}
-    else:
-        return None
-
-#Maybe Change this to add comment id to post rather than whole object, so its a list of comments in order of posts
-#comment will have attribute of being a thread or reply to thread
-
-def add_comment_to_post(id,comment_obj):
-    p = get_post_by_id(id=id)
-    if(p != None):
-        comments = p['comment']
-        comments.append(comment_obj)
-        return posts.update_one({'_id':ObjectId(id)},{"$set":{'comment':comments}})
-    else:
-        return None
-
-def get_all_posts():
-    p = posts.find()
-    out = []
-    for po in p:
-        out.append(post(po))
-    return out
-
-def delete_post_by_id(id):
-    return posts.delete_one({"_id":ObjectId(id)})
-
-#needs to remove from post list and if parent, delete all replys to said post
-def delete_comment():
-    pass
 
 def set_user_token(username,token,date=datetime.datetime.now()):
     hash = sha256(token.encode('utf-8')).hexdigest()
@@ -393,8 +288,12 @@ def get_images():
         out.append(img(im))
     return out
 
-def insert_lobby(host,title,desc,img_url,user_count=1,roomcode=None):
-    id = str(lobbys.insert_one({'host':host,'title':title,'desc':desc,'img_url':img_url,'user_count':user_count,'roomcode':roomcode}).inserted_id)
+#----------------------------------------------------
+#Lobby Util Stuff
+
+
+def insert_lobby(host,title,desc,img_url,max_player,user_count=1,roomcode=None):
+    id = str(lobbys.insert_one({'host':host,'title':title,'desc':desc,'img_url':img_url,'user_count':user_count,'roomcode':roomcode, 'max_player':int(max_player),'started':False,'game':None}).inserted_id)
     users_in.insert_one({'room': id,'users':[]})
     return id
 

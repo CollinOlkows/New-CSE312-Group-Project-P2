@@ -46,7 +46,7 @@ $(document).ready(function(){
         but.innerHTML = 'Join Lobby'
         let count = document.createElement('p')
         count.id='count_'+msg['id']
-        count.innerHTML = msg['count'] +'/6'
+        count.innerHTML = msg['count'] +'/' + msg['artists']
         
         d.insertAdjacentElement("afterbegin",but);
         d.insertAdjacentElement("afterbegin",name);
@@ -65,16 +65,16 @@ $(document).ready(function(){
 <div id="lobby_listings">
 {%for obj in lobby%}
 <div class="lobby_inst">
-    {%if 6 > obj.count%}
-    <p id="count_{{obj.id}}">{{obj.count}}/6</p>
+    {%if obj.max_player > obj.count%}
+    <p id="count_{{obj.id}}">{{obj.count}}/{{obj.max_player}}</p>
     {%else%}
-    <p id="count_{{obj.id}}">{{obj.count}}/6 Lobby Full!</p>
+    <p id="count_{{obj.id}}">{{obj.count}}/{{obj.max_player}} Lobby Full!</p>
     {%endif%}
     <p>{{obj.host}}</p>
     <p>{{obj.title}}</p>
     <img src="{{url_for('send_static',path='/catalog/'+obj.img)}}" class="lobby_img">
     <p>{{obj.desc}}</p>
-    {%if 6 > obj.count%}
+    {%if obj.max_player > obj.count%}
         <a href="{{url_for('lobbyin',string=obj.id)}}"><button>Join Server</button></a>
     {%endif%}
 </div>

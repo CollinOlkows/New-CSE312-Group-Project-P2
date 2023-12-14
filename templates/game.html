@@ -47,7 +47,7 @@ $(document).ready(function(){
         un.innerHTML = msg['user']
         document.getElementById('User_List').insertAdjacentElement('afterbegin',un)
         console.log(msg['count'])
-        if(6<=msg['count']){
+        if(msg['max_player']<=msg['count']){
             console.log(msg['game_value'])
             console.log(document.getElementById('a').value)
             document.getElementById('a').value = msg['game_value']
