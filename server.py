@@ -71,9 +71,7 @@ def after_request(response):
 
 @socketio.on('lobby_make')
 def make_lobby(lobby):
-    print('here')
     #'name': title, 'description': description, 'artists': artists, 'privacy': privacy}
-    print(lobby)
     roomName = html.escape(lobby['name'])
     description = html.escape(lobby['description'])
     artists = html.escape(lobby['artists'])
@@ -133,7 +131,7 @@ def test_message(count):
         it = random.randint(1,50)
         print(f'sending {count["lobby"]}')
         emit('count_update', {'count': item.count+1,'id':count['lobby']},broadcast=True)
-        emit('update_users',{'user':count['user'],'count':item.count+1,'game_value':it},to=count['lobby'])
+        emit('update_users',{'user':count['user'],'count':item.count+1,'game_value':it,'max_player':item.max_player},to=count['lobby'])
 
 
 @socketio.on('connect')
@@ -431,7 +429,8 @@ def lobbyin(string):
             resp.set_cookie('lobby','',max_age=0) 
             return resp
         else:
-            if(databaseutils.get_lobby_by_id(string).count<6):
+            lobby = databaseutils.get_lobby_by_id(string)
+            if(int(lobby.count)<int(lobby.max_player)):
                 resp = make_response(redirect('/lobby/'+request.cookies.get('lobby',None)))
                 resp.headers['X-Content-Type-Options'] = 'nosniff'
                 return resp
@@ -439,7 +438,8 @@ def lobbyin(string):
                 resp = make_response(redirect('/lobby'))
                 resp.headers['X-Content-Type-Options'] = 'nosniff'
                 return resp
-    if(databaseutils.get_lobby_by_id(string).count>=6):
+    lobby = databaseutils.get_lobby_by_id(string)
+    if(int(lobby.count)>=int(lobby.max_player)):
             if(request.cookies.get('lobby',None)==string):
                 print('1')
                 if login_status(request.cookies.get('auth', None)):
@@ -482,7 +482,8 @@ def lobbycreate():
             if user_sess!=None:
                 t = databaseutils.get_lobby_by_id(user_sess)
                 if(t!=None):
-                    redirect(url_for('lobbyin',string=user_sess))
+                    return redirect(url_for('lobbyin',string=user_sess))
+            
             # check if the post request has the file part
             if 'file' in request.files and request.files['file'].filename != '' and allowed_file(request.files['file'].filename):
                 user = databaseutils.get_user_by_token(request.cookies.get('auth', None))
@@ -498,14 +499,16 @@ def lobbycreate():
                 file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename + ext))
                 title = request.form.get('title')
                 desc = request.form.get('description')
+                max = request.form.get('artists')
 
-                id = databaseutils.insert_lobby(user.username,title,desc,filename + ext,user_count=0)
+                id = databaseutils.insert_lobby(user.username,title,desc,filename + ext,max,user_count=0)
                 return redirect(url_for('lobbyin', string=id))
             else:
+                max = request.form.get('artists')
                 user = databaseutils.get_user_by_token(request.cookies.get('auth', None))
                 title = request.form.get('title')
                 desc = request.form.get('description')
-                id = databaseutils.insert_lobby(user.username,title,desc,'logo.png',user_count=0)
+                id = databaseutils.insert_lobby(user.username,title,desc,'logo.png',max,user_count=0)
                 
                 return redirect(url_for('lobbyin', string=id))
 

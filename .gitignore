@@ -3,3 +3,5 @@
 wizards_and_associates
 __pycache__
 conf.json
+__pycache__/databaseutils.cpython-310.pyc
+*.pyc
