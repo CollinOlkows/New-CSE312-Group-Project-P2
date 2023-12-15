@@ -139,6 +139,13 @@ def test_connect():
     emit('my response', {'data': 'Connected'})
 
 
+#############################
+    #Start Game
+@socketio.on('start_game')
+def Start_Game():
+    emit('my response', {'data': 'Connected'})
+
+
 ###############################
 # Flask helper functions
 def login_status(cookie):
@@ -550,6 +557,40 @@ def view_pack(path):
         response = make_response(render_template('view_pack.html',pack=pack), 200)
         response.headers['X-Content-Type-Options'] = 'nosniff'
         return response
+
+###################
+    #TEMP PATHS FOR DESIGN
+@app.route('/gamewip',methods=['GET','POST'])
+@test_limit
+def gamewip():
+    if request.method == 'GET':
+        response = make_response(render_template('gamewip.html'), 200)
+        response.headers['X-Content-Type-Options'] = 'nosniff'
+        return response
+
+@app.route('/gameinprg',methods=['GET','POST'])
+@test_limit
+def gameinprg():
+    if request.method == 'GET':
+        response = make_response(render_template('gameinprogress.html'), 200)
+        response.headers['X-Content-Type-Options'] = 'nosniff'
+        return response
+@app.route('/gameresults',methods=['GET','POST'])
+@test_limit
+def gameresults():
+    if request.method == 'GET':
+        response = make_response(render_template('gameresults.html'), 200)
+        response.headers['X-Content-Type-Options'] = 'nosniff'
+        return response
+
+@app.route('/endgame',methods=['GET','POST'])
+@test_limit
+def endgame():
+    if request.method == 'GET':
+        response = make_response(render_template('endgame.html'), 200)
+        response.headers['X-Content-Type-Options'] = 'nosniff'
+        return response
+
 
 
 #socketio.run(app=app, host='0.0.0.0', port=8080, allow_unsafe_werkzeug=True)
