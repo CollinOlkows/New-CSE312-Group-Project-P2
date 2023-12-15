@@ -22,7 +22,7 @@ def make_game_instance(players,pack,player_count,max_player_count,host,rounds,lo
     
 
 def check_game_end(game_instance):
-    if(game_instance['current_round'] + 1 == game_instance['rounds']):
+    if(game_instance['current_round'] + 1 == game_instance['rounds'] and len(game_instance['judge_candidate'])==0):
         return True
     else:
         return False
@@ -34,18 +34,19 @@ def award_points(game_instance,winner):
 
 def new_round(game_instance):
     if check_game_end(game_instance):
-        pass # needs to end the game
+        return True
     else:
         for p in game_instance['players']:
             game_player_utils.reset(p)
         game_instance['judge_candidate'] = list(range(0,len(game_instance['players'])))
         game_instance['current_round'] +=1
+        return False
 
 def select_judge(game_instance):
     num = game_instance['judge_candidate'][random.randint(0,len(game_instance['judge_candidate'])-1)]
     game_player_utils.set_judge(game_instance['players'][num])
-    game_instance['judge_candidate'].remove(num)
     game_instance['current_judge'] = game_instance['players'][num]
+    game_instance['judge_candidate'].remove(num)
 
 #-----------------------------------------------------------------------
 
@@ -57,16 +58,16 @@ def get_player_scores(game_instance):
 
 #Pretty much only going to ever call the end turn function
 
-def end_turn(game_instance,winner):
-    if len(game_instance['judge_candidate'] == 0):
-        new_round(game_instance)
+def end_turn(game_instance):
+    if len(game_instance['judge_candidate']) == 0:
+        return new_round(game_instance)
     else:
-        award_points(game_instance,winner)
         for p in game_instance['players']:
             game_player_utils.reset(p)
         select_judge(game_instance)
         current_image = game_pack_utils.pick_image(game_instance['pack'])
         game_instance['current_image'] = current_image
+        return False
     
 #Only called on initalization of game
 

@@ -3,6 +3,7 @@
 {% block head %}
 <link  rel="stylesheet" href="{{url_for('send_static',path='css/gamewip.css')}}">
 <link  rel="stylesheet" href="{{url_for('send_static',path='css/gameInProgress.css')}}">
+<link  rel="stylesheet" href="{{url_for('send_static',path='css/gameresults.css')}}">
 <script src="/js/game_script.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.4/socket.io.js" integrity="sha512-aMGMvNYu8Ue4G+fHa359jcPb1u+ytAF+P2SCb+PxrjCdO3n3ZTxJ30zuH39rimUggmTwmh2u7wvQsDTHESnmfQ==" crossorigin="anonymous"></script>
@@ -15,6 +16,16 @@
             document.getElementById('prompt_div').innerHTML = '<p>Please Wait For Other Players to Submit</p>'
             socket.emit('send_prompt',{'user':'{{user}}','prompt':prompt,'host':'{{host}}','lobby':'{{code}}'})
         }
+    function prompt_win(winner){
+        socket.emit('winner_prompt',{'user':'{{user}}','host':'{{host}}','lobby':'{{code}}','winner':winner})
+    }
+    function next_turn(){
+        socket.emit('next_turn',{'user':'{{user}}','host':'{{host}}','lobby':'{{code}}'})
+    }
+    function End_The_Game(){
+        socket.emit('ending',{'user':'{{user}}','host':'{{host}}','lobby':'{{code}}'})
+    }
+    
     $(document).ready(function(){
         console.log(socket.io.engine.transport.name)
         socket.on('my response', function(msg) {
@@ -25,8 +36,8 @@
             console.log(msg)
         })
         socket.on('end_game',function(msg)  {
-            alert(msg['user']+' Has won the game. The answer was '+msg['value']+' please return to the main menu to start a new game')
-            window.location = '/home-page'
+            alert('The Game Has ended, click ok to be redirected to the make lobby screen')
+        window.location = '/home-page'
         })
         socket.on('update_users',function(msg)  {
             let un = document.createElement('p');
@@ -47,8 +58,32 @@
         });
 
         socket.on('prompt_submit',function(msg){
-            console.log('Prompt was submitted by'+msg['user'])
             document.getElementById(msg['user']).innerHTML=document.getElementById(msg['user']).innerHTML.replace("🔴","🟢")
+        });
+        socket.on('judging',function(msg){
+            if('{{user}}'==msg['game']['current_judge']['username']){
+                render_judge_page(msg['game']['players'],'/images/packs/'+msg['game']['pack']['path']+'/'+msg['game']['current_image'],msg['game']['current_judge']['username'])
+            }else{
+                Please_Wait_on_judge()
+            }
+        });
+        socket.on('show_prompts',function(msg){
+            if('{{user}}'==msg['game']['current_judge']['username']){
+                show_prompts_to_players(msg['game']['players'],msg['winner'],msg['game']['current_judge']['username'],'{{user}}')
+            }else{
+                show_prompts_to_players(msg['game']['players'],msg['winner'],msg['game']['current_judge']['username'],'{{user}}')
+            }
+        });
+        socket.on('start_next',function(msg){
+            start_game(msg['data']['players'],msg['data']['current_judge']['username'],'{{user}}','/images/packs/'+msg['data']['pack']['path']+'/'+msg['data']['current_image'])
+        });
+        socket.on('round_reached',function(msg){
+            console.log('game over')
+            if('{{user}}'==msg['data']['host']){
+                show_scores(true,msg['data']['players'])
+            }else{
+                show_scores(false,msg['data']['players'])
+            }
         });
     });
     

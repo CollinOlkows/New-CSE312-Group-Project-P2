@@ -105,9 +105,15 @@ def add_game_inst(game_inst):
 def get_game_inst_by_host(host):
     game = db_games.find_one({'host':host})
     return game
+
+def remove_game_inst_by_host(host):
+    db_games.delete_one({'host':host})
+
 def update_game_inst_by_host(host,game_inst):
     db_games.find_one_and_update({'host':host},{"$set":game_inst})
-    
+
+def remove_users_in_lobby_by_room(room):
+    users_in.delete_one({'room':room})
 
 #--------------------------------------
 

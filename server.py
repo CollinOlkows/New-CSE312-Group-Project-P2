@@ -165,16 +165,52 @@ def got_prompt(msg):
     submitted = 0
     for p in players:
         if p['username'] == msg['user']:
-            game_player_utils.submit_answer(p,msg['prompt'])
+            game_player_utils.submit_answer(p,html.escape(msg['prompt']))
         if p['submit']:
             submitted +=1
     databaseutils.update_game_inst_by_host(msg['host'],game_inst)
     if submitted >= len(players)-1:
         #end the round
+        game_inst['_id']=str(game_inst['_id'])
         emit('prompt_submit',{'user':msg['user']},to=msg['lobby'])
+        emit('judging',{'user':msg['user'],'game':game_inst},to=msg['lobby'])
     else:
         emit('prompt_submit',{'user':msg['user']},to=msg['lobby'])
-    
+
+@socketio.on('winner_prompt')
+def winner(msg):
+    game_inst = databaseutils.get_game_inst_by_host(msg['host'])
+    winner_prompt = ''
+    players = game_inst['players']
+    for p in players:
+        print(msg['winner'])
+        if p['username'] == str(msg['winner']):
+            print('match')
+            winner_prompt = p['input']
+            game_player_utils.increase_score(p)
+    databaseutils.update_game_inst_by_host(msg['host'],game_inst)
+    game_inst['_id']=str(game_inst['_id'])
+    emit('show_prompts',{'game':game_inst,'winner_prompt':winner_prompt,'winner':msg['winner']},to=msg['lobby'])
+
+@socketio.on('next_turn')
+def next_turn(msg):
+    lobby = databaseutils.get_lobby_by_id(msg['lobby'])
+    game_inst = databaseutils.get_game_inst_by_host(msg['host'])
+    check = game_instance_utils.end_turn(game_inst)
+    databaseutils.update_game_inst_by_host(msg['host'],game_inst)
+    game_inst['_id'] = str(game_inst['_id'])
+    if(check):
+        emit('round_reached', {'data': game_inst},to=msg['lobby'])
+    else:
+        emit('start', {'data': game_inst},to=msg['lobby'])
+        
+@socketio.on('ending')
+def test_message(message):
+    lobby = message['lobby']
+    emit('end_game', {'stuff':'here'},to=lobby)
+    databaseutils.remove_lobby_by_id(lobby)
+    databaseutils.remove_game_inst_by_host(message['host'])
+    databaseutils.remove_users_in_lobby_by_room(message['lobby'])
 
 
 ###############################
