@@ -1,0 +1,91 @@
+@import "style.css";
+
+.GRjudge {
+    text-align: center;
+    font-size: var(--font-medium);
+
+}
+
+.GRpromptImg {
+    width: 40vw;
+    border-radius: 10px;
+}
+
+.GRprompt {
+    text-align: center;
+
+}
+
+    .GRpromptTitle {
+        font-size: var(--font-big);
+        color: black;
+        text-align: center;
+    }
+
+    .GRpromptDirections {
+        font-size: var(--font-medium);
+        color: black;
+        text-align: center;
+    }
+
+    .GRpromptPrompts {
+        background-color: var(--blue);
+        border-radius: 10px;
+
+        margin-top: 1vw;
+        margin-bottom: 1vw;
+        margin-left: 1vw;
+        margin-right: 1vw;
+
+        padding-top: 1vw;
+        padding-bottom: 1vw;
+
+        display: flex; /* Enable Flexbox */
+        flex-direction: column; /* Stack children vertically */
+        align-items: center; /* Center children horizontally */
+    }
+    
+    .GRpromptPromptsButtons {
+        border-radius: 10px;
+        width: 80vw;
+        padding: 1vw 2vw; /* Shorthand for vertical and horizontal padding */
+        color: black;
+        font-size: var(--font-small);
+        margin-bottom: 1vw; /* Add space between buttons */
+        text-align: left; /* Align text inside the button to the left */
+        display: block; /* Make buttons block-level elements */
+    }
+
+    .GRpromptPromptsButtons:hover {
+        background-color: blanchedalmond;
+
+    }
+    
+    
+
+
+
+
+.GRscoreBoardTitle {
+    text-align: center;
+
+}
+
+.GRscoreBoardForm {
+    background-color: var(--blue);
+    border-radius: 10px;
+    padding: 1vw;
+    text-align: left; /* Aligns the content to the left */
+}
+
+    .GRscoreBoardRankings {
+        font-size: var(--font-medium);
+        display: block; /* Ensures each <p> element is on a new line */
+    }
+
+
+
+
+@media (max-width: 768px) {
+
+}
