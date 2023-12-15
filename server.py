@@ -158,6 +158,23 @@ def Start_Game(info):
     print(game_inst)
     emit('start', {'data': game_inst},to=info['lobby'])
 
+@socketio.on('send_prompt')
+def got_prompt(msg):
+    game_inst = databaseutils.get_game_inst_by_host(msg['host'])
+    players = game_inst['players']
+    submitted = 0
+    for p in players:
+        if p['username'] == msg['user']:
+            game_player_utils.submit_answer(p,msg['prompt'])
+        if p['submit']:
+            submitted +=1
+    if submitted >= len(players)-1:
+        #end the round
+        emit('prompt_submit',{'user':msg['user']},to=msg['lobby'])
+    else:
+        emit('prompt_submit',{'user':msg['user']},to=msg['lobby'])
+    
+
 
 ###############################
 # Flask helper functions
