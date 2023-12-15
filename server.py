@@ -152,10 +152,9 @@ def Start_Game(info):
     pack_used = databaseutils.get_pack_by_path('default')
     pack = game_pack_utils.make_pack_instance(pack_used)
     game_inst = game_instance_utils.make_game_instance(player_inst,pack,lobby.count,lobby.max_player,lobby.host,2,info['lobby'])
-    game_instance_utils.start_game(game_inst)
+    game_instance_utils.end_turn(game_inst)
     databaseutils.add_game_inst(game_inst)
     game_inst['_id'] = str(game_inst['_id'])
-    print(game_inst)
     emit('start', {'data': game_inst},to=info['lobby'])
 
 @socketio.on('send_prompt')

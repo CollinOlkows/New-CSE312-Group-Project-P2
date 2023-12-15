@@ -18,7 +18,7 @@ def refill_deck(pack_object):
     pack_object['deck'] = os.listdir(pack_object['packs_directory'])
 
 def pick_image(pack_object):
-    if(pack_object['deck'] == 0):
+    if(len(pack_object['deck']) == 0):
         refill_deck(pack_object)
     image = random.randint(0,len(pack_object['deck'])-1)
     img_url = pack_object['deck'][image]
