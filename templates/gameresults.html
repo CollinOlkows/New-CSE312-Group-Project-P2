@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Game Page{% endblock %}
 {% block head %}
-<link  rel="stylesheet" href="{{url_for('send_static',path='css/lobby.css')}}">
+<link  rel="stylesheet" href="{{url_for('send_static',path='css/gameresults.css')}}">
 <script src="/js/game_script.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.4/socket.io.js" integrity="sha512-aMGMvNYu8Ue4G+fHa359jcPb1u+ytAF+P2SCb+PxrjCdO3n3ZTxJ30zuH39rimUggmTwmh2u7wvQsDTHESnmfQ==" crossorigin="anonymous"></script>
@@ -10,26 +10,49 @@
 {% block content %}
 
 <div id="Game_Board">
-    <h1>Scoreboard</h1>
-    <div id="user_list">
-        <p>🟢William: 0</p>
-        <p>🟢Joe: 0</p>
-        <p>⚖️Johnny: 0</p>
-        <p>🟢Daniel: 0</p>
-        <p>🟢Rob: 0</p>
+
+    <div class="GRjudge">
+        <h1>YOU ARE JUDING BOZO</h1>
+        <h2>ROUND IMAGE</h2>
+        <img src="/static/images/packs/willPack/BingImage14.jpeg" class="GRpromptImg">
     </div>
-    <div id = 'image'>
-        <h1>Johnny is Judging!</h1>
-        <img src="/catalog/logo.png" style="height: 5vmax; width: 5vmax;">
-    </div>
-        <div id="Prompt">
-            <button>'Chicken'</button>
-            <button>'Prompt2'</button>
-            <button>'William Bozo'</button>
-            <button>'IDk stuff'</button>
-            <button>'Other Stuff'</button>
+
+    <div class="GRPrompt">
+        <h1 class="GRpromptTitle">PROMPTS</h1>
+        <h2 class="GRpromptDirections">PICK THE PROMPT THAT YOU THINK IS THE FUNNIEST BOZO</h2>
+        <div id="Prompt" class=GRpromptPrompts>
+            <button class="GRpromptPromptsButtons">Chicken eating ass in the bathtoom and then gave a reach around to the 
+                cashier behind the motherfucken counter
+            </button>
+
+            <button class="GRpromptPromptsButtons">Cat inserting a butt plug into elon musk himself at the cyber truck demo where the window 
+                is broken by a dildo
+            </button>
+
+            <button class="GRpromptPromptsButtons">pepe pooo pooo bitch</button>
+
+            <button class="GRpromptPromptsButtons">Cal at his job being hit on by a milf but shes got one of those mother fucken 
+                ai stephen hawking voice things
+            </button>
+
+            <button class="GRpromptPromptsButtons">where tf is the rest of our group bro i be getting fucken sleepy and shit working 
+                on this damn code. Someties when i sleep too much i get out of breath
+            </button>
+
         </div>
     </div>
+
+    <div>
+        <h1 class="GRscoreBoardTitle">SCORE BOARD</h1>
+        <div id="user_list" class="GRscoreBoardForm">
+            <p class="GRscoreBoardRankings">🟢William: 69</p>
+            <p class="GRscoreBoardRankings">🟢Joe: 0</p>
+            <p class="GRscoreBoardRankings">⚖️Johnny: 0</p>
+            <p class="GRscoreBoardRankings">🟢Daniel: 0</p>
+            <p class="GRscoreBoardRankings">🟢Rob: 0</p>
+        </div>
+    </div>
+
 </div>
 
 {% endblock %}
