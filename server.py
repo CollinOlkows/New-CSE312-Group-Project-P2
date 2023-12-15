@@ -348,6 +348,25 @@ def createlobby():
 @test_limit
 def lobby():
     if login_status(request.cookies.get('auth', None)):
+        user = databaseutils.get_user_by_token(request.cookies.get('auth', None))
+        if(request.cookies.get('lobby',None)!=None):
+            lobby = databaseutils.get_lobby_by_id(request.cookies.get('lobby',None))
+            if(lobby==None):
+                lobbies = databaseutils.get_lobbies()
+                response = make_response(render_template('lobby.html',lobby=lobbies,error=None), 200)
+                response.headers['X-Content-Type-Options'] = 'nosniff'
+                return response
+            else:
+                users_in = databaseutils.get_users_in_room_by_id(lobby.id)
+                if(int(lobby.count)<int(lobby.max_player) or user.username in users_in):
+                    resp = make_response(redirect('/lobby/'+request.cookies.get('lobby',None)))
+                    resp.headers['X-Content-Type-Options'] = 'nosniff'
+                    return resp
+        else:
+            lobbies = databaseutils.get_lobbies()
+            response = make_response(render_template('lobby.html',lobby=lobbies,error=None), 200)
+            response.headers['X-Content-Type-Options'] = 'nosniff'
+            return response
         lobbies = databaseutils.get_lobbies()
         response = make_response(render_template('lobby.html',lobby=lobbies,error=None), 200)
         response.headers['X-Content-Type-Options'] = 'nosniff'
@@ -462,10 +481,32 @@ def dispfile(path):
 @test_limit
 def home_page():
     if login_status(request.cookies.get('auth', None)):
-        user = databaseutils.get_user_by_token(request.cookies.get('auth', None))
-        response = make_response(render_template('home_page.html',user=user.username), 200)
-        response.headers['X-Content-Type-Options'] = 'nosniff'
-        return response
+        
+        if(request.cookies.get('lobby',None)!=None):
+            lobby = databaseutils.get_lobby_by_id(request.cookies.get('lobby',None))
+            if(lobby==None):
+                user = databaseutils.get_user_by_token(request.cookies.get('auth', None))
+                response = make_response(render_template('home_page.html',user=user.username), 200)
+                response.headers['X-Content-Type-Options'] = 'nosniff'
+                response.set_cookie('lobby','',max_age=0) 
+                return response
+            else:
+                user = databaseutils.get_user_by_token(request.cookies.get('auth', None))
+                users_in = databaseutils.get_users_in_room_by_id(lobby.id)
+                if(int(lobby.count)<int(lobby.max_player) or user.username in users_in):
+                    resp = make_response(redirect('/lobby/'+request.cookies.get('lobby',None)))
+                    resp.headers['X-Content-Type-Options'] = 'nosniff'
+                    return resp
+                else:
+                    user = databaseutils.get_user_by_token(request.cookies.get('auth', None))
+                    response = make_response(render_template('home_page.html',user=user.username), 200)
+                    response.headers['X-Content-Type-Options'] = 'nosniff'
+                    return response
+        else:
+            user = databaseutils.get_user_by_token(request.cookies.get('auth', None))
+            response = make_response(render_template('home_page.html',user=user.username), 200)
+            response.headers['X-Content-Type-Options'] = 'nosniff'
+            return response
     else:
         response = make_response(redirect('login'))
         response.headers['X-Content-Type-Options'] = 'nosniff'
@@ -492,7 +533,7 @@ def rick_roll():
 @test_limit
 def lobbyin(string):
     if login_status(request.cookies.get('auth', None)) == False:
-        response = make_response(redirect('login'))
+        response = make_response(redirect('/login'))
         response.headers['X-Content-Type-Options'] = 'nosniff'
         response.set_cookie('auth', '', max_age=0)
         return response
