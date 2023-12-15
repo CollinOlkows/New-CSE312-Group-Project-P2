@@ -23,7 +23,7 @@ $(document).ready(function(){
 
     socket.on('count_update',function(msg)  {
         console.log(msg)
-        document.getElementById('count_'+msg['id']).innerHTML=msg['count']+'/6'
+        document.getElementById('count_'+msg['id']).innerHTML=msg['count']+'/'+msg['max_player']
     })
 
     socket.on('lobby_made',function(msg)  {

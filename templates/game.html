@@ -2,9 +2,46 @@
 {% block title %}Login{% endblock %}
 {% block head %}
 <link  rel="stylesheet" href="{{url_for('send_static',path='css/lobby.css')}}">
+<script src="/js/game_script.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.4/socket.io.js" integrity="sha512-aMGMvNYu8Ue4G+fHa359jcPb1u+ytAF+P2SCb+PxrjCdO3n3ZTxJ30zuH39rimUggmTwmh2u7wvQsDTHESnmfQ==" crossorigin="anonymous"></script>
+ 
+<script>
+    $(document).ready(function(){
+        var socket = io({transports: ["websocket"]});
+        console.log(socket.io.engine.transport.name)
+        socket.on('my response', function(msg) {
+            console.log(msg.data)
+        });
+        socket.emit('update_count', {'lobby': '{{code}}','user':'{{user}}'});
+        socket.on('lobby joined',function(msg)  {
+            console.log(msg)
+        })
+        socket.on('end_game',function(msg)  {
+            alert(msg['user']+' Has won the game. The answer was '+msg['value']+' please return to the main menu to start a new game')
+            window.location = '/home-page'
+        })
+        socket.on('update_users',function(msg)  {
+            let un = document.createElement('p');
+            un.innerHTML = msg['user']
+            document.getElementById('User_List').insertAdjacentElement('afterbegin',un)
+            console.log(msg['count'])
+        })
+        '{%if host == user%}'
+        document.getElementById('start_game').addEventListener("click", start_game_s);
+        function start_game_s (){
+            socket.emit('start_game', {'host':'{{host}}','lobby':'{{code}}'})
+        };
+        '{%endif%}'
+        socket.on('start',function(msg){
+            console.log(msg)
+            console.log(msg['data']['players'])
+            start_game(msg['data']['players'],msg['data']['current_judge']['username'],'{{user}}')
+        });
+    });
     
+    </script>
+
 {% endblock %}
 {% block content %}
 <p id="log"></p>
@@ -14,75 +51,25 @@
 <div id="game_make">
 
 </div>
-<script>
-$(document).ready(function(){
-    var socket = io({transports: ["websocket"]});
-    console.log(socket.io.engine.transport.name)
-    socket.on('my response', function(msg) {
-        console.log(msg.data)
-    });
-    function check_value(){
-        let a = document.getElementById('a').innerHTML;
-        let g = document.getElementById('guess').value;
-        if(g == a){
-            document.getElementById('msgr').innerHTML='Correct, you win!'
-            socket.emit('winner',{'user':'{{user}}','value':a,'lobby':'{{code}}'})
-        }else{
-            document.getElementById('msgr').innerHTML='Incorrect please guess again'
-        }
-    }
-    socket.emit('update_count', {'lobby': '{{code}}','user':'{{user}}'});
-    socket.on('lobby joined',function(msg)  {
-        console.log(msg)
-    })
-    socket.on('lobby_made',function(msg)  {
-        console.log(msg)
-    })
-    socket.on('end_game',function(msg)  {
-        alert(msg['user']+' Has won the game. The answer was '+msg['value']+' please return to the main menu to start a new game')
-        window.location = '/home-page'
-    })
-    socket.on('update_users',function(msg)  {
-        let un = document.createElement('p');
-        un.innerHTML = msg['user']
-        document.getElementById('User_List').insertAdjacentElement('afterbegin',un)
-        console.log(msg['count'])
-        if(msg['max_player']<=msg['count']){
-            console.log(msg['game_value'])
-            console.log(document.getElementById('a').value)
-            document.getElementById('a').value = msg['game_value']
-            document.getElementById('a').innerHTML = msg['game_value']
-            document.getElementById("User_div").remove()
-            let text = document.createElement('p')
-            text.innerHTML = 'ender a number 1 - 50'
-            document.getElementById("game_make").style.visibility='visible';
 
-            let guess = document.createElement('input')
-            guess.id = 'guess'
-            guess.placeholder = 'Input Guess'
-            let submit = document.createElement('button')
-            submit.id='make-guess'
-            submit.value = 'Make Guess'
-            submit.placeholder = 'Make Guess'
-            submit.innerHTML = 'Make Guess'
-            submit.addEventListener("click", check_value);
-            document.getElementById("game_make").insertAdjacentElement('afterbegin',submit)
-            document.getElementById("game_make").insertAdjacentElement('afterbegin',guess)
-            document.getElementById("game_make").insertAdjacentElement('afterbegin',text)
-        }
-    })
-});
-
-</script>
-
-
-<div id="User_div">
-    <h1>Users In</h1>
-    <div id="User_List">
-    {%for u in users%}
-    <p>{{u}}</p>
-    {%endfor%}
+<div id="Game_Board">
+    <div id="User_div">
+        <h1>Users In</h1>
+        <div id="User_List">
+        {%for u in users%}
+        <p>{{u}}</p>
+        {%endfor%}
+        </div>
     </div>
+    {%if host == user%}
+    <div>
+        <h1>Host Settings</h1>
+        <br>
+        <label>Pack: Default</label>
+        <br>
+    <button id="start_game">Start Game</button>
+    </div>
+    {%endif%}
 </div>
 
 {% endblock %}

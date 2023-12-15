@@ -9,7 +9,7 @@ def make_pack_instance(pack_object):
               'public':pack_object.public,
               'description':pack_object.description,
               'pack_name':pack_object.pack_name,
-              'id':pack_object.id,
+              'id':str(pack_object.id),
               'deck':pack_object.deck
               }
     return output

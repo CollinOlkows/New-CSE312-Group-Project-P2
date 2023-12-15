@@ -2,8 +2,15 @@ import os
 import random
 
 
+
 def make_player_instance(username,score=0,input='',judge=False,submit=False):
     output = {'username':username,'score':score,'input':input,'judge':judge,'submit':submit}
+    return output
+
+def make_player_list(players):
+    output = []
+    for p in players:
+        output.append(make_player_instance(p))
     return output
 
 def set_judge(player_instance):

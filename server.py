@@ -12,6 +12,9 @@ import random
 from werkzeug.utils import secure_filename
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
+import game_instance_utils
+import game_pack_utils
+import game_player_utils
 
 
 
@@ -130,8 +133,8 @@ def test_message(count):
         databaseutils.increase_lobby_count(count['lobby'])
         it = random.randint(1,50)
         print(f'sending {count["lobby"]}')
-        emit('count_update', {'count': item.count+1,'id':count['lobby']},broadcast=True)
-        emit('update_users',{'user':count['user'],'count':item.count+1,'game_value':it,'max_player':item.max_player},to=count['lobby'])
+        emit('count_update', {'count': item.count+1,'id':count['lobby'],'max_player':item.max_player},broadcast=True)
+        emit('update_users',{'user':count['user'],'count':item.count+1,'game_value':it,'max_player':item.max_player,'players':['will','d']},to=count['lobby'])
 
 
 @socketio.on('connect')
@@ -142,8 +145,18 @@ def test_connect():
 #############################
     #Start Game
 @socketio.on('start_game')
-def Start_Game():
-    emit('my response', {'data': 'Connected'})
+def Start_Game(info):
+    lobby = databaseutils.get_lobby_by_id(info['lobby'])
+    players = databaseutils.get_users_in_room_by_id(info['lobby'])
+    player_inst = game_player_utils.make_player_list(players)
+    pack_used = databaseutils.get_pack_by_path('default')
+    pack = game_pack_utils.make_pack_instance(pack_used)
+    game_inst = game_instance_utils.make_game_instance(player_inst,pack,lobby.count,lobby.max_player,lobby.host,2,info['lobby'])
+    game_instance_utils.start_game(game_inst)
+    databaseutils.add_game_inst(game_inst)
+    game_inst['_id'] = str(game_inst['_id'])
+    print(game_inst)
+    emit('start', {'data': game_inst},to=info['lobby'])
 
 
 ###############################
@@ -451,7 +464,9 @@ def lobbyin(string):
                 print('1')
                 if login_status(request.cookies.get('auth', None)):
                     user = databaseutils.get_user_by_token(request.cookies.get('auth', None))
-                    response = make_response(render_template('game.html',code=string,users=databaseutils.get_users_in_room_by_id(string),user=user.username), 200)
+                    host=databaseutils.get_lobby_by_id(string).host
+                    print(f'host:{host}')
+                    response = make_response(render_template('game.html',code=string,users=databaseutils.get_users_in_room_by_id(string),user=user.username,host=host), 200)
                     response.headers['X-Content-Type-Options'] = 'nosniff'
                     #response.set_cookie('lobby',string,max_age=7200)
                     return response
@@ -466,7 +481,8 @@ def lobbyin(string):
             print(databaseutils.get_lobby_by_id(string).count)
             print('3')
             user = databaseutils.get_user_by_token(request.cookies.get('auth', None))
-            response = make_response(render_template('game.html',code=string,users=databaseutils.get_users_in_room_by_id(string),user=user.username), 200)
+            host=databaseutils.get_lobby_by_id(string).host
+            response = make_response(render_template('game.html',code=string,users=databaseutils.get_users_in_room_by_id(string),user=user.username,host=host), 200)
             response.headers['X-Content-Type-Options'] = 'nosniff'
             response.set_cookie('lobby',string,max_age=7200)
             return response
