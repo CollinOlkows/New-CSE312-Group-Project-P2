@@ -1,0 +1,97 @@
+@import "style.css";
+
+.GIPprompt {
+    background-color: var(--blue);
+    border-radius: 10px;
+    text-align: center;
+    padding-bottom: 3vw;
+    padding-top: 1vw;
+    margin-top: 1vw;
+}
+    .GIPpromptTitle {
+        color: white;
+    }
+
+    .GIPpromptForm {
+        width: 80vw;
+        padding: 1%;
+        border-radius: 10px;
+        font-size: var(--font-small);
+
+    }
+
+    .GIPpromptSubmit {
+        width: 40vw;
+        padding: 1%;
+        border-radius: 10px;
+        font-size: var(--font-small);
+        background-color: rgb(6, 70, 6);
+        color: white;
+
+
+    }
+
+.GIPgameContainer {
+    display: flex;
+    justify-content: space-between;
+}
+
+.GIPscoreBoard {
+    flex: 1;
+    padding: 10px;
+    text-align: center;
+
+}
+
+    .GIPscoreBoardContainer {
+        background-color: var(--blue);
+        border-radius: 10px;
+        padding: 2%;
+        color: white;
+
+    }
+
+.GIPjudge {
+    flex: 1;
+    padding: 10px;
+    text-align: center;
+
+}
+    .GIPjudgeContainer {
+        background-color: var(--blue);
+        border-radius: 10px;
+        padding: 2%;
+        color: white;
+    }
+
+    .GIPjudgeUsername {
+        font-size: var(--font-medium)
+
+    }
+
+    .GIPjudgeImg {
+        width: 25vw;
+        border-radius: 10px;
+
+    }
+
+
+
+@media (max-width: 768px) {
+    .GIPgameContainer {
+        flex-direction: column;
+
+    }
+
+    .GIPjudgeUsername {
+        font-size: var(--font-small)
+
+    }
+
+    .GIPpromptSubmit {
+        width: 80vw;
+
+
+
+    }
+}
