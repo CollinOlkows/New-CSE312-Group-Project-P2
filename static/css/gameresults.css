@@ -55,6 +55,12 @@
         text-align: left; /* Align text inside the button to the left */
         display: block; /* Make buttons block-level elements */
     }
+
+    .GRpromptPromptsButtons:hover {
+        background-color: blanchedalmond;
+
+    }
+    
     
 
 
