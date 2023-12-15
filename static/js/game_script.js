@@ -23,9 +23,8 @@ document.getElementById('Game_Board').innerHTML = game_string
 
 }
 
-function submit_prompt(){
+function submit_prompt(user){
     let prompt = document.getElementById('prompt').value;
-    console.log(prompt)
     document.getElementById('prompt_div').innerHTML = '<button onclick="judge_prompts();">Judging Screen</button><button onclick="Please_Wait();">Wait</button>'
     document.getElementById('Joe').innerHTML='🟢Joe: 0'
 }

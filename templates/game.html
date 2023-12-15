@@ -1,11 +1,11 @@
 {% extends "base.html" %}
-{% block title %}Login{% endblock %}
+{% block title %}Game Page{% endblock %}
 {% block head %}
-<link  rel="stylesheet" href="{{url_for('send_static',path='css/lobby.css')}}">
+<link  rel="stylesheet" href="{{url_for('send_static',path='css/gamewip.css')}}">
 <script src="/js/game_script.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.4/socket.io.js" integrity="sha512-aMGMvNYu8Ue4G+fHa359jcPb1u+ytAF+P2SCb+PxrjCdO3n3ZTxJ30zuH39rimUggmTwmh2u7wvQsDTHESnmfQ==" crossorigin="anonymous"></script>
- 
+
 <script>
     $(document).ready(function(){
         var socket = io({transports: ["websocket"]});
@@ -38,36 +38,35 @@
             console.log(msg['data']['players'])
             start_game(msg['data']['players'],msg['data']['current_judge']['username'],'{{user}}')
         });
+        socket.on('prompt_submit',function(msg){
+            document.getElementById(msg['user']).innerHTML=document.getElementById(msg['user']).innerHTML.replace("🔴","🟢")
+            if('{{user}}' == msg['user']){
+                document.getElementById('prompt_div').innerHTML = '<p>Please Wait For Other Players to Submit</p>'
+            }
+        });
     });
     
     </script>
-
 {% endblock %}
 {% block content %}
-<p id="log"></p>
-<label id="game" value="{{code}}" hidden></label>
-<label id="a" value="37" hidden></label>
-<p id="msgr"></p>
-<div id="game_make">
 
-</div>
-
-<div id="Game_Board">
-    <div id="User_div">
-        <h1>Users In</h1>
-        <div id="User_List">
-        {%for u in users%}
-        <p>{{u}}</p>
-        {%endfor%}
+<div id="Game_Board" class="game-container">
+    <div class="users">
+        <h1>USERS</h1>
+        <div id="User_List" class="userList">
+            {%for u in users%}
+            <p>{{u}}</p>
+            {%endfor%}
         </div>
-    </div>
+    </div>  
     {%if host == user%}
-    <div>
-        <h1>Host Settings</h1>
-        <br>
-        <label>Pack: Default</label>
-        <br>
-    <button id="start_game">Start Game</button>
+    <div class="host-settings">
+        <h1>HOST SETTINGS</h1>
+        <div class="settings">
+            <h2>PACK</h2>
+            <label>CAT PACK</label>
+            <button id='start_game' class="startButton">START GAME</button>
+        </div>
     </div>
     {%endif%}
 </div>
