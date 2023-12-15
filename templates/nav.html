@@ -1,20 +1,37 @@
-<nav class="nav-bar">
-    <img src="{{ url_for('static', filename='images/logo.png') }}" class="logo" alt="Logo">
-    <div class="nav-container">
-        <div class="bar">
-            <!-- Logo and Title -->
-            <p>Modern Art</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Art</title>
+    <!-- Link to the CSS file -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/nav.css') }}">
+</head>
+    <div class="navSection">
+        <p>MODERN ART</p>
 
-            <!-- Navigation Links -->
-            <ul class="nav-links">
-                <li><a href="{{ url_for('index') }}">Home</a></li>
-                <li><a href="{{ url_for('lobby') }}">Lobbies</a></li>
-                <li><a href="{{ url_for('home_page') }}">Make Lobby</a></li>
-                <li><a href="{{ url_for('profile') }}">Profile</a></li>
-                <li><a href="{{ url_for('catalog') }}">Image Gallery</a></li>
-                <li><a href="{{ url_for('packs') }}">Packs</a></li>
-                
-            </ul>
-        </div>
+        <nav class="nav-bar">
+            <!-- Dropdown Button -->
+            <img src="{{ url_for('static', filename='images/logo.png') }}" class="logo" alt="Logo">
+            <button class="dropdown-btn">MENU LOSER</button>
+
+            <!-- Container for the menu items -->
+            <div class="nav-container" id="navMenu">
+                <ul class="nav-links">
+                    <li><a href="{{ url_for('index') }}">HOME</a></li>
+                    <li><a href="{{ url_for('lobby') }}">LOBBIES</a></li>
+                    <li><a href="{{ url_for('home_page') }}">MAKE LOBBIES</a></li>
+                    <li><a href="{{ url_for('profile') }}">PROFILE</a></li>
+                    <li><a href="{{ url_for('catalog') }}">IMAGE GALLERY</a></li>
+                    <li><a href="{{ url_for('packs') }}">PACKS</a></li>
+                </ul>
+            </div>
+        </nav>
+
+        <script>
+            document.querySelector('.dropdown-btn').addEventListener('click', function() {
+                document.getElementById('navMenu').classList.toggle('active');
+            });
+        </script>
     </div>
-</nav>
+</html>

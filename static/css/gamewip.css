@@ -1,0 +1,48 @@
+.game-container {
+    display: flex;
+    justify-content: space-between;
+}
+
+.users, .host-settings {
+    flex: 1;
+    padding: 10px;
+    text-align: center;
+}
+
+p {
+    font-size: var(--font-medium);
+    color: white;
+}
+
+.userList {
+    background-color: var(--blue);
+    padding: 1vw; 
+    border-radius: 10px;
+}
+
+.settings{
+    background-color: var(--blue);
+    padding: 1vw; 
+    border-radius: 10px;
+    color: white;
+}
+
+.startButton {
+    font-size: var(--font-small);
+    color: black;
+    width: 40vw;
+    border-radius: 10px;
+    background-color: white;
+    margin-top: 10px;
+}
+
+.startButton:hover {
+   background-color: var(--color_three);
+}
+
+
+@media (max-width: 768px) {
+    .game-container {
+        flex-direction: column;
+    }
+}

@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Game Page{% endblock %}
 {% block head %}
-<link  rel="stylesheet" href="{{url_for('send_static',path='css/lobby.css')}}">
+<link  rel="stylesheet" href="{{url_for('send_static',path='css/gamewip.css')}}">
 <script src="/js/game_script.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.4/socket.io.js" integrity="sha512-aMGMvNYu8Ue4G+fHa359jcPb1u+ytAF+P2SCb+PxrjCdO3n3ZTxJ30zuH39rimUggmTwmh2u7wvQsDTHESnmfQ==" crossorigin="anonymous"></script>
@@ -9,21 +9,24 @@
 {% endblock %}
 {% block content %}
 
-<div id="Game_Board">
-    <h1>Users:</h1>
-    <div id="user_list">
-        <p>👑 William</p>
-        <p>✖️ Joe</p>
-        <p>✖️ Johnny</p>
-        <p>✖️ Daniel</p>
-        <p>✖️ Rob</p>
-    </div>
-    <div>
-        <h1>Host Settings</h1>
-        <br>
-        <label>Pack: Default</label>
-        <br>
-    <button onclick="start_game()">Start Game</button>
+<div class="game-container">
+    <div class="users">
+        <h1>USERS</h1>
+        <div id="user_list" class="userList">
+            <p>👑 William</p>
+            <p>✖️ Joe</p>
+            <p>✖️ Johnny</p>
+            <p>✖️ Daniel</p>
+            <p>✖️ Rob</p>
+        </div>
+    </div>  
+    <div class="host-settings">
+        <h1>HOST SETTINGS</h1>
+        <div class="settings">
+            <h2>PACK</h2>
+            <label>CAT PACK</label>
+            <button onclick="start_game()" class="startButton">START GAME</button>
+        </div>
     </div>
 </div>
 
