@@ -145,6 +145,20 @@ def make_default_pack():
         return True
     return False
 
+def make_will_pack():
+    check = db_packs.find_one({'username':'collin','pack_name':'Will'})
+    if check == None:
+        db_packs.insert_one({'username':'collin','pack_name':'Will','icon':None,'path':'willPack','description':'Official Will Pack','public':True})
+        return True
+    return False
+
+def make_cats_pack():
+    check = db_packs.find_one({'username':'collin','pack_name':'cats'})
+    if check == None:
+        db_packs.insert_one({'username':'collin','pack_name':'cats','icon':None,'path':'cats','description':'Official cats Pack','public':True})
+        return True
+    return False
+
 #Creates a pack where the username is the creater and the name of the pack is an html escaped title with optional icon image
 def create_empty_pack(username,pack_name,description,public,icon = None, path = None):
     check = db_packs.find_one({'username':username,'pack_name':pack_name})

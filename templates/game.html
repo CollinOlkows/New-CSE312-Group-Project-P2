@@ -48,7 +48,8 @@
         '{%if host == user%}'
         document.getElementById('start_game').addEventListener("click", start_game_s);
         function start_game_s (){
-            socket.emit('start_game', {'host':'{{host}}','lobby':'{{code}}'})
+            pack = document.getElementById('packs-name').value
+            socket.emit('start_game', {'host':'{{host}}','lobby':'{{code}}','pack':pack})
         };
         '{%endif%}'
         socket.on('start',function(msg){
@@ -104,9 +105,13 @@
     <div class="host-settings">
         <h1>HOST SETTINGS</h1>
         <div class="settings">
-            <h2>PACK</h2>
-            <label>CAT PACK</label>
             <button id='start_game' class="startButton">START GAME</button>
+            <label for="packs">Choose a pack:</label> 
+                <select name="packs" id="packs-name"> 
+                    <option value="default">default</option> 
+                    <option value="willPack">will pack</option> 
+                    <option value="cats">cats</option> 
+                </select>
         </div>
     </div>
     {%endif%}

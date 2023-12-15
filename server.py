@@ -149,7 +149,7 @@ def Start_Game(info):
     lobby = databaseutils.get_lobby_by_id(info['lobby'])
     players = databaseutils.get_users_in_room_by_id(info['lobby'])
     player_inst = game_player_utils.make_player_list(players)
-    pack_used = databaseutils.get_pack_by_path('default')
+    pack_used = databaseutils.get_pack_by_path(info['pack'])
     pack = game_pack_utils.make_pack_instance(pack_used)
     game_inst = game_instance_utils.make_game_instance(player_inst,pack,lobby.count,lobby.max_player,lobby.host,2,info['lobby'])
     game_instance_utils.end_turn(game_inst)
