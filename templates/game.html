@@ -2,13 +2,20 @@
 {% block title %}Game Page{% endblock %}
 {% block head %}
 <link  rel="stylesheet" href="{{url_for('send_static',path='css/gamewip.css')}}">
+<link  rel="stylesheet" href="{{url_for('send_static',path='css/gameInProgress.css')}}">
 <script src="/js/game_script.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.4/socket.io.js" integrity="sha512-aMGMvNYu8Ue4G+fHa359jcPb1u+ytAF+P2SCb+PxrjCdO3n3ZTxJ30zuH39rimUggmTwmh2u7wvQsDTHESnmfQ==" crossorigin="anonymous"></script>
 
 <script>
+    var socket = io({transports: ["websocket"]});
+    function submit_the_prompt(){
+        console.log('sending over socket')
+            let prompt = document.getElementById('promptInput').value;
+            document.getElementById('prompt_div').innerHTML = '<p>Please Wait For Other Players to Submit</p>'
+            socket.emit('send_prompt',{'user':'{{user}}','prompt':prompt,'host':'{{host}}','lobby':'{{code}}'})
+        }
     $(document).ready(function(){
-        var socket = io({transports: ["websocket"]});
         console.log(socket.io.engine.transport.name)
         socket.on('my response', function(msg) {
             console.log(msg.data)
@@ -36,13 +43,12 @@
         socket.on('start',function(msg){
             console.log(msg)
             console.log(msg['data']['players'])
-            start_game(msg['data']['players'],msg['data']['current_judge']['username'],'{{user}}')
+            start_game(msg['data']['players'],msg['data']['current_judge']['username'],'{{user}}','/images/packs/'+msg['data']['pack']['path']+'/'+msg['data']['current_image'])
         });
+
         socket.on('prompt_submit',function(msg){
+            console.log('Prompt was submitted by'+msg['user'])
             document.getElementById(msg['user']).innerHTML=document.getElementById(msg['user']).innerHTML.replace("🔴","🟢")
-            if('{{user}}' == msg['user']){
-                document.getElementById('prompt_div').innerHTML = '<p>Please Wait For Other Players to Submit</p>'
-            }
         });
     });
     
