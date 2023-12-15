@@ -1,7 +1,11 @@
 {% extends "base.html" %}
 {% block title %}Game Page{% endblock %}
 {% block head %}
+<link  rel="stylesheet" href="{{url_for('send_static',path='css/lobby.css')}}">
+<link  rel="stylesheet" href="{{url_for('send_static',path='css/gamewip.css')}}">
 <link  rel="stylesheet" href="{{url_for('send_static',path='css/gameInProgress.css')}}">
+<link  rel="stylesheet" href="{{url_for('send_static',path='css/gameresults.css')}}">
+<script src="/js/game_script.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.4/socket.io.js" integrity="sha512-aMGMvNYu8Ue4G+fHa359jcPb1u+ytAF+P2SCb+PxrjCdO3n3ZTxJ30zuH39rimUggmTwmh2u7wvQsDTHESnmfQ==" crossorigin="anonymous"></script>
  
@@ -42,12 +46,6 @@
             document.getElementById('User_List').insertAdjacentElement('afterbegin',un)
             console.log(msg['count'])
         })
-        '{%if host == user%}'
-        document.getElementById('start_game').addEventListener("click", start_game_s);
-        function start_game_s (){
-            socket.emit('start_game', {'host':'{{host}}','lobby':'{{code}}'})
-        };
-        '{%endif%}'
         socket.on('start',function(msg){
             console.log(msg)
             console.log(msg['data']['players'])
@@ -83,30 +81,46 @@
             }
         });
     });
-    
+    //game_inst -> varible for templating the lower container stuff
     </script>
 
 {% endblock %}
 {% block content %}
 
 <div id="Game_Board">
-
-    <div class="GIPprompt">
-        <h2 class="GIPpromptTitle">TYPE YOUR PROMPT BELOW BOZO</h2>
-        <textarea id="promptInput" class="GIPpromptForm" maxlength="300" placeholder="Prompt"></textarea>
-        <button class="GIPpromptSubmit">SUBMIT YOUR PROMPT BOZO</button>
-    </div>
+    {%for players in game_inst['players']%}
+        {%if players['username'] == user and user != game_inst['current_judge']['username'] and players['submit'] == false%}
+            <div id="prompt_div" class="GIPprompt">
+                <h2 class="GIPpromptTitle">TYPE YOUR PROMPT BELOW</h2>
+                <textarea id="promptInput" class="GIPpromptForm" maxlength="300" placeholder="Prompt"></textarea>
+                <button class="GIPpromptSubmit" id="prompt_submit">SUBMIT YOUR PROMPT</button>
+            </div>
+            <script>
+                document.getElementById('prompt_submit').addEventListener("click", submit_the_prompt);
+            </script>
+        {%elif players['username'] == user%}
+        <div id="prompt_div" class="GIPprompt">
+            <h2 class="GIPpromptTitle">Please Wait for all players to submit their prompt</h2>
+        </div>
+    {%endif%}
+    {%endfor%}
 
     <div class="GIPgameContainer">
         <div class="GIPscoreBoard">
             <h1>SCOREBOARD</h1>
             <div class="GIPscoreBoardContainer">
                 <div id="user_list">
-                    <p>🟢William: 69</p>
-                    <p>🔴Joe: 0</p>
-                    <p>⚖️Johnny: 0</p>
-                    <p>🔴Daniel: 0</p>
-                    <p>🔴Rob: 0</p>
+                    {%for players in game_inst['players']%}
+                        {%if players['judge']%}
+                        <p id="{{players['username']}}">⚖️{{players['username']}}: {{players['score']}}</p>
+                        {%else%}
+                        {%if players['submit']%}
+                        <p id="{{players['username']}}">🟢{{players['username']}}: {{players['score']}}</p>
+                        {%else%}
+                        <p id="{{players['username']}}">🔴{{players['username']}}: {{players['score']}}</p>
+                        {%endif%}
+                        {%endif%}
+                    {%endfor%}
                 </div>
             </div>
         </div>
@@ -114,8 +128,8 @@
         <div class="GIPjudge">
             <h1>JUDGING</h1>
             <div class="GIPjudgeContainer">
-                <h2>CockusBallus</h2>
-                <img src="/static/images/lebronDuck.jpeg" class="GIPjudgeImg">
+                <h2>{{game_inst['current_judge']['username']}}</h2>
+                <img id="current_image" src="{{'/images/packs/'+game_inst['pack']['path']+'/'+game_inst['current_image']}}" class="GIPjudgeImg">
             </div>
         </div>
     </div>

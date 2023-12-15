@@ -153,6 +153,7 @@ def Start_Game(info):
     pack = game_pack_utils.make_pack_instance(pack_used)
     game_inst = game_instance_utils.make_game_instance(player_inst,pack,lobby.count,lobby.max_player,lobby.host,2,info['lobby'])
     game_instance_utils.end_turn(game_inst)
+    game_instance_utils.set_game_state(1,game_inst)
     databaseutils.add_game_inst(game_inst)
     game_inst['_id'] = str(game_inst['_id'])
     emit('start', {'data': game_inst},to=info['lobby'])
@@ -167,13 +168,15 @@ def got_prompt(msg):
             game_player_utils.submit_answer(p,html.escape(msg['prompt']))
         if p['submit']:
             submitted +=1
-    databaseutils.update_game_inst_by_host(msg['host'],game_inst)
     if submitted >= len(players)-1:
         #end the round
+        game_instance_utils.set_game_state(2,game_inst)
+        databaseutils.update_game_inst_by_host(msg['host'],game_inst)
         game_inst['_id']=str(game_inst['_id'])
         emit('prompt_submit',{'user':msg['user']},to=msg['lobby'])
         emit('judging',{'user':msg['user'],'game':game_inst},to=msg['lobby'])
     else:
+        databaseutils.update_game_inst_by_host(msg['host'],game_inst)
         emit('prompt_submit',{'user':msg['user']},to=msg['lobby'])
 
 @socketio.on('winner_prompt')
@@ -196,11 +199,15 @@ def next_turn(msg):
     lobby = databaseutils.get_lobby_by_id(msg['lobby'])
     game_inst = databaseutils.get_game_inst_by_host(msg['host'])
     check = game_instance_utils.end_turn(game_inst)
-    databaseutils.update_game_inst_by_host(msg['host'],game_inst)
-    game_inst['_id'] = str(game_inst['_id'])
+    game_instance_utils.set_game_state(1,game_inst)
     if(check):
+        game_instance_utils.set_game_state(4,game_inst)
+        databaseutils.update_game_inst_by_host(msg['host'],game_inst)
+        game_inst['_id'] = str(game_inst['_id'])
         emit('round_reached', {'data': game_inst},to=msg['lobby'])
     else:
+        databaseutils.update_game_inst_by_host(msg['host'],game_inst)
+        game_inst['_id'] = str(game_inst['_id'])
         emit('start', {'data': game_inst},to=msg['lobby'])
         
 @socketio.on('ending')
@@ -559,11 +566,28 @@ def lobbyin(string):
                 if login_status(request.cookies.get('auth', None)):
                     user = databaseutils.get_user_by_token(request.cookies.get('auth', None))
                     host=databaseutils.get_lobby_by_id(string).host
-                    print(f'host:{host}')
-                    response = make_response(render_template('game.html',code=string,users=databaseutils.get_users_in_room_by_id(string),user=user.username,host=host), 200)
-                    response.headers['X-Content-Type-Options'] = 'nosniff'
-                    #response.set_cookie('lobby',string,max_age=7200)
-                    return response
+                    game_status = databaseutils.get_game_inst_by_host(host)
+                    if game_status == None:
+                        response = make_response(render_template('game.html',code=string,users=databaseutils.get_users_in_room_by_id(string),user=user.username,host=host), 200)
+                        response.headers['X-Content-Type-Options'] = 'nosniff'
+                        #response.set_cookie('lobby',string,max_age=7200)
+                        return response
+                    else:
+                        if(game_status['state'] == 1):
+                            response = make_response(render_template('gameinprogress.html',code=string,users=databaseutils.get_users_in_room_by_id(string),user=user.username,host=host,game_inst=game_status), 200)
+                            response.headers['X-Content-Type-Options'] = 'nosniff'
+                            #response.set_cookie('lobby',string,max_age=7200)
+                            return response
+                        elif(game_status['state']==2):
+                            response = make_response(render_template('gameresults.html',code=string,users=databaseutils.get_users_in_room_by_id(string),user=user.username,host=host,game_inst=game_status), 200)
+                            response.headers['X-Content-Type-Options'] = 'nosniff'
+                            #response.set_cookie('lobby',string,max_age=7200)
+                            return response
+                        else:
+                            response = make_response(render_template('endgame.html',code=string,users=databaseutils.get_users_in_room_by_id(string),user=user.username,host=host,game_inst=game_status), 200)
+                            response.headers['X-Content-Type-Options'] = 'nosniff'
+                            #response.set_cookie('lobby',string,max_age=7200)
+                            return response
 
             else:
                 print('2')
@@ -576,10 +600,28 @@ def lobbyin(string):
             print('3')
             user = databaseutils.get_user_by_token(request.cookies.get('auth', None))
             host=databaseutils.get_lobby_by_id(string).host
-            response = make_response(render_template('game.html',code=string,users=databaseutils.get_users_in_room_by_id(string),user=user.username,host=host), 200)
-            response.headers['X-Content-Type-Options'] = 'nosniff'
-            response.set_cookie('lobby',string,max_age=7200)
-            return response
+            game_status = databaseutils.get_game_inst_by_host(host)
+            if game_status == None:
+                response = make_response(render_template('game.html',code=string,users=databaseutils.get_users_in_room_by_id(string),user=user.username,host=host), 200)
+                response.headers['X-Content-Type-Options'] = 'nosniff'
+                response.set_cookie('lobby',string,max_age=7200)
+                return response
+            else:
+                if(game_status['state'] == 1):
+                    response = make_response(render_template('gameinprogress.html',code=string,users=databaseutils.get_users_in_room_by_id(string),user=user.username,host=host,game_inst=game_status), 200)
+                    response.headers['X-Content-Type-Options'] = 'nosniff'
+                    #response.set_cookie('lobby',string,max_age=7200)
+                    return response
+                elif(game_status['state']==2):
+                    response = make_response(render_template('gameresults.html',code=string,users=databaseutils.get_users_in_room_by_id(string),user=user.username,host=host,game_inst=game_status), 200)
+                    response.headers['X-Content-Type-Options'] = 'nosniff'
+                    #response.set_cookie('lobby',string,max_age=7200)
+                    return response
+                else:
+                    response = make_response(render_template('endgame.html',code=string,users=databaseutils.get_users_in_room_by_id(string),user=user.username,host=host,game_inst=game_status), 200)
+                    response.headers['X-Content-Type-Options'] = 'nosniff'
+                    #response.set_cookie('lobby',string,max_age=7200)
+                    return response
         else:
             response = make_response(redirect('login'))
             response.headers['X-Content-Type-Options'] = 'nosniff'

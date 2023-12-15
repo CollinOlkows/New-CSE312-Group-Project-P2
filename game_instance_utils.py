@@ -15,7 +15,7 @@ def make_game_instance(players,pack,player_count,max_player_count,host,rounds,lo
         'current_judge' : '',
         'current_round' : 0,
         'rounds' : rounds,
-        'state' : 'Lobby',
+        'state' : 0,
         'current_image':''}
     return output
 
@@ -40,6 +40,9 @@ def new_round(game_instance):
             game_player_utils.reset(p)
         game_instance['judge_candidate'] = list(range(0,len(game_instance['players'])))
         game_instance['current_round'] +=1
+        select_judge(game_instance)
+        current_image = game_pack_utils.pick_image(game_instance['pack'])
+        game_instance['current_image'] = current_image
         return False
 
 def select_judge(game_instance):
@@ -75,3 +78,6 @@ def start_game(game_instance):
     current_image = game_pack_utils.pick_image(game_instance['pack'])
     game_instance['current_image'] = current_image
     select_judge(game_instance)
+
+def set_game_state(num,game_instance):
+    game_instance['state'] = num
