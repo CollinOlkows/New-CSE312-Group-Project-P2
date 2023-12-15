@@ -105,6 +105,9 @@ def add_game_inst(game_inst):
 def get_game_inst_by_host(host):
     game = db_games.find_one({'host':host})
     return game
+def update_game_inst_by_host(host,game_inst):
+    db_games.find_one_and_update({'host':host},{"$set":game_inst})
+    
 
 #--------------------------------------
 

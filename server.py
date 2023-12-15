@@ -168,6 +168,7 @@ def got_prompt(msg):
             game_player_utils.submit_answer(p,msg['prompt'])
         if p['submit']:
             submitted +=1
+    databaseutils.update_game_inst_by_host(msg['host'],game_inst)
     if submitted >= len(players)-1:
         #end the round
         emit('prompt_submit',{'user':msg['user']},to=msg['lobby'])
