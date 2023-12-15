@@ -17,6 +17,8 @@ images = db['images']
 users_in = db['users_in']
 rates = db['rates']
 db_packs = db['packs']
+db_games = db['game']
+db_test = db['test']
 
 deloyed_mode = False
 
@@ -95,6 +97,16 @@ class pack:
         print(f'Directory: {self.packs_directory}\nPack Name: {self.pack_name}\nOwner: {self.owner}\nImage List {self.deck}\nID: {self.id}')
         return 'Attributes Listed'
 
+#---------------------------------------
+    #Game database stuff
+def add_game_inst(game_inst):
+    db_games.insert_one(game_inst)
+
+def get_game_inst_by_host(host):
+    game = db_games.find_one({'host':host})
+    return game
+
+#--------------------------------------
 
 def get_all_packs():
     pack_list = []
