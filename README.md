@@ -1,6 +1,9 @@
 # App Name Modern Art
 
-# Deployed Link: https://www.wizardsandassociates.me/
+# Deployed Link: The application is no longer currently deployed
+
+# State of development: Finished / Out of development.
+the applications main core mechanics are completed and the course is finished. Development on this application is no longer occuring and will not be frequently updated
 
 ## Progress / Todo List
 
